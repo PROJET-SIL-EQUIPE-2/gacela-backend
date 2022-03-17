@@ -38,5 +38,8 @@
     "stripe": "^8.209.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"
+  },
+  "prisma": {
+    "schema": "app/models/prisma/schema.prisma"
   }
 }

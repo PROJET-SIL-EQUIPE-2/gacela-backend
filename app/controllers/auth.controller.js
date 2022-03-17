@@ -1,9 +1,9 @@
 
-
-const authLocataire = (req, resp) => {
+function authStudent(req, resp) {
     resp.status(200).json({"message": "hello"});
 }
 
+
 module.exports = {
-    authLocataire
+    authStudent
 }

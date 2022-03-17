@@ -8,9 +8,12 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 const authRouter = require("./routes/auth.router")
+const studentsRouter = require("./routes/students.route")
 
 // Configure dotenv
-dotenv.config()
+dotenv.config({
+    path: ".env"
+})
 
 const app = express()
 
@@ -24,7 +27,8 @@ app.use(bodyParser.json())
 
 
 //// Apply routers
-app.use(authRouter)
+app.use(authRouter);
+app.use(studentsRouter);
 
 
 app.listen("3000", () => {
