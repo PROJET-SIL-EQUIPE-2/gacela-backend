@@ -1,7 +1,7 @@
 {
   "name": "gacella-backend",
   "version": "1.0.0",
-  "description": "backend REST API for Gacella App",
+  "description": "backend REST API for Gacela App",
   "main": "index.js",
   "scripts": {
     "start": "node app/app.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PROJET-SIL-EQUIPE-2/gacella-backend.git"
+    "url": "git+https://github.com/PROJET-SIL-EQUIPE-2/gacela-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/PROJET-SIL-EQUIPE-2/gacella-backend/issues"
+    "url": "https://github.com/PROJET-SIL-EQUIPE-2/gacela-backend/issues"
   },
-  "homepage": "https://github.com/PROJET-SIL-EQUIPE-2/gacella-backend#readme",
+  "homepage": "https://github.com/PROJET-SIL-EQUIPE-2/gacela-backend#readme",
   "dependencies": {
     "@prisma/client": "^3.11.0",
     "axios": "^0.26.1",
