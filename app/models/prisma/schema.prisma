@@ -8,10 +8,13 @@ datasource db {
 }
 
 model Admins {
-  admin_id     Int      @id
+  admin_id     Int      @id @default(autoincrement())
   nom          String?  @db.VarChar
   prenom       String?  @db.VarChar
+  email        String?  @unique @db.VarChar
   isSuperAdmin Boolean?
+  password     String?           @db.VarChar
+
 }
 
 model AgentsMaintenance {
@@ -31,6 +34,7 @@ model Decideurs {
   nom          String? @db.VarChar
   prenom       String? @db.VarChar
   phone_number String? @db.VarChar
+  email        String? @unique @db.VarChar
   password     String? @db.VarChar
 }
 
