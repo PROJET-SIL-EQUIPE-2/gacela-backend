@@ -1,3 +1,7 @@
+/*
+* An example demonstrating the use of prisma
+* */
+
 const joi = require("joi")
 const prismaPkg = require("@prisma/client")
 

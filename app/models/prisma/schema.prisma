@@ -7,18 +7,190 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id       Int      @id @default(autoincrement())
-  title    String
-  content  String? // Nullable string
-  published Boolean  @default(false)
-  author   Student? @relation(fields: authorId, references: [id]) // Many to one relation ship
-  authorId Int?
+model Admins {
+  admin_id     Int      @id
+  nom          String?  @db.VarChar
+  prenom       String?  @db.VarChar
+  isSuperAdmin Boolean?
 }
 
-model Student {
-  id    Int    @id @default(autoincrement())
-  name  String @db.VarChar(20)
-  email String @unique @db.VarChar(20)
-  posts Post[]
+model AgentsMaintenance {
+  agent_id        Int               @id @default(autoincrement())
+  nom             String?           @db.VarChar
+  prenom          String?           @db.VarChar
+  email           String?           @db.VarChar
+  phone_number    String?           @db.VarChar
+  password        String?           @db.VarChar
+  NotificationsAM NotificationsAM[]
+  Task            Task[]
+  Vehicules       Vehicules[]
+}
+
+model Decideurs {
+  decideur_id  Int     @id @default(autoincrement())
+  nom          String? @db.VarChar
+  prenom       String? @db.VarChar
+  phone_number String? @db.VarChar
+  password     String? @db.VarChar
+}
+
+model DemandesInscription {
+  demande_id                  Int                          @id @default(autoincrement())
+  locataire_id                Int?
+  date_demande                DateTime?                    @db.Timestamp(6)
+  etat_demande                Int?
+  EtatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires                  Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  DemandesInscriptionRejected DemandesInscriptionRejected?
+}
+
+model DemandesInscriptionRejected {
+  demande_id          Int                 @id @default(autoincrement())
+  justificatif        String?             @db.VarChar
+  DemandesInscription DemandesInscription @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model DemandesReservation {
+  demande_id       Int                   @id @default(autoincrement())
+  locataire_id     Int?
+  etat_reservation String?               @db.VarChar
+  date_reservation DateTime?             @db.Date
+  start_point      Unsupported("point")?
+  end_point        Unsupported("point")?
+  Locataires       Locataires?           @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Trajets          Trajets[]
+}
+
+model DemandesSupport {
+  demande_id   Int         @id @default(autoincrement())
+  locataire_id Int?
+  message      String?     @db.VarChar
+  date_demande DateTime?   @db.Timestamp(6)
+  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model EtatDemandeInscription {
+  etat_id             Int                   @id @default(autoincrement())
+  description         String?               @db.VarChar
+  DemandesInscription DemandesInscription[]
+}
+
+model EtatVehicule {
+  etat_id     Int         @id @default(autoincrement())
+  description String?     @db.VarChar
+  Vehicules   Vehicules[]
+}
+
+model Facture {
+  facture_id Int       @id @default(autoincrement())
+  trajet_id  Int?
+  price      Int?
+  paid       Boolean?
+  Trajets    Trajets?  @relation(fields: [trajet_id], references: [trajet_id], onDelete: NoAction, onUpdate: NoAction)
+  Paiment    Paiment[]
+}
+
+model Locataires {
+  id                     Int                      @id @default(autoincrement())
+  nom                    String?                  @db.VarChar
+  prenom                 DateTime?                @db.Timestamp(6)
+  email                  String?                  @db.VarChar
+  phone_number           String?                  @db.VarChar
+  password               String?                  @db.VarChar
+  photo_identity         String?                  @db.VarChar
+  personal_photo         String?                  @db.VarChar
+  DemandesInscription    DemandesInscription[]
+  DemandesReservation    DemandesReservation[]
+  DemandesSupport        DemandesSupport[]
+  NotificationsLocataire NotificationsLocataire[]
+  Trajets                Trajets[]
+}
+
+model NotificationsAM {
+  notif_id          Int                @id @default(autoincrement())
+  agent_id          Int?
+  date_notif        DateTime?          @db.Timestamp(6)
+  titre             String?            @db.VarChar
+  message           String?            @db.VarChar
+  AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model NotificationsLocataire {
+  notif_id     Int         @id @default(autoincrement())
+  locataire_id Int?
+  date_notif   DateTime?   @db.Date
+  titre        String?     @db.VarChar
+  message      String?     @db.VarChar
+  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Paiment {
+  paiment_id   Int          @id @default(autoincrement())
+  facture_id   Int?
+  date_paiment DateTime?    @db.Timestamp(6)
+  type_paiment Int?
+  Facture      Facture?     @relation(fields: [facture_id], references: [facture_id], onDelete: NoAction, onUpdate: NoAction)
+  TypePaiment  TypePaiment? @relation(fields: [type_paiment], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Panne {
+  panne_id    Int                   @id @default(autoincrement())
+  vehicule_id Int?
+  charge      Float?
+  date_panne  DateTime?             @db.Timestamp(6)
+  temperature Float?
+  blocked     Boolean?
+  position    Unsupported("point")?
+  treated     Boolean?
+  Vehicules   Vehicules?            @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Task {
+  task_id           Int                @id @default(autoincrement())
+  agent_id          Int?
+  date              DateTime?          @map("_date") @db.Date
+  panne_id          Int?
+  description       String?            @db.VarChar
+  completed         Boolean?
+  AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Trajets {
+  trajet_id           Int                  @id @default(autoincrement())
+  locataire_id        Int?
+  vehicule_id         Int?
+  demande_id          Int?
+  etat                String?              @db.VarChar
+  DemandesReservation DemandesReservation? @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires          Locataires?          @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Vehicules           Vehicules?           @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
+  Facture             Facture[]
+}
+
+model TypePaiment {
+  type_id     Int       @id @default(autoincrement())
+  description String?   @db.VarChar
+  Paiment     Paiment[]
+}
+
+model TypesVehicules {
+  type_id     Int         @id @default(autoincrement())
+  description String?     @db.VarChar
+  unit_price  Float?
+  Vehicules   Vehicules[]
+}
+
+model Vehicules {
+  vehicule_id       Int                @id @default(autoincrement())
+  responsable       Int?
+  type_vehicule     Int?
+  kilometrage       Float?
+  etat_vehicule     Int?
+  EtatVehicule      EtatVehicule?      @relation(fields: [etat_vehicule], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
+  Vehicules         Vehicules?         @relation("VehiculesToVehicules_etat_vehicule", fields: [etat_vehicule], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicules_etat_vehicule_fkey1")
+  AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
+  TypesVehicules    TypesVehicules?    @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
+  Panne             Panne[]
+  Trajets           Trajets[]
+  other_Vehicules   Vehicules[]        @relation("VehiculesToVehicules_etat_vehicule")
 }
