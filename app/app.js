@@ -16,7 +16,7 @@ dotenv.config({
 })
 
 const app = express()
-
+app.set("port", process.env.PORT || 3000) ;
 //// Apply middlewares
 // Allow cross-origin
 app.use(cors())
@@ -31,6 +31,6 @@ app.use(authRouter);
 app.use(studentsRouter);
 
 
-app.listen("3000", () => {
-    console.log("App is served under 3000 port");
+app.listen(app.get("port"), () => {
+    console.log(`App is served under ${app.get("port")} port`);
 })
