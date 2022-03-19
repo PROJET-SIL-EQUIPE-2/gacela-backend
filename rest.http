@@ -1,0 +1,14 @@
+POST http://localhost:3000/api/mobile_passwordReset/locataire
+Content-Type: application/json
+
+{
+    "email" : "id_bouloudene@esi.dz"
+}
+
+###
+PATCH http://localhost:3000/api/mobile_passwordReset/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvdUBlc2kuZHoiLCJpYXQiOjE2NDc3MDc0MzcsImV4cCI6MTY0Nzc0MzQzN30.BIoOGjjsZMuorTMsxV3aUDHJe7EiXpPSH3k2-sGefns
+Content-Type: application/json
+
+{
+    "password" : "reset"
+}
