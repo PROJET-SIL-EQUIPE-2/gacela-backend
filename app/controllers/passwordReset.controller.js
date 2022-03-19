@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
+const crypto = require("crypto")
 const sendEmail = require("../utils/sendEmail");
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
@@ -42,19 +43,32 @@ const passwordResetDemandLocataire = async(req, res) => {
             return res.status(400).send("user with given email doesn't exist");
         
         // Create token
-        const token = jwt.sign({email: req.body.email}, process.env.SECRET, {expiresIn: 3600,});
         
+
+        let token = await prisma.Token.findFirst({ 
+            where : {
+            email: locataire.email 
+        }});
+        if (!token) {
+            token = await prisma.Token.create({
+                data : {
+                user_id: locataire.id,
+                email: locataire.email,
+                token: jwt.sign({user_id : locataire.id}, crypto.randomBytes(32).toString("hex"))
+                }
+            });
+        }
         // Create template for email content
         const html = `
         <!DOCTYPE html>
         <html>
             <body>
                 <h2>Click here to reset your password</h2>
-                <a href="${process.env.BASE_URL}/mobile_passwordReset/locataire/${locataire.id}/${token}">Reset here</a>
+                <a href="${process.env.BASE_URL}/mobile_passwordReset/locataire/${locataire.id}/${token.token}">Reset here</a>
             </body>
         </html>
                            `;
-       const link = `you can reset your password by following this link ${process.env.BASE_URL}/forgot-password/${locataire.id}/${token}`;
+       const link = `you can reset your password by following this link ${process.env.BASE_URL}/forgot-password/${locataire.id}/${token.token}`;
        await sendEmail(req.body.email, "Password reset", link, html);
 
         res.send("password reset link sent to your email account");
@@ -84,13 +98,26 @@ const passwordResetLocataire = async(req, res) => {
 
         if (!locataire) return res.status(400).send("invalid link or expired");
 
-        // Verify token
-        jwt.verify(req.params.token,process.env.SECRET, async (err,decoded)=>{
-            if(err){
-                return res.status(400).send("invalid link or expired");
-            }
-            else{
-                 
+        // Verify if token isn't expired
+
+        let token = await prisma.Token.findFirst({ 
+            where : {
+            user_id: locataire.id,
+            token: req.params.token
+        }});
+        if (!token) return res.status(400).send("Invalid link")
+        if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
+              // delete the token 
+              const deleteToken = await prisma.token.deleteMany({
+                where : {
+                    user_id: locataire.id,
+                    token: req.params.token
+                }
+                });
+         return res.status(400).send("expired link")
+        }
+
+        // token still valide
                 // hash password
                  const passwordHash = bcrypt.hashSync(req.body.password, 10);
 
@@ -103,9 +130,17 @@ const passwordResetLocataire = async(req, res) => {
                         password : passwordHash
                     }
                     });
-                    res.send("password reset sucessfully.");
-                    }
-        })
+
+                    // delete the token 
+            const deleteToken = await prisma.token.deleteMany({
+                where : {
+                    user_id: locataire.id,
+                    token: req.params.token
+                }
+                });
+
+
+                    res.send("password reset sucessfully.");      
 
        
     }
@@ -136,7 +171,20 @@ const passwordResetDemandAM = async(req, res) => {
             return res.status(400).send("AM with given email doesn't exist");
         
         // Create token
-        const token = jwt.sign({email: req.body.email}, process.env.SECRET, {expiresIn: 3600,});
+        
+        let token = await prisma.Token.findFirst({ 
+            where : {
+            email: AM.email,
+        }});
+        if (!token) {
+            token = await prisma.Token.create({
+                data : {
+                user_id: AM.agent_id,
+                email: AM.email,
+                token: jwt.sign({user_id : AM.agent_id}, crypto.randomBytes(32).toString("hex"))
+                }
+            });
+        }
         
         // Create template for email content
         const html = `
@@ -144,7 +192,7 @@ const passwordResetDemandAM = async(req, res) => {
         <html>
             <body>
                 <h2>Click here to reset your password</h2>
-                <a href="${process.env.BASE_URL}/mobile_passwordReset/agent/${AM.agent_id}/${token}">Reset here</a>
+                <a href="${process.env.BASE_URL}/mobile_passwordReset/agent/${AM.agent_id}/${token.token}">Reset here</a>
             </body>
         </html>
                            `;
@@ -178,12 +226,26 @@ const passwordResetAM = async(req, res) => {
 
         if (!AM) return res.status(400).send("invalid link or expired");
 
-        // Verify token
-        jwt.verify(req.params.token,process.env.SECRET, async (err,decoded)=>{
-            if(err){
-                return res.status(400).send("invalid link or expired");
-            }
-            else{
+        // Verify if token isn't expired
+
+        let token = await prisma.Token.findFirst({ 
+            where : {
+            user_id: AM.agent_id,
+            token: req.params.token
+        }});
+        if (!token) return res.status(400).send("Invalid link")
+        if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
+              // delete the token 
+              const deleteToken = await prisma.token.deleteMany({
+                where : {
+                    user_id: AM.agent_id,
+                    token: req.params.token
+                }
+                });
+         return res.status(400).send("expired link")
+        }
+       
+           
                  
                 // hash password
                  const passwordHash = bcrypt.hashSync(req.body.password, 10);
@@ -197,10 +259,15 @@ const passwordResetAM = async(req, res) => {
                         password : passwordHash
                     }
                     });
-                    res.send("password reset sucessfully.");
-                    }
-        })
 
+                // delete the token 
+                  const deleteToken = await prisma.token.deleteMany({
+                where : {
+                    user_id: AM.agent_id,
+                    token: req.params.token
+                }
+                });
+                    res.send("password reset sucessfully.");
        
     }
      catch (error) {
