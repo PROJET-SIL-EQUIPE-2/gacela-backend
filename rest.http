@@ -6,7 +6,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/api/mobile_passwordReset/agent/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE2NDc3MzMzODJ9.C6a6Px53oqs32V_o4geTg2btUj34nU_j27iz-sJwRZI
+PATCH http://localhost:3000/api/mobile_passwordReset/agent/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM
 Content-Type: application/json
 
 {

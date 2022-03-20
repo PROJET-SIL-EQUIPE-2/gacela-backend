@@ -47,14 +47,15 @@ const passwordResetDemandLocataire = async(req, res) => {
 
         let token = await prisma.Token.findFirst({ 
             where : {
+            id_locataire: locataire.id,
             email: locataire.email 
         }});
         if (!token) {
             token = await prisma.Token.create({
                 data : {
-                user_id: locataire.id,
+                id_locataire: locataire.id,
                 email: locataire.email,
-                token: jwt.sign({user_id : locataire.id}, crypto.randomBytes(32).toString("hex"))
+                token: jwt.sign({id_locataire : locataire.id}, crypto.randomBytes(32).toString("hex"))
                 }
             });
         }
@@ -102,7 +103,7 @@ const passwordResetLocataire = async(req, res) => {
 
         let token = await prisma.Token.findFirst({ 
             where : {
-            user_id: locataire.id,
+            id_locataire: locataire.id,
             token: req.params.token
         }});
         if (!token) return res.status(400).send("Invalid link")
@@ -110,7 +111,7 @@ const passwordResetLocataire = async(req, res) => {
               // delete the token 
               const deleteToken = await prisma.token.deleteMany({
                 where : {
-                    user_id: locataire.id,
+                    id_locataire: locataire.id,
                     token: req.params.token
                 }
                 });
@@ -134,7 +135,7 @@ const passwordResetLocataire = async(req, res) => {
                     // delete the token 
             const deleteToken = await prisma.token.deleteMany({
                 where : {
-                    user_id: locataire.id,
+                    id_locataire: locataire.id,
                     token: req.params.token
                 }
                 });
@@ -174,12 +175,13 @@ const passwordResetDemandAM = async(req, res) => {
         
         let token = await prisma.Token.findFirst({ 
             where : {
-            email: AM.email,
+            id_AM : AM.agent_id,
+            email: AM.email
         }});
         if (!token) {
             token = await prisma.Token.create({
                 data : {
-                user_id: AM.agent_id,
+                id_AM: AM.agent_id,
                 email: AM.email,
                 token: jwt.sign({user_id : AM.agent_id}, crypto.randomBytes(32).toString("hex"))
                 }
@@ -230,7 +232,7 @@ const passwordResetAM = async(req, res) => {
 
         let token = await prisma.Token.findFirst({ 
             where : {
-            user_id: AM.agent_id,
+            id_AM: AM.agent_id,
             token: req.params.token
         }});
         if (!token) return res.status(400).send("Invalid link")
@@ -238,7 +240,7 @@ const passwordResetAM = async(req, res) => {
               // delete the token 
               const deleteToken = await prisma.token.deleteMany({
                 where : {
-                    user_id: AM.agent_id,
+                    id_AM: AM.agent_id,
                     token: req.params.token
                 }
                 });
@@ -263,7 +265,7 @@ const passwordResetAM = async(req, res) => {
                 // delete the token 
                   const deleteToken = await prisma.token.deleteMany({
                 where : {
-                    user_id: AM.agent_id,
+                    id_AM: AM.agent_id,
                     token: req.params.token
                 }
                 });
