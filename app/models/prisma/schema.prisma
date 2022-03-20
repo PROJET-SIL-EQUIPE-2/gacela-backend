@@ -16,9 +16,9 @@ model Admins {
 
 model AgentsMaintenance {
   agent_id        Int               @id @default(autoincrement())
-  nom             String?           @db.VarChar
-  prenom          String?           @db.VarChar
-  email           String?           @db.VarChar
+  name             String?           @db.VarChar
+  family_name          String?           @db.VarChar
+  email           String?           @unique(map: "agent_unique_email") @db.VarChar
   phone_number    String?           @db.VarChar
   password        String?           @db.VarChar
   NotificationsAM NotificationsAM[]
@@ -92,13 +92,13 @@ model Facture {
 
 model Locataires {
   id                     Int                      @id @default(autoincrement())
-  name                    String?                  @db.VarChar
-  family_name                 String?                  @db.VarChar
   email                  String?                  @unique(map: "locataire_email_unique") @db.VarChar
   phone_number           String?                  @db.VarChar
   password               String?                  @db.VarChar
   photo_identity         String?                  @db.VarChar
   personal_photo         String?                  @db.VarChar
+  family_name            String?                  @db.VarChar
+  name                   String?                  @db.VarChar
   DemandesInscription    DemandesInscription[]
   DemandesReservation    DemandesReservation[]
   DemandesSupport        DemandesSupport[]
