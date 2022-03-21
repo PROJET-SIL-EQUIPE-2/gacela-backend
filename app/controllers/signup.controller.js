@@ -4,6 +4,12 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
+
+const DEMAND_STATE_VALIDATED = 1;
+const DEMAND_STATE_PENDING = 2;
+const DEMAND_STATE_REJECTED = 3;
+
+
 const locataireSignupDataValidate = (data) => {
     // Validate locataire schema
     const validationSchema = Joi.object({
@@ -25,7 +31,9 @@ const locataireSignupDataValidate = (data) => {
 * */
 
 const signUpLocataire = async (req, res) => {
-    console.log(res.body);
+
+
+
     // Validate user supplied data
     const { error } = locataireSignupDataValidate(req.body);
     if (error) {
@@ -76,13 +84,156 @@ const signUpLocataire = async (req, res) => {
                 photo_identity: photo_identity
             }
         })
-        return res.status(201).json(newLocataire);
+
+        // Add locataire to DemandeInscription table
+
+        // Add locataire to demands table
+        await prisma.DemandesInscription.create({
+            data: {
+                // locataire_id: newLocataire.id,
+                locataire_id: newLocataire.id,
+                date_demande: new Date().toISOString(),
+                etat_demande: DEMAND_STATE_PENDING,
+            }
+        });
+
+        return res.status(201).json(newLocataire); // TODO: Change this to meet frontend requirements
     } catch (e) {
         console.error(e);
         return res.status(500).send("Server error...");
     }
 }
 
+
+// Validate user demand
+const validateLocataire = async (req, res) => {
+    const  data = req.body;
+    const validationSchema  = Joi.object({
+        email: Joi.string().email().required()
+    });
+
+    const {error} = validationSchema.validate(data);
+
+    if (error){
+        // Bad request
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+
+    const {email} = data;
+
+    try {
+        // Find locataire
+        let locataire = await prisma.locataires.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (!locataire){
+            return res.status(400).json({
+                errors: [{ msg: "Use doesn't exist" }]
+            });
+        }
+
+        // Change DemandInscription table
+        await prisma.DemandesInscription.updateMany({
+            where:{
+                locataire_id: locataire.id,
+            },
+            data:{
+                etat_demande: DEMAND_STATE_VALIDATED
+            }
+        });
+
+
+        // Change Locataire table
+        locataire = await prisma.locataires.update({
+            where: {
+                email: email
+            },
+            data: {
+                validated: true
+            }
+        });
+
+        return res.status(201).json(locataire); // TODO: Change this to meet frontend requirements
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).send("Server error...");
+    }
+
+}
+
+const rejectLocataire = async (req, res) => {
+    const  data = req.body;
+    const validationSchema  = Joi.object({
+        email: Joi.string().email().required(),
+        justificatif: Joi.string().required()
+    });
+
+    const {error} = validationSchema.validate(data);
+
+    if (error){
+        // Bad request
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {email, justificatif} = data;
+
+    try {
+        // Find locataire
+        let locataire = await prisma.locataires.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (!locataire){
+            return res.status(400).json({
+                errors: [{ msg: "Use doesn't exist" }]
+            });
+        }
+
+        // Change DemandInscription table
+        const updatedDemand = await prisma.DemandesInscription.updateMany({
+            where:{
+                locataire_id: locataire.id,
+            },
+            data:{
+                etat_demande: DEMAND_STATE_REJECTED
+            }
+        });
+
+       if (!updatedDemand){
+           return res.status(404).json({
+               err: "Cannot update demand"
+           })
+       }
+
+       console.log(updatedDemand);
+
+        // Add to DemandesInscriptionRejected
+        await prisma.DemandesInscriptionRejected.create({
+            data: {
+                demande_id: updatedDemand[0].demande_id,
+                justificatif: justificatif
+            }
+        });
+
+        res.json({
+            message: "Rejected",
+            reason: justificatif
+        })
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).send("Server error...");
+    }
+}
 
 const agentSignUpDataValidate = (data) =>  {
     const validationSchema = Joi.object({
@@ -146,7 +297,8 @@ const signUpAM = async (req, res) => {
         console.log(passwordHash);
         return res.status(201).json(newAgent);
     }catch (e){
-
+        console.error(e);
+        return res.status(500).send("Server error...");
     }
 
 }
@@ -154,5 +306,7 @@ const signUpAM = async (req, res) => {
 
 module.exports = {
     signUpLocataire,
-    signUpAM
+    signUpAM,
+    validateLocataire,
+    rejectLocataire
 }
