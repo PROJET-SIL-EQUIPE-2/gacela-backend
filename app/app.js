@@ -8,8 +8,9 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/auth.router");
-const studentsRouter = require("./routes/students.route");
 const mobileLoginRouter = require("./routes/mobileLogin.router");
+const signUpRouter = require("./routes/signup.router");
+
 // Configure dotenv
 dotenv.config({
 	path: ".env",
@@ -17,6 +18,7 @@ dotenv.config({
 
 const app = express();
 app.set("port", process.env.PORT || 3000);
+
 //// Apply middlewares
 // Allow cross-origin
 app.use(cors());
@@ -27,8 +29,10 @@ app.use(bodyParser.json());
 
 //// Apply routers
 app.use(authRouter);
-app.use(studentsRouter);
+
 app.use("/api/mobile_login", mobileLoginRouter);
+app.use("/api/signup", signUpRouter);
+
 
 app.listen(app.get("port"), () => {
 	console.log(`App is served under ${app.get("port")} port`);
