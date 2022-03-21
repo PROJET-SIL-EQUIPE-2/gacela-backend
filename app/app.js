@@ -9,7 +9,9 @@ const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 const authRouter = require("./routes/auth.router")
 const studentsRouter = require("./routes/students.route")
-const passwordResetRouter = require("./routes/passwordReset.router")
+//const passwordResetRouter = require("./routes/passwordReset.router")
+const passwordResetRouterWeb = require("./routes/passwordResetWeb.route")
+
 
 // Configure dotenv
 dotenv.config({
@@ -30,7 +32,9 @@ app.use(bodyParser.json())
 //// Apply routers
 app.use(authRouter);
 app.use(studentsRouter);
-app.use('/api/mobile_passwordReset',passwordResetRouter);
+//app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/web_passwordReset',passwordResetRouterWeb);
+
 
 
 app.listen(app.get("port"), () => {

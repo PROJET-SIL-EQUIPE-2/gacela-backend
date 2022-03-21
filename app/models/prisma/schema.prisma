@@ -202,3 +202,11 @@ model Token {
   token String 
   createdAt DateTime @default(now())
 }
+
+model TokenAdmin {
+  id Int @id @default(autoincrement())
+  user_id Int
+  email String? @db.VarChar
+  token String 
+  createdAt DateTime @default(now())
+}

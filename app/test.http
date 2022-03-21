@@ -1,0 +1,33 @@
+get http://localhost:3000
+### 
+
+post http://localhost:3000
+Content-Type: application/json
+
+{
+    "email" : "ih_merakchi@esi.dz" ,
+    "userId" : "1"
+
+}
+### 
+get http://localhost:3000/admin
+
+### 
+POST http://localhost:3000/api/web_passwordReset/agent
+Content-Type: application/json
+
+{
+    "email" : "id_bouloudene@esi.dz"
+}
+
+###
+PATCH http://localhost:3000/api/web_passwordReset/agent/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM
+Content-Type: application/json
+
+{
+    "password" : "resetreset"
+}
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Sec
