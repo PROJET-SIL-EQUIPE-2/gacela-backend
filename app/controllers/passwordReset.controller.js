@@ -31,7 +31,10 @@ const passwordResetDemandLocataire = async(req, res) => {
         // Validate user suplied email 
         const schemaValidation = Joi.object({ email: Joi.string().email().required() });
         const { error } = emailValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+        if (error) return res.status(400).send({
+            message :error.details[0].message,
+            success : false
+        });
         
         // Check if Locataire exists
         const locataire = await prisma.Locataires.findFirst({
@@ -40,7 +43,9 @@ const passwordResetDemandLocataire = async(req, res) => {
             } });
         
         if (!locataire)
-            return res.status(400).send("user with given email doesn't exist");
+            return res.status(400).send({
+                message: "user with given email doesn't exist"
+            });
         
         // Create token
         
@@ -71,10 +76,11 @@ const passwordResetDemandLocataire = async(req, res) => {
                            `;
        const link = `you can reset your password by following this link ${process.env.BASE_URL}/forgot-password/${locataire.id}/${token.token}`;
        await sendEmail(req.body.email, "Password reset", link, html);
-
-        res.send("password reset link sent to your email account");
+        res.status(200).send({
+            message: 'password reset link sent to your email account'
+        });
     } catch (error) {
-        res.send("An error occured");
+        res.send({message :"An error occured"});
         console.log(error);
     }
 }
@@ -87,7 +93,9 @@ const passwordResetLocataire = async(req, res) => {
         // Validate user suplied password 
         const schemaValidation = Joi.object({ email: Joi.string().email().required() });
         const { error } = passwordValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+        if (error) return res.status(400).send({
+            message : error.details[0].message,
+        success : false});
         
         // Verify if Locataire exists
         const {id} = req.params.userId;
@@ -97,7 +105,9 @@ const passwordResetLocataire = async(req, res) => {
             }
         });
 
-        if (!locataire) return res.status(400).send("invalid link or expired");
+        if (!locataire) return res.status(400).send({
+            message : "invalid link or expired",
+        success : false});
 
         // Verify if token isn't expired
 
@@ -106,7 +116,8 @@ const passwordResetLocataire = async(req, res) => {
             id_locataire: locataire.id,
             token: req.params.token
         }});
-        if (!token) return res.status(400).send("Invalid link")
+        if (!token) return res.status(400).send({message : "Invalid link",
+    success : false})
         if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
               // delete the token 
               const deleteToken = await prisma.token.deleteMany({
@@ -115,7 +126,9 @@ const passwordResetLocataire = async(req, res) => {
                     token: req.params.token
                 }
                 });
-         return res.status(400).send("expired link")
+         return res.status(400).send({
+             message : "expired link",
+            success : false})
         }
 
         // token still valide
@@ -141,12 +154,14 @@ const passwordResetLocataire = async(req, res) => {
                 });
 
 
-                    res.send("password reset sucessfully.");      
-
+                    res.status(200).send({
+                        message : "password reset sucessfully."
+                }); 
        
     }
      catch (error) {
-       res.send("An error occured");
+       res.send({
+           message : "An error occured"});
        console.log(error);
     }
 }
@@ -160,7 +175,9 @@ const passwordResetDemandAM = async(req, res) => {
         // Validate user suplied email 
         const schemaValidation = Joi.object({ email: Joi.string().email().required() });
         const { error } = emailValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+        if (error) return res.status(400).send({
+            message : error.details[0].message,
+        success : false});
         
         // Check if AM exists
         const AM = await prisma.AgentsMaintenance.findFirst({
@@ -169,7 +186,7 @@ const passwordResetDemandAM = async(req, res) => {
             } });
         
         if (!AM)
-            return res.status(400).send("AM with given email doesn't exist");
+            return res.status(400).send({message :"AM with given email doesn't exist"});
         
         // Create token
         
@@ -201,9 +218,10 @@ const passwordResetDemandAM = async(req, res) => {
        const link = `you can reset your password by following this link ${process.env.BASE_URL}/forgot-password/${AM.agent_id}/${token}`;
        await sendEmail(req.body.email, "Password reset", link, html);
 
-        res.send("password reset link sent to your email account");
+        res.status(200).send({ message : "password reset link sent to your email account",
+        success: true});
     } catch (error) {
-        res.send("An error occured");
+        res.send({message : "An error occured"});
         console.log(error);
     }
 }
@@ -216,7 +234,8 @@ const passwordResetAM = async(req, res) => {
         // Validate user suplied password 
         const schemaValidation = Joi.object({ email: Joi.string().email().required() });
         const { error } = passwordValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+        if (error) return res.status(400).send({ message :error.details[0].message,
+        success : false});
         
         // Verify if AM exists
         const {id} = req.params.userId;
@@ -226,7 +245,8 @@ const passwordResetAM = async(req, res) => {
             }
         });
 
-        if (!AM) return res.status(400).send("invalid link or expired");
+        if (!AM) return res.status(400).send({message :"invalid link or expired",
+    success : false});
 
         // Verify if token isn't expired
 
@@ -235,7 +255,8 @@ const passwordResetAM = async(req, res) => {
             id_AM: AM.agent_id,
             token: req.params.token
         }});
-        if (!token) return res.status(400).send("Invalid link")
+        if (!token) return res.status(400).send({message :"Invalid link",
+    success : false})
         if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
               // delete the token 
               const deleteToken = await prisma.token.deleteMany({
@@ -244,7 +265,7 @@ const passwordResetAM = async(req, res) => {
                     token: req.params.token
                 }
                 });
-         return res.status(400).send("expired link")
+         return res.status(400).send({message :"expired link"})
         }
        
            
@@ -269,11 +290,12 @@ const passwordResetAM = async(req, res) => {
                     token: req.params.token
                 }
                 });
-                    res.send("password reset sucessfully.");
+                    res.status(200).send({message :"password reset sucessfully.",
+                success : true});
        
     }
      catch (error) {
-       res.send("An error occured");
+       res.send({message : "An error occured"});
        console.log(error);
     }
 }
