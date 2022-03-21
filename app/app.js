@@ -4,36 +4,39 @@
 // import bodyParser from 'body-parser';
 // import authRouter from 'routes/auth.router'
 const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
-const authRouter = require("./routes/auth.router");
-const mobileLoginRouter = require("./routes/mobileLogin.router");
-const signUpRouter = require("./routes/signup.router");
+const cors = require("cors")
+const dotenv = require("dotenv")
+const bodyParser = require("body-parser")
+const authRouter = require("./routes/auth.router")
+const studentsRouter = require("./routes/students.route")
+//const passwordResetRouter = require("./routes/passwordReset.router")
+const passwordResetRouterWeb = require("./routes/passwordResetWeb.route")
+
 
 // Configure dotenv
 dotenv.config({
-	path: ".env",
-});
+    path: ".env"
+})
 
-const app = express();
-app.set("port", process.env.PORT || 3000);
-
+const app = express()
+app.set("port", process.env.PORT || 3000) ;
 //// Apply middlewares
 // Allow cross-origin
-app.use(cors());
+app.use(cors())
 
 // Parse data as json
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
+
 
 //// Apply routers
 app.use(authRouter);
+app.use(studentsRouter);
+//app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/web_passwordReset',passwordResetRouterWeb);
 
-app.use("/api/mobile_login", mobileLoginRouter);
-app.use("/api/signup", signUpRouter);
 
 
 app.listen(app.get("port"), () => {
-	console.log(`App is served under ${app.get("port")} port`);
-});
+    console.log(`App is served under ${app.get("port")} port`);
+})

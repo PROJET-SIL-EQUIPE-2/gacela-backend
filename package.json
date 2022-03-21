@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/app.js",
+    "dev": "nodemon app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,18 +24,23 @@
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
+    "buffer-equal-constant-time": "^1.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "fs": "^0.0.1-security",
     "google-auth-library": "^7.14.0",
     "googleapis": "^97.0.0",
+    "handlebars": "^4.7.7",
     "jasmin": "^0.0.2",
     "jest": "^27.5.1",
     "joi": "^17.6.0",
     "jsdoc": "^3.6.10",
     "jsonwebtoken": "^8.5.1",
     "karma": "^6.3.17",
+    "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
+    "path": "^0.12.7",
     "stripe": "^8.209.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"

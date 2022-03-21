@@ -198,3 +198,19 @@ model Vehicules {
   Trajets           Trajets[]
   other_Vehicules   Vehicules[]        @relation("VehiculesToVehicules_etat_vehicule")
 }
+
+model Token {
+  id Int @id @default(autoincrement())
+  user_id Int
+  email String? @db.VarChar
+  token String 
+  createdAt DateTime @default(now())
+}
+
+model TokenAdmin {
+  id Int @id @default(autoincrement())
+  user_id Int
+  email String? @db.VarChar
+  token String 
+  createdAt DateTime @default(now())
+}
