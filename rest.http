@@ -1,12 +1,12 @@
-POST http://localhost:3000/api/mobile_passwordReset/agent
+POST http://localhost:3000/api/mobile_passwordReset/locataire
 Content-Type: application/json
 
 {
-    "email" : "id_bouloudene@esi.dz"
+    "email" : "dou@esi.dz"
 }
 
 ###
-PATCH http://localhost:3000/api/mobile_passwordReset/agent/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE2NDc3MzMzODJ9.C6a6Px53oqs32V_o4geTg2btUj34nU_j27iz-sJwRZI
+PATCH http://localhost:3000/api/mobile_passwordReset/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0Nzg4MzU5MH0.evASr4mKr7PQFV_pD_jHFD0Q_9PYNLcQ5x0xVfDWkSw
 Content-Type: application/json
 
 {

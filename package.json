@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app/app.js",
     "dev": "nodemon app/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
     "nodemon": "^2.0.15",
     "path": "^0.12.7",
     "stripe": "^8.209.0",
+    "supertest": "^6.2.2",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"
   },
