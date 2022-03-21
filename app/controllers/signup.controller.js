@@ -25,7 +25,6 @@ const locataireSignupDataValidate = (data) => {
 * */
 
 const signUpLocataire = async (req, res) => {
-    console.log(res.body);
     // Validate user supplied data
     const { error } = locataireSignupDataValidate(req.body);
     if (error) {
@@ -114,7 +113,6 @@ const signUpAM = async (req, res) => {
     } = req.body;
 
     try {
-        console.log("hi");
         // Check if agent already exits
         const agent = await prisma.AgentsMaintenance.findUnique({
             where: {

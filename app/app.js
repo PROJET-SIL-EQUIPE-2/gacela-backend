@@ -8,8 +8,9 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 const authRouter = require("./routes/auth.router")
-const studentsRouter = require("./routes/students.route")
-//const passwordResetRouter = require("./routes/passwordReset.router")
+const mobileLoginRouter = require("./routes/mobileLogin.router");
+const passwordResetRouter = require("./routes/passwordReset.router");
+const signUpRouter = require("./routes/signup.router");
 const passwordResetRouterWeb = require("./routes/passwordResetWeb.route")
 
 
@@ -20,6 +21,7 @@ dotenv.config({
 
 const app = express()
 app.set("port", process.env.PORT || 3000) ;
+
 //// Apply middlewares
 // Allow cross-origin
 app.use(cors())
@@ -30,9 +32,9 @@ app.use(bodyParser.json())
 
 
 //// Apply routers
+app.use('/api/')
 app.use(authRouter);
-app.use(studentsRouter);
-//app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/mobile_passwordReset',passwordResetRouter);
 app.use('/api/web_passwordReset',passwordResetRouterWeb);
 
 

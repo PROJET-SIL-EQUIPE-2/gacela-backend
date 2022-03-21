@@ -22,9 +22,6 @@ function authenticate(req, res, next){
         next()
     })
 }
-function authStudent(req, resp) {
-    resp.status(200).json({"message": "hello"});
-}
 
 const authAdmins=(req , res, next)=>{
     const {email, password} = req.body;
@@ -98,7 +95,6 @@ const authDecideurs=(req , res, next)=>{
 
 
 module.exports = {
-    authStudent,
     authAdmins,
     authDecideurs
 }
