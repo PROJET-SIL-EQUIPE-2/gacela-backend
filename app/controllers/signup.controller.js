@@ -4,6 +4,12 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
+
+const DEMAND_STATE_VALIDATED = 1;
+const DEMAND_STATE_PENDING = 2;
+const DEMAND_STATE_REJECTED = 3;
+
+
 const locataireSignupDataValidate = (data) => {
     // Validate locataire schema
     const validationSchema = Joi.object({
@@ -25,6 +31,9 @@ const locataireSignupDataValidate = (data) => {
 * */
 
 const signUpLocataire = async (req, res) => {
+
+
+
     // Validate user supplied data
     const { error } = locataireSignupDataValidate(req.body);
     if (error) {
@@ -113,6 +122,7 @@ const signUpAM = async (req, res) => {
     } = req.body;
 
     try {
+        console.log("hi");
         // Check if agent already exits
         const agent = await prisma.AgentsMaintenance.findUnique({
             where: {
@@ -144,7 +154,8 @@ const signUpAM = async (req, res) => {
         console.log(passwordHash);
         return res.status(201).json(newAgent);
     }catch (e){
-
+        console.error(e);
+        return res.status(500).send("Server error...");
     }
 
 }
@@ -152,5 +163,7 @@ const signUpAM = async (req, res) => {
 
 module.exports = {
     signUpLocataire,
-    signUpAM
+    signUpAM,
+    validateLocataire,
+    rejectLocataire
 }

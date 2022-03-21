@@ -19,11 +19,11 @@ model Admins {
 
 model AgentsMaintenance {
   agent_id        Int               @id @default(autoincrement())
-  name             String?           @db.VarChar
-  family_name          String?           @db.VarChar
   email           String?           @unique(map: "agent_unique_email") @db.VarChar
   phone_number    String?           @db.VarChar
   password        String?           @db.VarChar
+  family_name     String?           @db.VarChar
+  name            String?           @db.VarChar
   NotificationsAM NotificationsAM[]
   Task            Task[]
   Vehicules       Vehicules[]
@@ -41,7 +41,7 @@ model Decideurs {
 
 model DemandesInscription {
   demande_id                  Int                          @id @default(autoincrement())
-  locataire_id                Int?
+  locataire_id                Int?                         @unique(map: "demande_unique_locataire")
   date_demande                DateTime?                    @db.Timestamp(6)
   etat_demande                Int?
   EtatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
@@ -104,7 +104,8 @@ model Locataires {
   personal_photo         String?                  @db.VarChar
   family_name            String?                  @db.VarChar
   name                   String?                  @db.VarChar
-  DemandesInscription    DemandesInscription[]
+  validated              Boolean?                 @default(false)
+  DemandesInscription    DemandesInscription?
   DemandesReservation    DemandesReservation[]
   DemandesSupport        DemandesSupport[]
   NotificationsLocataire NotificationsLocataire[]
