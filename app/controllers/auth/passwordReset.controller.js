@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 const crypto = require("crypto")
-const sendEmail = require("../utils/sendEmail(old)");
+const sendEmail = require("../../utils/sendEmail(old)");
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 

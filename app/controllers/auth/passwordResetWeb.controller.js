@@ -2,7 +2,7 @@ const {
     requestPasswordResetAdmin,
     passwordResetAdmin,
    
-  } = require("../services/passwordReset.service");
+  } = require("../../services/passwordReset.service");
   
   
   

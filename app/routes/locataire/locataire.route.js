@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const locataireController = require('../controllers/locataireController');
+const locataireController = require('../../controllers/locataire/locataireController');
 
 
 // Get validated locataire

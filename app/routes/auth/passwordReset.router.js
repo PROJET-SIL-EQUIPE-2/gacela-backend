@@ -1,4 +1,4 @@
-const passwordResetController = require("../controllers/passwordReset.controller")
+const passwordResetController = require("../../controllers/auth/passwordReset.controller")
 const express = require("express");
 const router = express.Router();
 

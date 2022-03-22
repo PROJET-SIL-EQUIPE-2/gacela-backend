@@ -1,5 +1,5 @@
-const passwordResetController = require("../controllers/passwordResetWeb.controller")
-const passwordResetService = require('../services/passwordReset.service')
+const passwordResetController = require("../../controllers/auth/passwordResetWeb.controller")
+const passwordResetService = require('../../services/passwordReset.service')
 
 const express = require("express");
 const router = express.Router();

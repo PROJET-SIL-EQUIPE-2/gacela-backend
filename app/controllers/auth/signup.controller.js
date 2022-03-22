@@ -1,8 +1,12 @@
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
+const upload = require("../../utils/upload");
+
+
 const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
+
 
 
 const DEMAND_STATE_VALIDATED = 1;
@@ -18,12 +22,9 @@ const locataireSignupDataValidate = (data) => {
         email: Joi.string().email().max(255).required(),
         phone_number: Joi.string().required(),
         password: Joi.string().min(8).max(255).required(),
-        personal_photo: Joi.string().required(),
-        photo_identity: Joi.string().required()
     });
     return validationSchema.validate(data)
 }
-
 
 /*
 * HTTP codes
@@ -31,8 +32,6 @@ const locataireSignupDataValidate = (data) => {
 * */
 
 const signUpLocataire = async (req, res) => {
-
-
 
     // Validate user supplied data
     const { error } = locataireSignupDataValidate(req.body);
@@ -50,8 +49,6 @@ const signUpLocataire = async (req, res) => {
         email,
         phone_number,
         password,
-        personal_photo,
-        photo_identity
     } = req.body;
 
     try {
@@ -74,6 +71,11 @@ const signUpLocataire = async (req, res) => {
         const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
         const passwordHash = await bcrypt.hash(password, salt);
 
+        // Rename uploaded files
+        const files = upload(req.files);
+        const personal_photo = files[0]
+        const photo_identity = files[1]
+
         const newLocataire = await prisma.locataires.create({
             data: {
                 name: name,
@@ -81,8 +83,8 @@ const signUpLocataire = async (req, res) => {
                 email: email,
                 phone_number: phone_number,
                 password: passwordHash,
-                personal_photo: personal_photo,
-                photo_identity: photo_identity
+                personal_photo: personal_photo, // TODO: Change this
+                photo_identity: photo_identity  // TODO: Change this
             }
         })
         await prisma.DemandesInscription.create({
@@ -93,10 +95,12 @@ const signUpLocataire = async (req, res) => {
             }
         });
 
-        return res.status(201).json(newLocataire);
+        return res.status(201).json({
+            message: "Locataire registered"
+        });
     } catch (e) {
         console.error(e);
-        return res.status(500).send("Server error...");
+        return res.status(500).send("Server error");
     }
 }
 
@@ -133,6 +137,7 @@ const validateLocataire = async (req, res) => {
                 }]
             });
         }
+
         // Check if locataire demand is validated
         if (locataire.validated){
             return res.status(400).json({
@@ -376,7 +381,6 @@ const signUpAM = async (req, res) => {
         console.error(e);
         return res.status(500).send("Server error...");
     }
-
 }
 
 
@@ -384,5 +388,5 @@ module.exports = {
     signUpLocataire,
     signUpAM,
     validateLocataire,
-    // rejectLocataire
+    rejectLocataire,
 }
