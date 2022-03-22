@@ -7,11 +7,11 @@ router.post("/locataire", signUpController.signUpLocataire);
 // validate locataire demand by email
 router.post("/locataire/validate", signUpController.validateLocataire);
 
-// reject locataire and send him
-router.post("/locataire/reject", signUpController.rejectLocataire);
+// reject locataire and send him a justification
+// router.post("/locataire/reject", signUpController.rejectLocataire);
 
 
-// Register new agent route
+// Register a new agent route
 router.post("/agent", signUpController.signUpAM);
 
 // Register new admin

@@ -3,7 +3,6 @@ const authController = require("../controllers/auth.controller")
 const router = require("express").Router();
 
 // Authenticate clients
-router.get("/api/auth/locataire/", authController.authStudent)
 router.post("/api/auth/web/", authController.authAdmins , authController.authDecideurs)
 
 // export default router;

@@ -73,6 +73,7 @@ const signUpLocataire = async (req, res) => {
         // Create a brand new locataire
         const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
         const passwordHash = await bcrypt.hash(password, salt);
+
         const newLocataire = await prisma.locataires.create({
             data: {
                 name: name,
@@ -84,10 +85,126 @@ const signUpLocataire = async (req, res) => {
                 photo_identity: photo_identity
             }
         })
+        await prisma.DemandesInscription.create({
+            data: {
+                locataire_id: newLocataire.id,
+                date_demande: new Date().toISOString(),
+                etat_demande: DEMAND_STATE_PENDING
+            }
+        });
+
         return res.status(201).json(newLocataire);
     } catch (e) {
         console.error(e);
         return res.status(500).send("Server error...");
+    }
+}
+
+// Validate locataire based on there emails
+const validateLocataire = async (req, res) => {
+    const data = req.body;
+    const validationSchema = Joi.object({
+        email: Joi.string().email().required()
+    });
+
+    const {error} = validationSchema.validate(data);
+    if (error){
+        // Bad request
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+
+    const {email} = req.body;
+
+    try {
+        // Find locataire demand
+        const locataire = await prisma.locataires.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        // Check if locataire doesn't exist
+        if (!locataire) {
+            return res.status(400).json({
+                errors: [{
+                    msg: "Locataire doesn't exists"
+                }]
+            });
+        }
+        // Check if locataire demand is validated
+        if (locataire.validated){
+            return res.status(400).json({
+                errors: [{
+                    msg: "Locataire is already validated"
+                }]
+            });
+        }
+
+        // Find demand
+        let demand = await prisma.DemandesInscription.findMany({
+            where: {
+                locataire_id:locataire.id
+            },
+            include:{
+                EtatDemandeInscription: true
+            }
+        });
+        // res.json(demand);
+        console.log(demand);
+        if (demand.length > 0){
+            let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
+                where: {
+                    demande_id: demand[0].demande_id
+                }
+            })
+            if (!demandRejected){
+                // Locataire is not rejected before
+
+                // Create a transaction that does the following
+                // 1. Update DemandesInscription
+                // 2. Update validated column
+
+                const [updatedDemand, updatedLocataire] = await prisma.$transaction([
+                    prisma.DemandesInscription.update({
+                        where: {
+                            demande_id: demand[0].demande_id
+                        },
+                        data: {
+                            etat_demande: DEMAND_STATE_VALIDATED
+                        }
+                    }),
+                    prisma.locataires.update({
+                        where: {
+                            id: locataire.id
+                        },
+                        data: {
+                            validated: true
+                        },
+                        select: {
+                            id: true,
+                            email: true,
+                            phone_number: true,
+                            photo_identity: true,
+                            personal_photo: true,
+                            name: true,
+                            family_name: true,
+                            validated: true
+                        }
+                    })
+                ]);
+
+                return res.send(updatedLocataire);
+
+            }
+            // TODO: Should we handle the case where locataire was rejected before
+            return res.send("this demand was rejected before");
+        }
+        return res.send("No demand");
+    }catch (e){
+        console.error(e);
+        return res.json(e);
     }
 }
 
@@ -165,5 +282,5 @@ module.exports = {
     signUpLocataire,
     signUpAM,
     validateLocataire,
-    rejectLocataire
+    // rejectLocataire
 }

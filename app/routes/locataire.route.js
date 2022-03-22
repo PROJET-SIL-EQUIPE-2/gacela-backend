@@ -3,10 +3,10 @@ const locataireController = require('../controllers/locataireController');
 
 
 // Get validated locataire
-router.get("/locataire/validated", locataireController.getValidatedLocataires);
+router.get("/validated", locataireController.getValidatedLocataires);
 
 // Get non-validated locataires
-router.get("/locataire/non_validated", locataireController.getNonValidatedLocataires);
+router.get("/non_validated", locataireController.getNonValidatedLocataires);
 
 
 

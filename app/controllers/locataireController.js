@@ -7,17 +7,26 @@ const getValidatedLocataires = async (req, res) => {
     try {
         const non_validated = await prisma.locataires.findMany({
             where: {
-                validated: false
+                validated: true
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
             }
         });
         return res.send(non_validated);
 
     }catch (e){
         console.error(e);
-        res.status(500).json("Server error");
+        return res.status(500).json("Server error");
 
     }
-    res.send("success");
 }
 
 const getNonValidatedLocataires = async (req, res) => {
@@ -25,16 +34,25 @@ const getNonValidatedLocataires = async (req, res) => {
         const validated = await prisma.locataires.findMany({
             where: {
                 validated: false
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
             }
         });
         return res.send(validated);
 
     }catch (e){
         console.error(e);
-        res.status(500).json("Server error");
+        return res.status(500).json("Server error");
 
     }
-    res.send("success");
 }
 
 
