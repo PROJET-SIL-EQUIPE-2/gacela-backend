@@ -209,6 +209,108 @@ const validateLocataire = async (req, res) => {
 }
 
 
+// Reject locataire based on email
+const rejectLocataire = async (req, res) => {
+    const data = req.body;
+    const validationSchema = Joi.object({
+        email: Joi.string().email().required(),
+        justificatif: Joi.string().required()
+    });
+
+    const {error} = validationSchema.validate(data);
+    if (error){
+        // Bad request
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+
+    const {email, justificatif} = req.body;
+
+    try {
+
+        // 1. Find non validated locataire
+        // 2. Create a rejection record
+        // 3. Send an email along with a justification
+        const locataire = await prisma.locataires.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        // Check if locataire doesn't exist
+        if (!locataire) {
+            return res.status(400).json({
+                errors: [{
+                    msg: "Locataire doesn't exists"
+                }]
+            });
+        }
+        // Check if locataire demand is validated
+        if (locataire.validated){
+            return res.status(400).json({
+                errors: [{
+                    msg: "Locataire is already validated"
+                }]
+            });
+        }
+
+        // Check if locataire is rejected before
+        let demand = await prisma.DemandesInscription.findMany({
+            where: {
+                locataire_id:locataire.id
+            },
+            include:{
+                EtatDemandeInscription: true
+            }
+        });
+
+        if (demand.length > 0) {
+            let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
+                where: {
+                    demande_id: demand[0].demande_id
+                }
+            })
+            if (demandRejected){
+                return res.status(400).json({
+                    errors: [{
+                        msg: "This demand is rejected before"
+                    }]
+                });
+            }
+
+            // A transaction containing
+            // 1. Create  a rejection record
+            // 2. Update DemandesInscription
+            await prisma.$transaction([
+                prisma.DemandesInscriptionRejected.create({
+                    data: {
+                        demande_id: demand[0].demande_id,
+                        justificatif: justificatif
+                    }
+                }),
+                prisma.DemandesInscription.update({
+                    where: {
+                        demande_id: demand[0].demande_id
+                    },
+                    data: {
+                        etat_demande: DEMAND_STATE_REJECTED
+                    }
+                })
+            ]);
+            return res.json(data)
+        }
+
+        return res.status(400).json("I can't find a proper error message x)")
+
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json("Server error");
+    }
+}
+
+
 const agentSignUpDataValidate = (data) =>  {
     const validationSchema = Joi.object({
         name: Joi.string().min(3).max(255).required(),
@@ -220,7 +322,7 @@ const agentSignUpDataValidate = (data) =>  {
     return validationSchema.validate(data);
 }
 
-//  TODO: Implement Sign Up for Agents
+
 const signUpAM = async (req, res) => {
     // 1. Validate user supplied data
     const {error} = agentSignUpDataValidate(req.body);
