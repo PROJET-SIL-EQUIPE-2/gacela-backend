@@ -95,7 +95,7 @@ const loginLocataire = async (req, res) => {
 		});
 	} catch (err) {
 		console.error(err);
-		return res.status(500).send("Server error...");
+		return res.status(500).json({ success: false, errors: [{ msg: "Server error..." }] });
 	}
 };
 
@@ -150,7 +150,7 @@ const loginAM = async (req, res) => {
 		});
 	} catch (err) {
 		console.error(err);
-		return res.status(500).send("Server error...");
+		return res.status(500).json({ success: false, errors: [{ msg: "Server error..." }] });
 	}
 };
 
