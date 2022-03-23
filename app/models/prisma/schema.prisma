@@ -9,8 +9,8 @@ datasource db {
 
 model Admins {
   admin_id     Int      @id @default(autoincrement())
-  nom          String?  @db.VarChar
-  prenom       String?  @db.VarChar
+  name          String?  @db.VarChar
+  family_name       String?  @db.VarChar
   email        String?  @unique @db.VarChar
   isSuperAdmin Boolean?
   password     String?           @db.VarChar
@@ -32,8 +32,8 @@ model AgentsMaintenance {
 
 model Decideurs {
   decideur_id  Int     @id @default(autoincrement())
-  nom          String? @db.VarChar
-  prenom       String? @db.VarChar
+  name          String? @db.VarChar
+  family_name       String? @db.VarChar
   phone_number String? @db.VarChar
   email        String? @unique @db.VarChar
   password     String? @db.VarChar

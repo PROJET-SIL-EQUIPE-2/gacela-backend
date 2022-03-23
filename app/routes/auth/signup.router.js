@@ -23,8 +23,9 @@ router.post("/locataire/reject", signUpController.rejectLocataire);
 router.post("/agent", signUpController.signUpAM);
 
 // Register new admin
-// router.post("/admin", signUpController.registerAdmin);
+router.post("/admin", signUpController.registerAdmin);
 
 // Register a new dicedeur
+router.post("/decideur", signUpController.registerDicedeur);
 
 module.exports = router;
