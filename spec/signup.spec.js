@@ -115,9 +115,75 @@ describe("POST: Locataire signup", () => {
 
 // TEST locataire validation
 describe('POST: Locataire validation', () => {
-    it('',()=>{
+    it('should return 400 bad request when no email is provided',(done)=>{
+        Request
+            .post("/locataire/validate")
+            .send({
+                // no email
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "\"email\" is required").toBe(true)
+                done();
+            })
+    });
 
-    })
+    it("should return 400 bad request when no locataire exists with this email", (done) => {
+        Request
+            .post("/locataire/validate")
+            .send({
+                email: "nolocataire@nexcode.dz"
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "Locataire doesn't exists").toBe(true)
+                done();
+            })
+    });
+
+    it("should return 200 OK when locataire is validated", (done) => {
+        Request
+            .post("/locataire/validate")
+            .send({
+                email: "locataire1@nexcode.dz"
+            })
+            .expect(200)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.success === true).toBe(true)
+                expect(res.body.validated === true).toBe(true)
+                done();
+            })
+    });
+
+    it("should return 400 when locataire is already validated", (done) => {
+        Request
+            .post("/locataire/validate")
+            .send({
+                email: "locataire1@nexcode.dz"
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "Locataire is already validated").toBe(true)
+                done();
+            })
+    });
+
 })
 
 // TEST locataire rejection
