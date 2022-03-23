@@ -211,7 +211,7 @@ const validateLocataire = async (req, res) => {
             return res.status(400).json({
                 errors: [
                     {
-                        msg: "this demand was rejected before"
+                        msg: "This demand was rejected before"
                     }
                 ]
             })
