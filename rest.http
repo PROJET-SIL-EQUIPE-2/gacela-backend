@@ -1,12 +1,12 @@
-POST http://localhost:3000/api/mobile_passwordReset/locataire
+POST http://localhost:3000/api/web_passwordReset/decideur
 Content-Type: application/json
 
 {
-    "email" : "dou@esi.dz"
+    "email" : "dounia@esi.dz"
 }
 
 ###
-PATCH http://localhost:3000/api/mobile_passwordReset/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0Nzg4MzU5MH0.evASr4mKr7PQFV_pD_jHFD0Q_9PYNLcQ5x0xVfDWkSw
+PATCH http://localhost:3000/api/web_passwordReset/decideur/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ3OTk1NTY0fQ.7-EKZsVrEnt_WER3yNC--P4aZRkS96WAXz_-_Fa_omw
 Content-Type: application/json
 
 {

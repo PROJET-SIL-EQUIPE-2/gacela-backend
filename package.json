@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/app.js",
-    "test": ""
+    "dev": "nodemon app/app.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
     "jsonwebtoken": "^8.5.1",
     "karma": "^6.3.17",
     "multer": "^1.4.4",
+    "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "stripe": "^8.209.0",
     "swagger-jsdoc": "^6.1.0",
@@ -43,6 +44,7 @@
     "schema": "app/models/prisma/schema.prisma"
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "prisma": "^3.11.0"
   }
 }

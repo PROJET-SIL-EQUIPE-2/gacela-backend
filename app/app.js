@@ -4,7 +4,9 @@ const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 // const authRouter = require("./routes/auth.router");
 const mobileLoginRouter = require("./routes/auth/mobileLogin.router");
-// const passwordResetRouter = require("./routes/passwordReset.router");
+const passwordResetRouter = require("./routes/auth/passwordReset.router");
+const passwordResetWebRouter = require("./routes/auth/passwordResetWeb.route");
+
 const signUpRouter = require("./routes/auth/signup.router");
 // const passwordResetRouterWeb = require("./routes/passwordResetWeb.route");
 const locataireRouter = require("./routes/locataire/locataire.route");
@@ -28,8 +30,8 @@ app.use(bodyParser.json())
 
 //// Apply routers
 // app.use(authRouter);
-// app.use('/api/mobile_passwordReset',passwordResetRouter);
-// app.use('/api/web_passwordReset',passwordResetRouterWeb);
+app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/web_passwordReset',passwordResetWebRouter);
 
 app.use("/api/mobile_login", mobileLoginRouter);
 app.use("/api/signup", signUpRouter);
