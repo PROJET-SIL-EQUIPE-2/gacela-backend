@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "Admins" (
     "admin_id" SERIAL NOT NULL,
-    "nom" VARCHAR,
-    "prenom" VARCHAR,
+    "name" VARCHAR,
+    "family_name" VARCHAR,
     "email" VARCHAR,
     "isSuperAdmin" BOOLEAN,
     "password" VARCHAR,
@@ -25,8 +25,8 @@ CREATE TABLE "AgentsMaintenance" (
 -- CreateTable
 CREATE TABLE "Decideurs" (
     "decideur_id" SERIAL NOT NULL,
-    "nom" VARCHAR,
-    "prenom" VARCHAR,
+    "name" VARCHAR,
+    "family_name" VARCHAR,
     "phone_number" VARCHAR,
     "email" VARCHAR,
     "password" VARCHAR,
@@ -217,10 +217,8 @@ CREATE TABLE "Token" (
     "id" SERIAL NOT NULL,
     "id_locataire" INTEGER,
     "id_AM" INTEGER,
-<<<<<<< HEAD:app/models/prisma/migrations/20220323004312_init/migration.sql
-=======
     "id_admin" INTEGER,
->>>>>>> 4fd8d36aaacad97307d9954397eda6aad224aa9f:app/models/prisma/migrations/20220322233720_updated_token/migration.sql
+    "id_decideur" INTEGER,
     "email" VARCHAR,
     "token" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -228,20 +226,6 @@ CREATE TABLE "Token" (
     CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
 );
 
-<<<<<<< HEAD:app/models/prisma/migrations/20220323004312_init/migration.sql
--- CreateTable
-CREATE TABLE "TokenAdmin" (
-    "id" SERIAL NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "email" VARCHAR,
-    "token" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "TokenAdmin_pkey" PRIMARY KEY ("id")
-);
-
-=======
->>>>>>> 4fd8d36aaacad97307d9954397eda6aad224aa9f:app/models/prisma/migrations/20220322233720_updated_token/migration.sql
 -- CreateIndex
 CREATE UNIQUE INDEX "Admins_email_key" ON "Admins"("email");
 
@@ -315,13 +299,13 @@ ALTER TABLE "Vehicules" ADD CONSTRAINT "Vehicules_type_vehicule_fkey" FOREIGN KE
 ALTER TABLE "Vehicules" ADD CONSTRAINT "Vehicules_etat_vehicule_fkey1" FOREIGN KEY ("etat_vehicule") REFERENCES "Vehicules"("vehicule_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-<<<<<<< HEAD:app/models/prisma/migrations/20220323004312_init/migration.sql
-=======
 ALTER TABLE "Token" ADD CONSTRAINT "Token_id_admin_fkey" FOREIGN KEY ("id_admin") REFERENCES "Admins"("admin_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
->>>>>>> 4fd8d36aaacad97307d9954397eda6aad224aa9f:app/models/prisma/migrations/20220322233720_updated_token/migration.sql
 ALTER TABLE "Token" ADD CONSTRAINT "Token_id_AM_fkey" FOREIGN KEY ("id_AM") REFERENCES "AgentsMaintenance"("agent_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_id_decideur_fkey" FOREIGN KEY ("id_decideur") REFERENCES "Decideurs"("decideur_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "Token" ADD CONSTRAINT "Token_id_locataire_fkey" FOREIGN KEY ("id_locataire") REFERENCES "Locataires"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
