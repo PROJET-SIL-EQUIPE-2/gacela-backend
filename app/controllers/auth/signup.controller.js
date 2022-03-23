@@ -68,7 +68,7 @@ const signUpLocataire = async (req, res) => {
         }
 
         // Create a brand new locataire
-        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
+        const salt = await bcrypt.genSalt(process.env.SALT_ROUNDS || 10);
         const passwordHash = await bcrypt.hash(password, salt);
 
         // Rename uploaded files
@@ -77,6 +77,7 @@ const signUpLocataire = async (req, res) => {
         const photo_identity = files[1]
 
         const newLocataire = await prisma.locataires.create({
+            success: true,
             data: {
                 name: name,
                 family_name: family_name,
@@ -96,7 +97,10 @@ const signUpLocataire = async (req, res) => {
         });
 
         return res.status(201).json({
-            message: "Locataire registered"
+            success: true,
+            data: {
+                msg: "Locataire registered"
+            }
         });
     } catch (e) {
         console.error(e);
@@ -203,10 +207,22 @@ const validateLocataire = async (req, res) => {
                 return res.send(updatedLocataire);
 
             }
-            // TODO: Should we handle the case where locataire was rejected before
-            return res.send("this demand was rejected before");
+            // TODO: Should we handle the case where locataire was rejected before?
+            return res.status(400).json({
+                errors: [
+                    {
+                        msg: "this demand was rejected before"
+                    }
+                ]
+            })
         }
-        return res.send("No demand");
+        return res.status(400).json({
+            errors: [
+                {
+                    msg: "No demand found"
+                }
+            ]
+        })
     }catch (e){
         console.error(e);
         return res.json(e);
@@ -303,10 +319,17 @@ const rejectLocataire = async (req, res) => {
                     }
                 })
             ]);
-            return res.json(data)
+            return res.json({
+                success: true,
+                data: data
+            })
         }
 
-        return res.status(400).json("I can't find a proper error message x)")
+        return res.status(400).json({
+            errors: [{
+                msg: "No demand found"
+            }]
+        })
 
 
     }catch (e){
@@ -346,7 +369,6 @@ const signUpAM = async (req, res) => {
     } = req.body;
 
     try {
-        console.log("hi");
         // Check if agent already exits
         const agent = await prisma.AgentsMaintenance.findUnique({
             where: {
@@ -376,10 +398,140 @@ const signUpAM = async (req, res) => {
             }
         })
         console.log(passwordHash);
-        return res.status(201).json(newAgent);
+        return res.status(201).json({
+            success: true,
+            data: {
+                msg: "New agent added"
+            }
+        });
     }catch (e){
         console.error(e);
         return res.status(500).send("Server error...");
+    }
+}
+
+const registerAdmin = async (req, res) => {
+    // 1. Validate user supplied data
+    const validationSchema = Joi.object({
+        name: Joi.string().min(3).max(255).required(),
+        family_name: Joi.string().min(3).max(255).required(),
+        email: Joi.string().email().max(255).required(),
+        password: Joi.string().min(8).max(255).required()
+    });
+    const {error} = validationSchema.validate(req.body);
+    if (error){
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    // 2. Extract validated data from body
+    const {
+        name,
+        family_name,
+        email,
+        password
+    } = req.body;
+
+    try {
+        // Check if agent already exits
+        const admin = await prisma.Admins.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (admin){
+            // Agent exists
+            return res.status(400).json({
+                errors: [{
+                    msg: "Admin already exists"
+                }]
+            });
+        }
+        // Create a brand new agent
+        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        const newAdmin = await prisma.Admins.create({
+            data: {
+                name: name,
+                family_name: family_name,
+                email: email,
+                password: passwordHash,
+            }
+        })
+        return res.status(201).json({
+            success: true,
+            data: {
+                msg: "Admin added"
+            }
+        });
+    }catch (e){
+        console.error(e);
+        return res.status(500).send("Server error...");
+    }
+}
+
+const registerDicedeur = async (req, res) => {
+    // 1. Validate user supplied data
+    const {error} = agentSignUpDataValidate(req.body);
+    if (error){
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    // 2. Extract validated data from body
+    const {
+        name,
+        family_name,
+        email,
+        phone_number,
+        password
+    } = req.body;
+
+    try {
+        // Check if agent already exits
+        const decideur = await prisma.Decideurs.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (decideur){
+            // Agent exists
+            return res.status(400).json({
+                errors: [{
+                    msg: "Decideur already exists"
+                }]
+            });
+        }
+        // Create a brand new agent
+        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        await prisma.Decideurs.create({
+            data: {
+                name: name,
+                family_name: family_name,
+                email: email,
+                phone_number: phone_number,
+                password: passwordHash,
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            data: {
+                msg: "Decideur added"
+            }
+        });
+    }catch (e){
+        console.error(e);
+        return res.status(500).send({
+            errors:[{
+                msg: "Server error"
+            }]
+        });
     }
 }
 
@@ -389,4 +541,6 @@ module.exports = {
     signUpAM,
     validateLocataire,
     rejectLocataire,
+    registerAdmin,
+    registerDicedeur
 }

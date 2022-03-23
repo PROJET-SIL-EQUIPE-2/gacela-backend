@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/app.js",
-    "test": ""
+    "test": "jasmine",
+    "dev": "nodemon app/app.js"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,8 @@
     "schema": "app/models/prisma/schema.prisma"
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "supertest": "^6.2.2",
+    "prisma": "^3.11.0"
   }
 }
