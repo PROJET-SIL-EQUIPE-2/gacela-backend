@@ -293,7 +293,7 @@ const rejectLocataire = async (req, res) => {
         }
 
         // Check if locataire is rejected before
-        let demand = await prisma.DemandesInscription.findMany({
+        let demand = await prisma.DemandesInscription.findFirst({
             where: {
                 locataire_id:locataire.id
             },
@@ -305,7 +305,7 @@ const rejectLocataire = async (req, res) => {
         if (demand.length > 0) {
             let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
                 where: {
-                    demande_id: demand[0].demande_id
+                    demande_id: demand.demande_id
                 }
             })
             if (demandRejected){
@@ -322,13 +322,13 @@ const rejectLocataire = async (req, res) => {
             await prisma.$transaction([
                 prisma.DemandesInscriptionRejected.create({
                     data: {
-                        demande_id: demand[0].demande_id,
+                        demande_id: demand.demande_id,
                         justificatif: justificatif
                     }
                 }),
                 prisma.DemandesInscription.update({
                     where: {
-                        demande_id: demand[0].demande_id
+                        demande_id: demand.demande_id
                     },
                     data: {
                         etat_demande: DEMAND_STATE_REJECTED

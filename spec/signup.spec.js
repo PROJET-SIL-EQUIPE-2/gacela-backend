@@ -51,7 +51,7 @@ describe("POST: Locataire signup", () => {
             .post('/locataire')
             .field('name', 'locataire1')
             .field('family_name','locataire1')
-            .field('email', 'locataire1@nexcode.dz')
+            .field('email', 'validateme@nexcode.dz')
             .field('password', 'password')
             .field('phone_number','0777123082')
             .attach('personal_photo', 'spec/test_files/test.jpg')
@@ -67,6 +67,28 @@ describe("POST: Locataire signup", () => {
                 expect(res.body.data.msg === "Locataire registered").toBe(true);
                 done();
             })
+
+        Request
+            .post('/locataire')
+            .field('name', 'locataire1')
+            .field('family_name','locataire1')
+            .field('email', 'rejectme@nexcode.dz')
+            .field('password', 'password')
+            .field('phone_number','0777123082')
+            .attach('personal_photo', 'spec/test_files/test.jpg')
+            .attach('photo_identity', 'spec/test_files/test.jpg')
+            .expect(201)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err) {
+                    done(err);
+                    return;
+                }
+                expect(res.body.success === true).toBe(true)
+                expect(res.body.data.msg === "Locataire registered").toBe(true);
+                done();
+            })
+
     });
 
     it('should return 400 bad request when no photos uploaded', (done) => {
@@ -96,7 +118,7 @@ describe("POST: Locataire signup", () => {
             .send({
                 name: "locataire1",
                 family_name: "locataire1",
-                email: "locataire1@nexcode.dz",
+                email: "validateme@nexcode.dz",
                 password: "password",
                 phone_number: "0777123082",
             })
@@ -153,7 +175,7 @@ describe('POST: Locataire validation', () => {
         Request
             .post("/locataire/validate")
             .send({
-                email: "locataire1@nexcode.dz"
+                email: "validateme@nexcode.dz"
             })
             .expect(200)
             .expect('Content-Type', 'application/json; charset=utf-8')
@@ -162,7 +184,7 @@ describe('POST: Locataire validation', () => {
                     done();
                 }
                 expect(res.body.success === true).toBe(true)
-                expect(res.body.validated === true).toBe(true)
+                expect(res.body.data.validated === true).toBe(true)
                 done();
             })
     });
@@ -171,7 +193,7 @@ describe('POST: Locataire validation', () => {
         Request
             .post("/locataire/validate")
             .send({
-                email: "locataire1@nexcode.dz"
+                email: "validateme@nexcode.dz"
             })
             .expect(400)
             .expect('Content-Type', 'application/json; charset=utf-8')
@@ -188,9 +210,76 @@ describe('POST: Locataire validation', () => {
 
 // TEST locataire rejection
 describe('POST: Locataire rejection', () => {
-    it('',()=>{
+    it('should return 400 bad request when no email is provided',(done)=>{
+        Request
+            .post("/locataire/reject")
+            .send({
+                // no email
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "\"email\" is required").toBe(true)
+                done();
+            })
+    });
+    it("should return 400 bad request when no locataire exists with this email", (done) => {
+        Request
+            .post("/locataire/reject")
+            .send({
+                email: "nolocataire@nexcode.dz",
+                justificatif: "Une justification par l admin"
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "Locataire doesn't exists").toBe(true)
+                done();
+            })
+    });
 
-    })
+    it("should return 400 when locataire is already validated", (done) => {
+        Request
+            .post("/locataire/reject")
+            .send({
+                email: "validateme@nexcode.dz",
+                justificatif: "Une justification par l admin"
+            })
+            .expect(400)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.errors[0].msg === "Locataire is already validated").toBe(true)
+                done();
+            })
+    });
+
+    it("should return 200 OK when rejected", (done) => {
+        Request
+            .post("/locataire/reject")
+            .send({
+                email: "rejectme@nexcode.dz",
+                justificatif: "Une justification par l admin"
+            })
+            .expect(200)
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .end((err, res) => {
+                if (err){
+                    done();
+                }
+                expect(res.body.success === true).toBe(true)
+                done();
+            })
+    });
+
 })
 
 // TEST AM signup
@@ -199,9 +288,9 @@ describe('POST : AM signup', () => {
         Request
             .post('/agent')
             .send({
-                name: "agent1",
-                family_name: "agent2",
-                email: "agent1@nexcode.dz",
+                name: "agent",
+                family_name: "agent",
+                email: "agent@nexcode.dz",
                 phone_number: "077766556665",
                 // Password is required
             })
@@ -222,9 +311,9 @@ describe('POST : AM signup', () => {
         Request
             .post('/agent')
             .send({
-                name: "agent2",
-                family_name: "agent2",
-                email: "agent2@nexcode.dz",
+                name: "agent",
+                family_name: "agent",
+                email: "agent@nexcode.dz",
                 phone_number: "077766556665",
                 password: "password"
             })
@@ -247,9 +336,9 @@ describe('POST : AM signup', () => {
         Request
             .post('/agent')
             .send({
-                name: "agent1",
-                family_name: "agent2",
-                email: "agent1@nexcode.dz",
+                name: "agent",
+                family_name: "agent",
+                email: "agent@nexcode.dz",
                 phone_number: "077766556665",
                 password: "password"
             })
@@ -274,9 +363,9 @@ describe('POST : Admin registration', () => {
         Request
             .post('/admin')
             .send({
-                name: "admin1",
-                family_name: "admin1",
-                email: "admin1@nexcode.dz",
+                name: "admin",
+                family_name: "admin",
+                email: "admin@nexcode.dz",
                 phone_number: "077766556665",
                 // Password is required
             })
@@ -297,9 +386,9 @@ describe('POST : Admin registration', () => {
         Request
             .post('/admin')
             .send({
-                name: "admin2",
-                family_name: "admin2",
-                email: "admin2@nexcode.dz",
+                name: "admin",
+                family_name: "admin",
+                email: "admin@nexcode.dz",
                 password: "password"
             })
             .expect(201)
@@ -317,9 +406,9 @@ describe('POST : Admin registration', () => {
         Request
             .post('/admin')
             .send({
-                name: "admin1",
-                family_name: "admin1",
-                email: "admin1@nexcode.dz",
+                name: "admin",
+                family_name: "admin",
+                email: "admin@nexcode.dz",
                 password: "password"
             })
             .expect(400)
@@ -342,9 +431,9 @@ describe('POST : Decideur signup', () => {
         Request
             .post('/decideur')
             .send({
-                name: "decideur1",
-                family_name: "decideur1",
-                email: "decideur1@nexcode.dz",
+                name: "decideur",
+                family_name: "decideur",
+                email: "decideu@nexcode.dz",
                 phone_number: "077766556665",
                 // Password is required
             })
@@ -365,9 +454,9 @@ describe('POST : Decideur signup', () => {
         Request
             .post('/decideur')
             .send({
-                name: "decideur2",
-                family_name: "decideur2",
-                email: "decideur2@nexcode.dz",
+                name: "decideur",
+                family_name: "decideur",
+                email: "decideur@nexcode.dz",
                 phone_number: "077766556665",
                 password: "password"
             })
@@ -388,9 +477,9 @@ describe('POST : Decideur signup', () => {
         Request
             .post('/decideur')
             .send({
-                name: "decideur1",
-                family_name: "decideur1",
-                email: "decideur1@nexcode.dz",
+                name: "decideur",
+                family_name: "decideur",
+                email: "decideur@nexcode.dz",
                 phone_number: "077766556665",
                 password: "password"
             })
