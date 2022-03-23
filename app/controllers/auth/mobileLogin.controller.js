@@ -62,11 +62,35 @@ const loginLocataire = async (req, res) => {
 				.status(400)
 				.json({ success: false, errors: [{ msg: "Email or Password incorrect" }] });
 
-		if (!user.validated)
-			return res.status(401).json({
-				success: false,
-				errors: [{ msg: "The user isn't validated" }]
-			});
+		if (!user.validated) {
+			const demandesInscription = await prisma.demandesInscription.findFirst({
+				where: {
+					locataire_id: user.id,
+				}
+			})
+			if (!demandesInscription)
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: "The user isn't validated" }]
+				});
+			if (demandesInscription.etat_demande === 2)
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: "Your demande is in qeue, wait for validation" }]
+				});
+			else if (demandesInscription.etat_demande === 3) {
+				const rejection = await prisma.demandesInscriptionRejected.findFirst({
+					where: {
+						demande_id: demandesInscription.demande_id,
+					}
+				})
+				const message = !rejection.justificatif ? "Your demande is rejected" : rejection.justificatif
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: message }]
+				});
+			}
+		}
 
 		// The user exists and the password is correct
 		// create jwt
