@@ -1,9 +1,11 @@
 -- CreateTable
 CREATE TABLE "Admins" (
-    "admin_id" INTEGER NOT NULL,
+    "admin_id" SERIAL NOT NULL,
     "nom" VARCHAR,
     "prenom" VARCHAR,
+    "email" VARCHAR,
     "isSuperAdmin" BOOLEAN,
+    "password" VARCHAR,
 
     CONSTRAINT "Admins_pkey" PRIMARY KEY ("admin_id")
 );
@@ -11,11 +13,11 @@ CREATE TABLE "Admins" (
 -- CreateTable
 CREATE TABLE "AgentsMaintenance" (
     "agent_id" SERIAL NOT NULL,
-    "nom" VARCHAR,
-    "prenom" VARCHAR,
     "email" VARCHAR,
     "phone_number" VARCHAR,
     "password" VARCHAR,
+    "family_name" VARCHAR,
+    "name" VARCHAR,
 
     CONSTRAINT "AgentsMaintenance_pkey" PRIMARY KEY ("agent_id")
 );
@@ -26,6 +28,7 @@ CREATE TABLE "Decideurs" (
     "nom" VARCHAR,
     "prenom" VARCHAR,
     "phone_number" VARCHAR,
+    "email" VARCHAR,
     "password" VARCHAR,
 
     CONSTRAINT "Decideurs_pkey" PRIMARY KEY ("decideur_id")
@@ -100,13 +103,14 @@ CREATE TABLE "Facture" (
 -- CreateTable
 CREATE TABLE "Locataires" (
     "id" SERIAL NOT NULL,
-    "nom" VARCHAR,
-    "prenom" TIMESTAMP(6),
     "email" VARCHAR,
     "phone_number" VARCHAR,
     "password" VARCHAR,
     "photo_identity" VARCHAR,
     "personal_photo" VARCHAR,
+    "family_name" VARCHAR,
+    "name" VARCHAR,
+    "validated" BOOLEAN DEFAULT false,
 
     CONSTRAINT "Locataires_pkey" PRIMARY KEY ("id")
 );
@@ -208,6 +212,34 @@ CREATE TABLE "Vehicules" (
     CONSTRAINT "Vehicules_pkey" PRIMARY KEY ("vehicule_id")
 );
 
+-- CreateTable
+CREATE TABLE "Token" (
+    "id" SERIAL NOT NULL,
+    "id_locataire" INTEGER,
+    "id_AM" INTEGER,
+    "id_admin" INTEGER,
+    "email" VARCHAR,
+    "token" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admins_email_key" ON "Admins"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "agent_unique_email" ON "AgentsMaintenance"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Decideurs_email_key" ON "Decideurs"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "demande_unique_locataire" ON "DemandesInscription"("locataire_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "locataire_email_unique" ON "Locataires"("email");
+
 -- AddForeignKey
 ALTER TABLE "DemandesInscription" ADD CONSTRAINT "DemandesInscription_etat_demande_fkey" FOREIGN KEY ("etat_demande") REFERENCES "EtatDemandeInscription"("etat_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
@@ -264,3 +296,12 @@ ALTER TABLE "Vehicules" ADD CONSTRAINT "Vehicules_type_vehicule_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "Vehicules" ADD CONSTRAINT "Vehicules_etat_vehicule_fkey1" FOREIGN KEY ("etat_vehicule") REFERENCES "Vehicules"("vehicule_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_id_admin_fkey" FOREIGN KEY ("id_admin") REFERENCES "Admins"("admin_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_id_AM_fkey" FOREIGN KEY ("id_AM") REFERENCES "AgentsMaintenance"("agent_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_id_locataire_fkey" FOREIGN KEY ("id_locataire") REFERENCES "Locataires"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

@@ -4,7 +4,7 @@ const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 const authRouter = require("./routes/auth/auth.router");
 const mobileLoginRouter = require("./routes/auth/mobileLogin.router");
-const passwordResetRouter = require("./routes/auth/passwordReset.router");
+const passwordResetRouter = require("./routes/auth/passwordReset.router")
 const signUpRouter = require("./routes/auth/signup.router");
 const passwordResetRouterWeb = require("./routes/auth/passwordResetWeb.route");
 const locataireRouter = require("./routes/locataire/locataire.route");
@@ -30,6 +30,7 @@ app.use(bodyParser.json())
 app.use(authRouter);
 app.use('/api/mobile_passwordReset',passwordResetRouter);
 app.use('/api/web_passwordReset',passwordResetRouterWeb);
+app.use('/api/mobile_passwordReset',passwordResetRouter);
 
 app.use("/api/mobile_login", mobileLoginRouter);
 app.use("/api/signup", signUpRouter);
