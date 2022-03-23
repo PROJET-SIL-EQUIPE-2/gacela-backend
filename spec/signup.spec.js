@@ -166,7 +166,7 @@ describe('POST: Locataire validation', () => {
                 if (err){
                     done();
                 }
-                expect(res.body.errors[0].msg === "Locataire doesn't exists").toBe(true)
+                expect(res.body.errors[0].msg === "Locataire doesn't exist").toBe(true)
                 done();
             })
     });
@@ -239,7 +239,7 @@ describe('POST: Locataire rejection', () => {
                 if (err){
                     done();
                 }
-                expect(res.body.errors[0].msg === "Locataire doesn't exists").toBe(true)
+                expect(res.body.errors[0].msg === "Locataire doesn't exist").toBe(true)
                 done();
             })
     });

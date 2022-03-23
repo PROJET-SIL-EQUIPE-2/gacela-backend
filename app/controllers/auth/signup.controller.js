@@ -149,7 +149,7 @@ const validateLocataire = async (req, res) => {
         if (!locataire) {
             return res.status(400).json({
                 errors: [{
-                    msg: "Locataire doesn't exists"
+                    msg: "Locataire doesn't exist"
                 }]
             });
         }
@@ -279,7 +279,7 @@ const rejectLocataire = async (req, res) => {
         if (!locataire) {
             return res.status(400).json({
                 errors: [{
-                    msg: "Locataire doesn't exists"
+                    msg: "Locataire doesn't exist"
                 }]
             });
         }
@@ -302,7 +302,7 @@ const rejectLocataire = async (req, res) => {
             }
         });
 
-        if (demand.length > 0) {
+        if (demand) {
             let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
                 where: {
                     demande_id: demand.demande_id

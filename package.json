@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app/app.js",
     "test": "jasmine",
-    "dev": "nodemon app/app.js"
+    "dev": "nodemon app/app.js",
+    "jtest": "jest"
   },
   "repository": {
     "type": "git",
