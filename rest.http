@@ -6,7 +6,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/api/web_passwordReset/admin/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ4MDM0NzQyfQ.x_O-iSp5yxNAhT8ugdhB8SZvISO6VOzAYUstx19thBE
+PATCH http://localhost:3000/api/web_passwordReset/admin/1/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ4MDQ3ODY4fQ.PTddgG-ZktQvEDZ3HZbrBwmW9zw-X_ofgs4dP8Gyd6Y
 Content-Type: application/json
 
 {
