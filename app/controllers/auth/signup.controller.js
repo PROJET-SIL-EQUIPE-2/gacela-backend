@@ -72,10 +72,9 @@ const signUpLocataire = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         // Rename uploaded files
-        console.log(req.files);
-
-        if (req.files){
-
+        console.log(req.files.personal_photo);
+        console.log(req.files.photo_identity);
+        if (req.files.personal_photo && req.files.photo_identity){
             const personal_photo = upload(req.files.personal_photo[0]);
             const photo_identity = upload(req.files.photo_identity[0]);
 
@@ -108,7 +107,9 @@ const signUpLocataire = async (req, res) => {
         }else{
             return res.status(400).json({
                 success: false,
-                errors: []
+                errors: [{
+                    msg: 'Photos must be provided'
+                }]
             })
         }
 
