@@ -9,6 +9,8 @@ const signUpRouter = require("./routes/auth/signup.router");
 const passwordResetRouterWeb = require("./routes/auth/passwordResetWeb.route");
 const locataireRouter = require("./routes/locataire/locataire.route");
 
+const webLoginRouter = require("./routes/auth/webLogin.router");
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
@@ -27,6 +29,7 @@ app.use(bodyParser.json())
 
 
 //// Apply routers
+
 app.use(authRouter);
 app.use('/api/mobile_passwordReset',passwordResetRouter);
 app.use('/api/web_passwordReset',passwordResetRouterWeb);
@@ -34,6 +37,7 @@ app.use('/api/mobile_passwordReset',passwordResetRouter);
 
 app.use("/api/mobile_login", mobileLoginRouter);
 app.use("/api/signup", signUpRouter);
+app.use("/api/web_login" , webLoginRouter)
 
 app.use("/api/locataire", locataireRouter);
 

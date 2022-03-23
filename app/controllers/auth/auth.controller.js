@@ -25,6 +25,7 @@ function authenticate(req, res, next){
 
 const authAdmins=(req , res, next)=>{
     const {email, password} = req.body;
+    console.log("EMAIL =", email);
     let theUser = null;
         prisma.Admins.findUnique({
             where: {
