@@ -41,7 +41,7 @@ const loginLocataire = async (req, res) => {
 	if (error)
 		return res
 			.status(400)
-			.json({ errors: [{ msg: error.details[0].message }] });
+			.json({ success: false, errors: [{ msg: error.details[0].message }] });
 
 	try {
 		const { email, password } = req.body;
@@ -53,16 +53,16 @@ const loginLocataire = async (req, res) => {
 		if (!user)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: `User doesn't exist` }] });
+				.json({ success: false, errors: [{ msg: `User doesn't exist` }] });
 
 		// Check the password
 		const passwordMatch = await bcrypt.compare(password, user.password);
 		if (!passwordMatch)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: "Email or Password incorrect" }] });
+				.json({ success: false, errors: [{ msg: "Email or Password incorrect" }] });
 
-		if(!user.validated)
+		if (!user.validated)
 			return res.status(401).json({
 				success: false,
 				errors: [{ msg: "The user isn't validated" }]
@@ -80,8 +80,7 @@ const loginLocataire = async (req, res) => {
 		 * Complete the other attributes in case we need to
 		 */
 		return res.json({
-			accountType: "Locataire",
-			message: "Login avec succès",
+			success: true,
 			token,
 			data: {
 				id: user.id,
@@ -106,7 +105,7 @@ const loginAM = async (req, res) => {
 	if (error)
 		return res
 			.status(400)
-			.json({ errors: [{ msg: error.details[0].message }] });
+			.json({ success: false, errors: [{ msg: error.details[0].message }] });
 
 	try {
 		const { email, password } = req.body;
@@ -118,14 +117,14 @@ const loginAM = async (req, res) => {
 		if (!user)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: `User doesn't exist` }] });
+				.json({ success: false, errors: [{ msg: `User doesn't exist` }] });
 
 		// Check the password
 		const passwordMatch = await bcrypt.compare(password, user.password);
 		if (!passwordMatch)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: "Email or password incorrect" }] });
+				.json({ success: false, errors: [{ msg: "Email or password incorrect" }] });
 
 		// The user exists and the password is correct
 		// create jwt
