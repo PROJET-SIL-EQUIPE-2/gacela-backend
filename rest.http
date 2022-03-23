@@ -1,14 +1,14 @@
-POST http://localhost:3000/api/web_passwordReset/decideur
+POST http://localhost:3000/api/web_passwordReset/admin
 Content-Type: application/json
 
 {
-    "email" : "dounia@esi.dz"
+    "email" : "ninamimi305@gmail.com"
 }
 
 ###
-PATCH http://localhost:3000/api/web_passwordReset/decideur/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ3OTk1NTY0fQ.7-EKZsVrEnt_WER3yNC--P4aZRkS96WAXz_-_Fa_omw
+PATCH http://localhost:3000/api/web_passwordReset/admin/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ4MDM0NzQyfQ.x_O-iSp5yxNAhT8ugdhB8SZvISO6VOzAYUstx19thBE
 Content-Type: application/json
 
 {
-    "password" : "resetreset"
+    "password" : "hibahibahiba"
 }

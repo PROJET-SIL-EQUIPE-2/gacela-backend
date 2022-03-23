@@ -21,11 +21,11 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/api/web_passwordReset/agent/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM
+PATCH http://localhost:3000/api/web_passwordReset/admin/1/KbzjYWmu0q6MsUXwIsyGPMC6VcDFka5cVRJPtyBnjT8
 Content-Type: application/json
 
 {
-    "password" : "resetreset"
+    "password" : "hiba"
 }
 © 2022 GitHub, Inc.
 Terms

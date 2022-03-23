@@ -42,10 +42,14 @@ const passwordResetDemandAdmin = async(req, res) => {
                 email : req.body.email 
             } });
         
-        if (!admin)
-            return res.status(400).send({
-                message: "user with given email doesn't exist"
-            });
+        if (!admin) {
+           return await passwordResetDemandDecideur(req , res) ; 
+          /*  return res.status(400).send({
+            message: "user with given email doesn't exist"
+        });
+ */
+        }
+            
         
         // Create token
         
@@ -64,13 +68,14 @@ const passwordResetDemandAdmin = async(req, res) => {
                 }
             });
         }
+        const a = 0 ;
         // Create template for email content
         const html = `
         <!DOCTYPE html>
         <html>
             <body>
                 <h2>Click here to reset your password</h2>
-                <a href="${process.env.BASE_URL}/web_passwordReset/admin/${admin.admin_id}/${token.token}">Reset here</a>
+                <a href="${process.env.BASE_URL}/web_passwordReset/${a}/${admin.admin_id}/${token.token}">Reset here</a>
             </body>
         </html>
                            `;
@@ -99,15 +104,33 @@ const passwordResetAdmin = async(req, res) => {
         
         // Verify if Admins exists
         const {id} = req.params.userId;
+       /*  const {a} = req.params.a;
+        if (Number(a) == 0 ) {
+
+
+
+        }
+        else of (Number(a) == 1) {
+            
+
+        } */
+
+
         const admin = await prisma.admins.findUnique({
             where : {
-                admin_id : Number(req.params.userId)
+                admin_id : Number(req.params.userId) ,
+
             }
         });
 
-        if (!admin) return res.status(400).send({
-            message : "invalid link or expired",
-        success : false});
+        if (!admin) {
+          return await passwordResetDecideur(req , res);
+
+            /*  return res.status(400).send({
+                message : "invalid link or expired",
+            success : false});  */
+
+        } 
 
         // Verify if token isn't expired
 
@@ -116,7 +139,7 @@ const passwordResetAdmin = async(req, res) => {
               id_admin: admin.admin_id,
             token: req.params.token
         }});
-        if (!token) return res.status(400).send({message : "Invalid link",
+        if (!token) return res.status(400).send({message : "Invalid link for admin",
     success : false})
         if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
               // delete the token 
@@ -208,13 +231,14 @@ const passwordResetDemandDecideur = async(req, res) => {
                 }
             });
         }
+        const a = 1 ;
         // Create template for email content
         const html = `
         <!DOCTYPE html>
         <html>
             <body>
                 <h2>Click here to reset your password</h2>
-                <a href="${process.env.BASE_URL}/web_passwordReset/decideur/${decideur.decideur_id}/${token.token}">Reset here</a>
+                <a href="${process.env.BASE_URL}/web_passwordReset/${a}/${decideur.decideur_id}/${token.token}">Reset here</a>
             </body>
         </html>
                            `;
@@ -260,7 +284,7 @@ const passwordResetDecideur = async(req, res) => {
               id_decideur: decideur.decideur_id,
             token: req.params.token
         }});
-        if (!token) return res.status(400).send({message : "Invalid link",
+        if (!token) return res.status(400).send({message : "Invalid link for decideur",
     success : false})
         if(Date.now() > (token.createdAt.getTime() + (3600*1000))){
               // delete the token 
