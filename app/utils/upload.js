@@ -1,16 +1,11 @@
 const pathlib = require("path");
 const fs = require("fs");
 
-const upload = (files) => {
-    let uploadedFilePath;
-    let uploadedFiles = [];
-    for (let i = 0; i < files.length; i++) {
-        let {
-            originalname,
-            path
-        } = files[i];
+const upload = (file) => {
+    if (file){
+        let uploadedFilePath;
+        let {originalname, path} = file;
         uploadedFilePath = path + pathlib.extname(originalname);
-        uploadedFiles.push(uploadedFilePath);
         fs.rename(path, uploadedFilePath, (err) => {
             if ( err ){
                 return {
@@ -18,8 +13,8 @@ const upload = (files) => {
                 }
             }
         })
+        return uploadedFilePath;
     }
-    return uploadedFiles;
 }
 const deleteFiles = (files) => {
     for (let i = 0; i < files.length; i++) {
