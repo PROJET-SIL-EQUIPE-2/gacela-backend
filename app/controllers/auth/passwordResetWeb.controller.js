@@ -85,7 +85,7 @@ const passwordResetDemandAdmin = async(req, res) => {
             message: 'password reset link sent to your email account'
         });
     } catch (error) {
-        res.send({message :"An error occured"});
+        res.status(500).send({message :"An error occured"});
         console.log(error);
     }
 }
@@ -272,7 +272,7 @@ const passwordResetAdmin = async(req, res) => {
        
    /*  }
      catch (error) {
-       res.send({
+       res.status(500).send({
            message : "An error occured"});
        console.log(error);
     } */

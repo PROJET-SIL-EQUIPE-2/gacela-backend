@@ -41,7 +41,7 @@ const loginLocataire = async (req, res) => {
 	if (error)
 		return res
 			.status(400)
-			.json({ errors: [{ msg: error.details[0].message }] });
+			.json({ success: false, errors: [{ msg: error.details[0].message }] });
 
 	try {
 		const { email, password } = req.body;
@@ -53,20 +53,44 @@ const loginLocataire = async (req, res) => {
 		if (!user)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: `Utilisateur n'exist pas` }] });
+				.json({ success: false, errors: [{ msg: `User doesn't exist` }] });
 
 		// Check the password
 		const passwordMatch = await bcrypt.compare(password, user.password);
 		if (!passwordMatch)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: "Email ou Mot de passe Incorrecte" }] });
+				.json({ success: false, errors: [{ msg: "Email or Password incorrect" }] });
 
-		/**
-		 * TODO:
-		 * Add verification if the user status is validated => Need to fill états tables
-		 * Add isEmailVerified to locataires table => to verify emails
-		 */
+		if (!user.validated) {
+			const demandesInscription = await prisma.demandesInscription.findFirst({
+				where: {
+					locataire_id: user.id,
+				}
+			})
+			if (!demandesInscription)
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: "The user isn't validated" }]
+				});
+			if (demandesInscription.etat_demande === 2)
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: "Your demande is in qeue, wait for validation" }]
+				});
+			else if (demandesInscription.etat_demande === 3) {
+				const rejection = await prisma.demandesInscriptionRejected.findFirst({
+					where: {
+						demande_id: demandesInscription.demande_id,
+					}
+				})
+				const message = !rejection.justificatif ? "Your demande is rejected" : rejection.justificatif
+				return res.status(401).json({
+					success: false,
+					errors: [{ msg: message }]
+				});
+			}
+		}
 
 		// The user exists and the password is correct
 		// create jwt
@@ -80,20 +104,22 @@ const loginLocataire = async (req, res) => {
 		 * Complete the other attributes in case we need to
 		 */
 		return res.json({
-			accountType: "Locataire",
-			message: "Login avec succès",
+			success: true,
 			token,
 			data: {
 				id: user.id,
 				email: user.email,
-				nom: user.nom,
-				prenom: user.prenom,
-				birthday: user.birthday,
+				phone_number: user.phone_number,
+				name: user.name,
+				family_name: user.family_name,
+				validated: user.validated,
+				personal_photo: user.personal_photo,
+				photo_identity: user.photo_identity,
 			},
 		});
 	} catch (err) {
 		console.error(err);
-		return res.status(500).send("Server error...");
+		return res.status(500).json({ success: false, errors: [{ msg: "Server error..." }] });
 	}
 };
 
@@ -103,7 +129,7 @@ const loginAM = async (req, res) => {
 	if (error)
 		return res
 			.status(400)
-			.json({ errors: [{ msg: error.details[0].message }] });
+			.json({ success: false, errors: [{ msg: error.details[0].message }] });
 
 	try {
 		const { email, password } = req.body;
@@ -115,14 +141,14 @@ const loginAM = async (req, res) => {
 		if (!user)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: `Utilisateur n'exist pas` }] });
+				.json({ success: false, errors: [{ msg: `User doesn't exist` }] });
 
 		// Check the password
 		const passwordMatch = await bcrypt.compare(password, user.password);
 		if (!passwordMatch)
 			return res
 				.status(400)
-				.json({ errors: [{ msg: "Email ou Mot de passe Incorrecte" }] });
+				.json({ success: false, errors: [{ msg: "Email or password incorrect" }] });
 
 		// The user exists and the password is correct
 		// create jwt
@@ -136,18 +162,19 @@ const loginAM = async (req, res) => {
 		 * Complete the other attributes in case we need to
 		 */
 		return res.json({
-			accountType: "Agent de maintenance",
-			message: "Login avec succès",
+			success: true,
 			token,
 			data: {
+				id: user.agent_id,
 				email: user.email,
-				nom: user.nom,
-				prenom: user.prenom,
+				phone_number: user.phone_number,
+				name: user.name,
+				family_name: user.family_name,
 			},
 		});
 	} catch (err) {
 		console.error(err);
-		return res.status(500).send("Server error...");
+		return res.status(500).json({ success: false, errors: [{ msg: "Server error..." }] });
 	}
 };
 

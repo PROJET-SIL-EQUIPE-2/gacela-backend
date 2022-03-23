@@ -68,40 +68,52 @@ const signUpLocataire = async (req, res) => {
         }
 
         // Create a brand new locataire
-        const salt = await bcrypt.genSalt(process.env.SALT_ROUNDS || 10);
+        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS) || 10);
         const passwordHash = await bcrypt.hash(password, salt);
 
         // Rename uploaded files
-        const files = upload(req.files);
-        const personal_photo = files[0]
-        const photo_identity = files[1]
+        console.log(req.files.personal_photo);
+        console.log(req.files.photo_identity);
+        if (req.files.personal_photo && req.files.photo_identity){
+            const personal_photo = upload(req.files.personal_photo[0]);
+            const photo_identity = upload(req.files.photo_identity[0]);
 
-        const newLocataire = await prisma.locataires.create({
-            success: true,
-            data: {
-                name: name,
-                family_name: family_name,
-                email: email,
-                phone_number: phone_number,
-                password: passwordHash,
-                personal_photo: personal_photo, // TODO: Change this
-                photo_identity: photo_identity  // TODO: Change this
-            }
-        })
-        await prisma.DemandesInscription.create({
-            data: {
-                locataire_id: newLocataire.id,
-                date_demande: new Date().toISOString(),
-                etat_demande: DEMAND_STATE_PENDING
-            }
-        });
+            // TODO: Must be a transaction ?
+            const newLocataire = await prisma.locataires.create({
+                data: {
+                    name: name,
+                    family_name: family_name,
+                    email: email,
+                    phone_number: phone_number,
+                    password: passwordHash,
+                    personal_photo: personal_photo, // TODO: Change this
+                    photo_identity: photo_identity  // TODO: Change this
+                }
+            })
+            await prisma.DemandesInscription.create({
+                data: {
+                    locataire_id: newLocataire.id,
+                    date_demande: new Date().toISOString(),
+                    etat_demande: DEMAND_STATE_PENDING
+                }
+            });
 
-        return res.status(201).json({
-            success: true,
-            data: {
-                msg: "Locataire registered"
-            }
-        });
+            return res.status(201).json({
+                success: true,
+                data: {
+                    msg: "Locataire registered"
+                }
+            });
+        }else{
+            return res.status(400).json({
+                success: false,
+                errors: [{
+                    msg: 'Photos must be provided'
+                }]
+            })
+        }
+
+
     } catch (e) {
         console.error(e);
         return res.status(500).send("Server error");
@@ -161,7 +173,7 @@ const validateLocataire = async (req, res) => {
             }
         });
         // res.json(demand);
-        console.log(demand);
+        console.log(locataire.id);
         if (demand.length > 0){
             let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
                 where: {
@@ -195,8 +207,6 @@ const validateLocataire = async (req, res) => {
                             id: true,
                             email: true,
                             phone_number: true,
-                            photo_identity: true,
-                            personal_photo: true,
                             name: true,
                             family_name: true,
                             validated: true
@@ -204,14 +214,20 @@ const validateLocataire = async (req, res) => {
                     })
                 ]);
 
-                return res.send(updatedLocataire);
+                return res.send({
+                    success: true,
+                    data: {
+                        validated: true,
+                        updatedLocataire
+                    }
+                });
 
             }
             // TODO: Should we handle the case where locataire was rejected before?
             return res.status(400).json({
                 errors: [
                     {
-                        msg: "this demand was rejected before"
+                        msg: "This demand was rejected before"
                     }
                 ]
             })
@@ -229,7 +245,7 @@ const validateLocataire = async (req, res) => {
     }
 }
 
-
+// TODO: Delete records ?
 // Reject locataire based on email
 const rejectLocataire = async (req, res) => {
     const data = req.body;
