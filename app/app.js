@@ -3,7 +3,7 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 
-// const authRouter = require("./routes/auth/auth.router");
+const authRouter = require("./routes/auth/auth.router");
 const mobileLoginRouter = require("./routes/auth/mobileLogin.router");
 
 const passwordResetRouter = require("./routes/auth/passwordReset.router")
@@ -32,7 +32,7 @@ app.use(bodyParser.json())
 
 //// Apply routers
 
-// app.use(authRouter);
+app.use(authRouter);
 app.use('/api/mobile_passwordReset',passwordResetRouter);
 
 app.use('/api/web_passwordReset',passwordResetRouterWeb);
