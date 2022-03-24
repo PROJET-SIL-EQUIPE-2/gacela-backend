@@ -13,7 +13,7 @@ const upload = (file) => {
                 }
             }
         })
-        return uploadedFilePath;
+        return pathlib.basename(uploadedFilePath);
     }
 }
 const deleteFiles = (files) => {
