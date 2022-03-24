@@ -2,6 +2,9 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
+const DEMAND_STATE_VALIDATED = 1;
+const DEMAND_STATE_PENDING = 2;
+const DEMAND_STATE_REJECTED = 3;
 
 const getValidatedLocataires = async (req, res) => {
     try {
@@ -29,25 +32,79 @@ const getValidatedLocataires = async (req, res) => {
     }
 }
 
-const getNonValidatedLocataires = async (req, res) => {
+const getWaitingLocataires = async (req, res) => {
     try {
-        const validated = await prisma.locataires.findMany({
+        // const validated = await prisma.locataires.findMany({
+        //     where: {
+        //         validated: false
+        //     },
+        //     select:{
+        //         id: true,
+        //         email: true,
+        //         phone_number: true,
+        //         photo_identity: true,
+        //         personal_photo: true,
+        //         name: true,
+        //         family_name: true,
+        //         validated: true
+        //     }
+        // });
+        // return res.send(validated);
+        const r = await prisma.DemandesInscription.findMany({
             where: {
-                validated: false
+                etat_demande: DEMAND_STATE_PENDING
             },
-            select:{
-                id: true,
-                email: true,
-                phone_number: true,
-                photo_identity: true,
-                personal_photo: true,
-                name: true,
-                family_name: true,
-                validated: true
+            include: {
+                locataire:{
+                    select: {
+                        family_name: true,
+                        name: true,
+                        email: true,
+                        phone_number: true,
+                        personal_photo: true,
+                        photo_identity: true
+                    }
+                },
+                etatDemandeInscription: true
             }
-        });
-        return res.send(validated);
+        })
 
+        res.send(r);
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json("Server error");
+
+    }
+}
+
+const getRejectedLocataires = async (req, res) => {
+    try {
+        const r = await prisma.DemandesInscription.findMany({
+            where: {
+                etat_demande: DEMAND_STATE_REJECTED
+            },
+            include: {
+                locataire:{
+                    select: {
+                        family_name: true,
+                        name: true,
+                        email: true,
+                        phone_number: true,
+                        personal_photo: true,
+                        photo_identity: true
+                    }
+                },
+                rejected: {
+                    select: {
+                        justificatif: true,
+                    }
+                },
+                etatDemandeInscription: true
+            }
+        })
+
+        res.send(r);
     }catch (e){
         console.error(e);
         return res.status(500).json("Server error");
@@ -59,5 +116,6 @@ const getNonValidatedLocataires = async (req, res) => {
 
 module.exports = {
     getValidatedLocataires,
-    getNonValidatedLocataires
+    getRejectedLocataires,
+    getWaitingLocataires
 }

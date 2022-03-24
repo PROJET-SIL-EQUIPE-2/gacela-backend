@@ -5,9 +5,10 @@ const locataireController = require('../../controllers/locataire/locataireContro
 // Get validated locataire
 router.get("/validated", locataireController.getValidatedLocataires);
 
-// Get non-validated locataires
-router.get("/non_validated", locataireController.getNonValidatedLocataires);
+// Get waiting locataires
+router.get("/waiting", locataireController.getWaitingLocataires);
 
-
+// Get rejected
+router.get("/rejected", locataireController.getRejectedLocataires)
 
 module.exports = router;

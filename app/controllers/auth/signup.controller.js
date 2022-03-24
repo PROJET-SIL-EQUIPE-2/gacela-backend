@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const upload = require("../../utils/upload");
+const sendEmail = require("../../utils/sendEmail");
 
 
 const PrismaClient = require("@prisma/client").PrismaClient;
@@ -298,7 +299,7 @@ const rejectLocataire = async (req, res) => {
                 locataire_id:locataire.id
             },
             include:{
-                EtatDemandeInscription: true
+                etatDemandeInscription: true
             }
         });
 
@@ -335,9 +336,33 @@ const rejectLocataire = async (req, res) => {
                     }
                 })
             ]);
+            // TODO: Send email and delete records
+            // await sendEmail(email, "Motif de rejet", justificatif)
+
+            // Delete records
+            // await prisma.$transaction([
+            //     prisma.DemandesInscriptionRejected.delete({
+            //         where: {
+            //             demande_id: demand.demande_id,
+            //         }
+            //     }),
+            //     prisma.DemandesInscription.delete({
+            //         where: {
+            //             demande_id: demand.demande_id
+            //         }
+            //     }),
+            //     prisma.Locataires.delete({
+            //         where: {
+            //             email: email
+            //         }
+            //     }),
+            // ]);
+
+            // Send success response
             return res.json({
                 success: true,
-                data: data
+                data: data,
+                message: "An email is sent to locataire"
             })
         }
 

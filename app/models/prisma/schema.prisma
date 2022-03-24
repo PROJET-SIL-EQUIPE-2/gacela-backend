@@ -45,9 +45,9 @@ model DemandesInscription {
   locataire_id                Int?                         @unique(map: "demande_unique_locataire")
   date_demande                DateTime?                    @db.Timestamp(6)
   etat_demande                Int?
-  EtatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
-  Locataires                  Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  DemandesInscriptionRejected DemandesInscriptionRejected?
+  etatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
+  locataire                  Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rejected DemandesInscriptionRejected?
 }
 
 model DemandesInscriptionRejected {
