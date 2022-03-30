@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/PROJET-SIL-EQUIPE-2/gacela-backend#readme",
   "dependencies": {
-    "@prisma/client": "^3.11.0",
+    "@prisma/client": "^3.11.1",
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "jest": "^27.5.1",
-    "supertest": "^6.2.2",
-    "prisma": "^3.11.0"
+    "prisma": "^3.11.1",
+    "supertest": "^6.2.2"
   }
 }
