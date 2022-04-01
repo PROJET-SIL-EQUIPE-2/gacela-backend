@@ -170,7 +170,7 @@ const validateLocataire = async (req, res) => {
                 locataire_id:locataire.id
             },
             include:{
-                EtatDemandeInscription: true
+                etatDemandeInscription: true
             }
         });
         // res.json(demand);

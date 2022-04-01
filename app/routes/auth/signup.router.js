@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const signUpController = require("../../controllers/auth/signup.controller");
+const auth = require("../../middlewares/auth/authorize");
+const Role = require("../../middlewares/auth/roles");
 
 const multer  = require('multer')
 const uploader = multer({ dest: 'uploads/' })
@@ -13,10 +15,10 @@ router.post("/locataire", uploader.fields([
 
 
 // validate locataire demand by email
-router.post("/locataire/validate", signUpController.validateLocataire);
+router.post("/locataire/validate", auth.authorize(Role.Admin), signUpController.validateLocataire);
 
 // reject locataire and send him a justification
-router.post("/locataire/reject", signUpController.rejectLocataire);
+router.post("/locataire/reject", auth.authorize(Role.Admin), signUpController.rejectLocataire);
 
 
 // Register a new agent route

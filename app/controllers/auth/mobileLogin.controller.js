@@ -6,6 +6,7 @@ const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const PrismaClient = require("@prisma/client").PrismaClient;
+const Role = require('../../middlewares/auth/roles');
 
 const prisma = new PrismaClient();
 
@@ -94,7 +95,8 @@ const loginLocataire = async (req, res) => {
 
 		// The user exists and the password is correct
 		// create jwt
-		const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+		// TODO: Add role to signed jwt payload
+		const token = jwt.sign({ id: user.id, role: Role.Locataire }, process.env.JWT_SECRET, {
 			expiresIn: 36000,
 		});
 
@@ -152,7 +154,8 @@ const loginAM = async (req, res) => {
 
 		// The user exists and the password is correct
 		// create jwt
-		const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+		// TODO: Add role to signed payload
+		const token = jwt.sign({ id: user.id, role: Role.Agent }, process.env.JWT_SECRET, {
 			expiresIn: 36000,
 		});
 
