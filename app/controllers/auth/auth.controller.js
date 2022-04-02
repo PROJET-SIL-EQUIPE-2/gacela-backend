@@ -3,10 +3,11 @@ const {func} = require("joi");
 const { PrismaClient } = require('@prisma/client')
 const bcrypt= require("bcrypt")
 const prisma = new PrismaClient()
+const Role = require('../../middlewares/auth/roles');
 
 // 1. Generating Token
-function generateAccessToken(username){
-    return jwt.sign(username, process.env.SECRET);
+function generateAccessToken(username, role){
+    return jwt.sign({username, role}, process.env.SECRET);
 }
 // 2. Authenticating Token
 function authenticate(req, res, next){
@@ -47,7 +48,8 @@ const authAdmins=(req , res, next)=>{
                 if (status === true) {
                     res.setHeader('Content-Types', 'application/json');
                     res.statusCode = 200;
-                    res.json({success: true, data: {token: generateAccessToken(theUser) , accountType : "Admin"}})
+                    //TODO: Add  admin role
+                    res.json({success: true, data: {token: generateAccessToken(theUser, Role.Admin) , accountType : "Admin"}})
                 }else{
                     throw new Error("Password is wrong")
                 }
@@ -80,7 +82,8 @@ const authDecideurs=(req , res, next)=>{
             if (status === true) {
                 res.setHeader('Content-Types', 'application/json');
                 res.statusCode = 200;
-                res.json({success: true, data: {token: generateAccessToken(theUser) , accountType : "Decideur"}})
+                // TODO: Add Decideur role
+                res.json({success: true, data: {token: generateAccessToken(theUser, Role.Decideur) , accountType : "Decideur"}})
             }else{
                 throw new Error("Password is wrong")
             }
