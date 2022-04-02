@@ -22,12 +22,12 @@ router.post("/locataire/reject", auth.authorize(Role.Admin), signUpController.re
 
 
 // Register a new agent route
-router.post("/agent", signUpController.signUpAM);
+router.post("/agent", auth.authorize([Role.Admin, Role.Decideur]),signUpController.signUpAM);
 
 // Register new admin
-router.post("/admin", signUpController.registerAdmin);
+router.post("/admin", auth.authorize([Role.Admin]),signUpController.registerAdmin);
 
 // Register a new dicedeur
-router.post("/decideur", signUpController.registerDicedeur);
+router.post("/decideur", auth.authorize([Role.Admin]),signUpController.registerDicedeur);
 
 module.exports = router;
