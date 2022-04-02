@@ -11,4 +11,9 @@ router.get("/waiting", locataireController.getWaitingLocataires);
 // Get rejected
 router.get("/rejected", locataireController.getRejectedLocataires)
 
+
+router.get("/blocked", locataireController.getBlockedLocataires)
+
+router.get("/not-blocked", locataireController.getNotBlockedLocataires)
+
 module.exports = router;

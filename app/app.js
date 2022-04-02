@@ -13,6 +13,10 @@ const locataireRouter = require("./routes/locataire/locataire.route");
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
 
+const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
+const auth = require("./middlewares/auth/authorize");
+const Role = require("./middlewares/auth/roles");
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
@@ -43,6 +47,9 @@ app.use("/api/signup", signUpRouter);
 app.use("/api/web_login" , webLoginRouter)
 
 app.use("/api/locataire", locataireRouter);
+
+// TOGGLE BLOCK ACCOUNTS
+app.use("/api/accounts/toggle-block" , blockAccountsRouter);
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);
