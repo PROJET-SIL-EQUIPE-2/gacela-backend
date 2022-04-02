@@ -29,7 +29,9 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
-
+app.get("/", (req, res) => {
+    res.send("Gacela API is up and running")
+})
 //// Apply routers
 
 app.use(authRouter);
