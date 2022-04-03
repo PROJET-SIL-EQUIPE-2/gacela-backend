@@ -10,10 +10,12 @@ const prisma = new PrismaClient()
 const passwordValidate = (data) => {
     // Validate password
     const validationSchema = Joi.object({
-        password: Joi.string().min(8).max(255).required(),
+        oldPassword: Joi.string().min(8).max(255).required(),
+        newPassword: Joi.string().min(8).max(255).required(),
     });
     return validationSchema.validate(data)
 }
+
 
 const emailValidate = (data) => {
     // Validate email
@@ -35,7 +37,7 @@ const passwordUpdate = async(req, res) => {
     }
 
     // Extract validated data from body
-    const newPassword = req.body.password;
+    const {oldPassword, newPassword} = req.body;
 
     try{
 
@@ -48,8 +50,13 @@ const passwordUpdate = async(req, res) => {
         if (!decideur) return res.status(400).send({ errors: [{
             msg: "Decideur doesn't exist"
         }]});
-
-        // Check the password
+        // Check the old password 
+        const oldPasswordMatch = await bcrypt.compare(oldPassword, decideur.password);
+        if (!oldPasswordMatch)
+            return res
+                .status(400)
+        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
+        // Check the new password
         const passwordMatch = await bcrypt.compare(newPassword, decideur.password);
         if (passwordMatch)
             return res

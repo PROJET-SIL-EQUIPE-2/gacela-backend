@@ -10,7 +10,8 @@ const prisma = new PrismaClient()
 const passwordValidate = (data) => {
     // Validate password
     const validationSchema = Joi.object({
-        password: Joi.string().min(8).max(255).required(),
+        oldPassword: Joi.string().min(8).max(255).required(),
+        newPassword: Joi.string().min(8).max(255).required(),
     });
     return validationSchema.validate(data)
 }
@@ -35,7 +36,7 @@ const passwordUpdateLocataire = async(req, res) => {
     }
 
     // Extract validated data from body
-    const newPassword = req.body.password;
+    const {oldPassword, newPassword} = req.body;
 
     try{
 
@@ -48,8 +49,14 @@ const passwordUpdateLocataire = async(req, res) => {
         if (!locataire) return res.status(400).send({ errors: [{
             msg: "Locataire doesn't exist"
         }]});
-
-        // Check the password
+        // Check the old password 
+        const oldPasswordMatch = await bcrypt.compare(oldPassword, locataire.password);
+        if (!oldPasswordMatch)
+            return res
+                .status(400)
+        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
+      
+        // Check the new password
         const passwordMatch = await bcrypt.compare(newPassword, locataire.password);
         if (passwordMatch)
             return res
@@ -148,8 +155,7 @@ const passwordUpdateAM = async(req, res) => {
     }
 
     // Extract validated data from body
-    const newPassword = req.body.password;
-
+    const {oldPassword, newPassword} = req.body;
     try{
 
         const am = await prisma.AgentsMaintenance.findUnique({
@@ -161,8 +167,13 @@ const passwordUpdateAM = async(req, res) => {
         if (!am) return res.status(400).send({ errors: [{
             msg: "Agent doesn't exist"
         }]});
-
-        // Check the password
+        // Check the old password 
+        const oldPasswordMatch = await bcrypt.compare(oldPassword, am.password);
+        if (!oldPasswordMatch)
+            return res
+                .status(400)
+        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
+        // Check the new password
          const passwordMatch = await bcrypt.compare(newPassword, am.password);
         if (passwordMatch)
             return res
