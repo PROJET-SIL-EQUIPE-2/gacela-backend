@@ -1,99 +1,49 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+
 const Joi = require("joi");
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const mobileSettingsService = require("../../services/settings/mobileSettings.service")
 
 
 
 
-const passwordValidate = (data) => {
-    // Validate password
-    const validationSchema = Joi.object({
-        oldPassword: Joi.string().min(8).max(255).required(),
-        newPassword: Joi.string().min(8).max(255).required(),
-    });
-    return validationSchema.validate(data)
-}
+    const passwordValidate = (data) => {
+        // Validate password
+        const validationSchema = Joi.object({
+            oldPassword: Joi.string().min(8).max(255).required(),
+            newPassword: Joi.string().min(8).max(255).required(),
+        });
+        return validationSchema.validate(data)
+    }
 
-const emailValidate = (data) => {
-    // Validate email
-    const validationSchema = Joi.object({
-        email: Joi.string().email().required()
-    });
-    return validationSchema.validate(data)
-}
+    const emailValidate = (data) => {
+        // Validate email
+        const validationSchema = Joi.object({
+            email: Joi.string().email().required()
+        });
+        return validationSchema.validate(data)
+    }
 
 // UPDATE PASSWORD FOR LOCATAIRE
-const passwordUpdateLocataire = async(req, res) => {
-    // Validate user supplied data
-    const { error } = passwordValidate(req.body);
-    if (error) {
-        // Bad request
-        return res.status(400).json({
-            errors: [{ msg: error.details[0].message }]
-        });
-    }
 
-    // Extract validated data from body
-    const {oldPassword, newPassword} = req.body;
-
-    try{
-
-        const locataire = await prisma.locataires.findUnique({
-            where: {
-                id: Number(req.params.id)
-            }
-        });
-
-        if (!locataire) return res.status(400).send({ errors: [{
-            msg: "Locataire doesn't exist"
-        }]});
-        // Check the old password 
-        const oldPasswordMatch = await bcrypt.compare(oldPassword, locataire.password);
-        if (!oldPasswordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
-      
-        // Check the new password
-        const passwordMatch = await bcrypt.compare(newPassword, locataire.password);
-        if (passwordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "You can't use the same password" }] });
-       
-        // hash the password
-        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS) || 10);
-        const passwordHash = await bcrypt.hash(newPassword, salt);
-
-         // update password
-         const updatePassword = await prisma.locataires.update({
-            where : {
-                id: Number(req.params.id)
-            },
-            data : {
-                password : passwordHash
-            }
+    const passwordUpdateLocataire = async(req, res) => {
+        // Validate user supplied data
+        const { error } = passwordValidate(req.body);
+        if (error) {
+            // Bad request
+            return res.status(400).json({
+                errors: [{ msg: error.details[0].message }]
             });
+        }
 
-                 return res.status(200).json({
-                    success: true,
-                    data: {
-                        msg: "Password updated successfully"
-                    }
-                });
-
-    }catch(e){
-        console.error(e);
-        return res.status(500).send("Server error");
+        // Extract validated data from body
+        const {oldPassword, newPassword} = req.body;
+        const { code, data } = await mobileSettingsService.passwordUpdateLocataire(req.params.id,oldPassword, newPassword)
+        return res.status(code).json(data)
     }
 
-}
 
 
+//UPDATE EMAIL FOR LOCATAIRE
 
-    // update email locataire
     const emailUpdateLocataire = async (req,res) => {
           // Validate user supplied data
     const { error } = emailValidate(req.body);
@@ -106,158 +56,48 @@ const passwordUpdateLocataire = async(req, res) => {
 
             // Extract validated data from body
              const newEmail = req.body.email;
-        try{
+            const { code, data } = await mobileSettingsService.emailUpdateLocataire(req.params.id,newEmail)
+            return res.status(code).json(data)
+            }
 
-            const locataire = await prisma.locataires.findUnique({
-                where: {
-                    id: Number(req.params.id)
-                }
+
+// UPDATE PASSWORD FOR AM
+
+    const passwordUpdateAM = async(req, res) => {
+        // Validate user supplied data
+        const { error } = passwordValidate(req.body);
+        if (error) {
+            // Bad request
+            return res.status(400).json({
+                errors: [{ msg: error.details[0].message }]
             });
-    
-            if (!locataire) return res.status(400).send({ errors: [{
-                msg: "Locataire doesn't exist"
-            }]});
-    
-    
-             // update email
-             const updateEmail = await prisma.locataires.update({
-                where : {
-                    id: Number(req.params.id)
-                },
-                data : {
-                    email : newEmail
-                }
-                });
-    
-                     return res.status(200).json({
-                        success: true,
-                        data: {
-                            msg: "Email updated successfully"
-                        }
-                    });
-    
-        }catch(e){
-            console.error(e);
-            return res.status(500).send("Server error");
         }
+
+        // Extract validated data from body
+        const {oldPassword, newPassword} = req.body;
+        const { code, data } = await mobileSettingsService.passwordUpdateAM(req.params.id,oldPassword, newPassword)
+        return res.status(code).json(data)
 
     }
 
-    // UPDATE PASSWORD FOR AM
-const passwordUpdateAM = async(req, res) => {
-    // Validate user supplied data
-    const { error } = passwordValidate(req.body);
+
+// UPDATE EMAIL FOR AM
+
+    const emailUpdateAM = async (req,res) => {
+            // Validate user supplied data
+    const { error } = emailValidate(req.body);
     if (error) {
         // Bad request
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
+        }
+
+            // Extract validated data from body
+            const newEmail = req.body.email;
+            const { code, data } = await mobileSettingsService.emailUpdateAM(req.params.id,newEmail)
+            return res.status(code).json(data)
     }
-
-    // Extract validated data from body
-    const {oldPassword, newPassword} = req.body;
-    try{
-
-        const am = await prisma.AgentsMaintenance.findUnique({
-            where: {
-                agent_id: Number(req.params.id)
-            }
-        });
-
-        if (!am) return res.status(400).send({ errors: [{
-            msg: "Agent doesn't exist"
-        }]});
-        // Check the old password 
-        const oldPasswordMatch = await bcrypt.compare(oldPassword, am.password);
-        if (!oldPasswordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
-        // Check the new password
-         const passwordMatch = await bcrypt.compare(newPassword, am.password);
-        if (passwordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "You can't use the same password" }] }); 
-       
-        // hash the password
-        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS) || 10);
-        const passwordHash = await bcrypt.hash(newPassword, salt);
-
-         // update password
-         const updatePassword = await prisma.AgentsMaintenance.update({
-            where : {
-                agent_id: Number(req.params.id)
-            },
-            data : {
-                password : passwordHash
-            }
-            });
-
-                 return res.status(200).json({
-                    success: true,
-                    data: {
-                        msg: "Password updated successfully"
-                    }
-                });
-
-    }catch(e){
-        console.error(e);
-        return res.status(500).send("Server error");
-    }
-
-}
-
-
-    // update email agent
-    const emailUpdateAM = async (req,res) => {
-        // Validate user supplied data
-  const { error } = emailValidate(req.body);
-  if (error) {
-      // Bad request
-      return res.status(400).json({
-          errors: [{ msg: error.details[0].message }]
-      });
-      }
-
-          // Extract validated data from body
-           const newEmail = req.body.email;
-      try{
-
-          const am = await prisma.AgentsMaintenance.findUnique({
-              where: {
-                  agent_id: Number(req.params.id)
-              }
-          });
-  
-          if (!am) return res.status(400).send({ errors: [{
-              msg: "Agent doesn't exist"
-          }]});
-  
-  
-           // update email
-           const updateEmail = await prisma.AgentsMaintenance.update({
-              where : {
-                  agent_id: Number(req.params.id)
-              },
-              data : {
-                  email : newEmail
-              }
-              });
-  
-                   return res.status(200).json({
-                      success: true,
-                      data: {
-                          msg: "Email updated successfully"
-                      }
-                  });
-  
-      }catch(e){
-          console.error(e);
-          return res.status(500).send("Server error");
-      }
-
-  }
 
 module.exports = {
     passwordUpdateLocataire,

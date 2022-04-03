@@ -1,32 +1,30 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+
 const Joi = require("joi");
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const webSettingsService = require("../../services/settings/webSettings.service")
 
 
 
+    const passwordValidate = (data) => {
+        // Validate password
+        const validationSchema = Joi.object({
+            oldPassword: Joi.string().min(8).max(255).required(),
+            newPassword: Joi.string().min(8).max(255).required(),
+        });
+        return validationSchema.validate(data)
+    }
 
-const passwordValidate = (data) => {
-    // Validate password
-    const validationSchema = Joi.object({
-        oldPassword: Joi.string().min(8).max(255).required(),
-        newPassword: Joi.string().min(8).max(255).required(),
-    });
-    return validationSchema.validate(data)
-}
 
-
-const emailValidate = (data) => {
-    // Validate email
-    const validationSchema = Joi.object({
-        email: Joi.string().email().required()
-    });
-    return validationSchema.validate(data)
-}
+    const emailValidate = (data) => {
+        // Validate email
+        const validationSchema = Joi.object({
+            email: Joi.string().email().required()
+        });
+        return validationSchema.validate(data)
+    }
 
 // UPDATE PASSWORD FOR DECIDEUR
-const passwordUpdate = async(req, res) => {
+
+    const passwordUpdate = async(req, res) => {
     // Validate user supplied data
     const { error } = passwordValidate(req.body);
     if (error) {
@@ -39,61 +37,14 @@ const passwordUpdate = async(req, res) => {
     // Extract validated data from body
     const {oldPassword, newPassword} = req.body;
 
-    try{
-
-        const decideur = await prisma.Decideurs.findUnique({
-            where: {
-                decideur_id: Number(req.params.id)
-            }
-        });
-
-        if (!decideur) return res.status(400).send({ errors: [{
-            msg: "Decideur doesn't exist"
-        }]});
-        // Check the old password 
-        const oldPasswordMatch = await bcrypt.compare(oldPassword, decideur.password);
-        if (!oldPasswordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "Le mot de passe entré est incorrect" }] });
-        // Check the new password
-        const passwordMatch = await bcrypt.compare(newPassword, decideur.password);
-        if (passwordMatch)
-            return res
-                .status(400)
-        .json({ success: false, errors: [{ msg: "You can't use the same password" }] });
-       
-        // hash the password
-        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS) || 10);
-        const passwordHash = await bcrypt.hash(newPassword, salt);
-
-         // update password
-         const updatePassword = await prisma.Decideurs.update({
-            where : {
-                decideur_id: Number(req.params.id)
-            },
-            data : {
-                password : passwordHash
-            }
-            });
-
-                 return res.status(200).json({
-                    success: true,
-                    data: {
-                        msg: "Password updated successfully"
-                    }
-                });
-
-    }catch(e){
-        console.error(e);
-        return res.status(500).send("Server error");
-    }
-
+    const { code, data } = await webSettingsService.passwordUpdate(req.params.id,oldPassword,newPassword)
+    return res.status(code).json(data)
 }
 
 
 
-    // update email decideur
+// UPDATE EMAIL DECIDEUR
+
     const emailUpdate = async (req,res) => {
           // Validate user supplied data
     const { error } = emailValidate(req.body);
@@ -106,42 +57,11 @@ const passwordUpdate = async(req, res) => {
 
             // Extract validated data from body
              const newEmail = req.body.email;
-        try{
-
-            const decideur = await prisma.Decideurs.findUnique({
-                where: {
-                    decideur_id: Number(req.params.id)
-                }
-            });
-    
-            if (!decideur) return res.status(400).send({ errors: [{
-                msg: "Decideur doesn't exist"
-            }]});
-    
-    
-             // update email
-             const updateEmail = await prisma.Decideurs.update({
-                where : {
-                    decideur_id: Number(req.params.id)
-                },
-                data : {
-                    email : newEmail
-                }
-                });
-    
-                     return res.status(200).json({
-                        success: true,
-                        data: {
-                            msg: "Email updated successfully"
-                        }
-                    });
-    
-        }catch(e){
-            console.error(e);
-            return res.status(500).send("Server error");
-        }
+             const { code, data } = await webSettingsService.emailUpdate(req.params.id,newEmail)
+             return res.status(code).json(data)
 
     }
+
 
     module.exports = {
         passwordUpdate,
