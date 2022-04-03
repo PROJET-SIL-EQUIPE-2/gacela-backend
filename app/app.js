@@ -10,6 +10,7 @@ const passwordResetRouter = require("./routes/auth/passwordReset.router")
 const signUpRouter = require("./routes/auth/signup.router");
 const passwordResetRouterWeb = require("./routes/auth/passwordResetWeb.route");
 const locataireRouter = require("./routes/locataire/locataire.route");
+const accountsRouter = require("./routes/accounts/accounts.router");
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
 
@@ -45,6 +46,7 @@ app.use("/api/signup", signUpRouter);
 app.use("/api/web_login" , webLoginRouter)
 
 app.use("/api/locataire", locataireRouter);
+app.use("/api/accounts", accountsRouter);
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);
