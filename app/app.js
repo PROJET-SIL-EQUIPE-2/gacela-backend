@@ -16,14 +16,17 @@ const websettingsRouter = require("./routes/settings/webSettings.route")
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
 
+const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
 })
 
-const app = express()
+const app = express();
 app.set("port", process.env.PORT || 3000) ;
-app.use(express.static('uploads'))
+app.use(express.static('uploads'));
+
 //// Apply middlewares
 // Allow cross-origin
 app.use(cors())
@@ -52,6 +55,10 @@ app.use("/api/locataire", locataireRouter);
 app.use("/api/accounts", accountsRouter);
 app.use("/api/mobile_settings", settingsRouter);
 app.use("/api/web_settings", websettingsRouter);
+
+// TOGGLE BLOCK ACCOUNTS
+app.use("/api/accounts/toggle-block" , blockAccountsRouter);
+
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);

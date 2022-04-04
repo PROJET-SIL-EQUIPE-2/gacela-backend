@@ -112,10 +112,80 @@ const getRejectedLocataires = async (req, res) => {
     }
 }
 
+const getBlockedLocataires = async (req, res) => {
+    try {
+        const blocked = await prisma.locataires.findMany({
+            where: {
+                blocked: true
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
+            }
+        });
+        return res.status(200).json({
+            data: {
+                success: true,
+                data : blocked
+            }
+        });
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json({
+            code: 500,
+            message: e.message
+        });
+
+    }
+}
+
+const getNotBlockedLocataires = async (req, res) => {
+    try {
+        const non_blocked = await prisma.locataires.findMany({
+            where: {
+                blocked: false
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
+            }
+        });
+        return res.send({
+            data: {
+                success: true,
+                data : non_blocked
+            }
+        });
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json({
+            code: 500,
+            message: e.message
+        });
+
+    }
+}
+
 
 
 module.exports = {
     getValidatedLocataires,
     getRejectedLocataires,
-    getWaitingLocataires
+    getWaitingLocataires,
+    getBlockedLocataires,
+    getNotBlockedLocataires
 }
