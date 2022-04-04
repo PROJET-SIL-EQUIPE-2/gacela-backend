@@ -1,8 +1,8 @@
-POST http://localhost:3000/api/web_passwordReset/admin
+PUT http://localhost:3000/api/mobile_settings/locataire/password/1
 Content-Type: application/json
 
 {
-    "email" : "ninamimi305@gmail.com"
+    "password" : "updateupdate"
 }
 
 ###
