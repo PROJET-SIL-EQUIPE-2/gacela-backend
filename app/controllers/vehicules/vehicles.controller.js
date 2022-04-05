@@ -2,7 +2,7 @@ const Joi = require("joi")
 const vehiclesService = require("../../services/vehicules/vehicles.service");
 
 
-
+// TODO: Add only query parameter
 const getAllVehicles = async (req, res) => {
     // Invoke service
     const {code, data, serviceError} = await vehiclesService.getAll();
@@ -18,9 +18,27 @@ const getAllVehicles = async (req, res) => {
     }
 }
 
-const getVehicleById = (req, res) => {
+const getVehicleById = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
 
+        // Invoke service
+        const {code, data, serviceError} = await vehiclesService.getById(id);
+        if (!serviceError){
+            // Send  message to user
+            res.status(code).json(data)
+            // Invoke logger
+        }else{
+            // Invoke error logger
+            console.log(serviceError);
+            res.status(code).json(serviceError)
+        }
+    }catch (e){
+        res.json("Number my be provided");
+    }
 }
+
+
 
 const addVehicle = async (req, res) => {
     const validator = Joi.object({
@@ -51,8 +69,27 @@ const addVehicle = async (req, res) => {
     }
 }
 
-const deleteVehicle = (req, res) => {
+const deleteVehicle = async (req, res) => {
+    // Delete vehicule by id
+    try {
+        const id = parseInt(req.params.id);
+        
+        // Invoke service
+        const {code, data, serviceError} = await vehiclesService.deleteVehicule(id);
 
+        if (!serviceError){
+            // Send  message to user
+            res.status(code).json(data)
+            // Invoke logger
+        }else{
+            // Invoke error logger
+            console.log(serviceError);
+            res.status(code).json(data)
+        }
+
+    }catch (e) {
+        res.json("Number my be provided");
+    }
 }
 
 module.exports = {

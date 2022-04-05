@@ -12,7 +12,12 @@ const getAll = async () => {
         });
         return {
             code: 200,
-            data: allVehicles
+            data: {
+                success: true,
+                data: {
+                    allVehicles
+                }
+            }
         }
     }catch (e){
         return {
@@ -23,8 +28,40 @@ const getAll = async () => {
     }
 }
 
-const getOnly = async (n) => {
-
+const getById = async (id) => {
+    try {
+        const vehicule = await prisma.Vehicules.findUnique({
+            where: {
+                vehicule_id: id
+            }
+        })
+        if (vehicule){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: {
+                        vehicule
+                    }
+                }
+            }
+        }
+        else{
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: `No vehicule with id ${id} that was found`
+                }
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
 }
 
 
@@ -70,7 +107,44 @@ const addVehicle = async (
     }
 }
 
+const deleteVehicule = async (id) => {
+    try {
+        const deleted = await prisma.Vehicules.delete({
+            where: {
+                vehicule_id: id
+            }
+        });
+
+        if (deleted){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: "Vehicule deleted"
+                }
+            }
+        }else{
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: "Vehicule could not be deleted"
+                }
+            }
+        }
+    }catch (e){
+        return {
+            code: 500,
+            data: `Service error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
+}
+
+
 module.exports = {
     getAll,
-    addVehicle
+    getById,
+    addVehicle,
+    deleteVehicule
 }
