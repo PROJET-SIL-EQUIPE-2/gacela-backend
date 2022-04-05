@@ -47,7 +47,12 @@ const addVehicle = async (req, res) => {
         price_per_hour: Joi.number().required()
     })
     const {error} = validator.validate(req.body);
-
+    if (error){
+        // Bad request
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
     // Extract data
     const {
         type,
