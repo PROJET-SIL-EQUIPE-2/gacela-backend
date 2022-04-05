@@ -2,8 +2,40 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
-const deleteLocataire = () => {
+const deleteLocataire = async (email) => {
+    try {
+        const deleted = await prisma.Locataires.delete({
+            where:{
+                email: email
+            }
+        })
+        if (deleted){
 
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    message: "Locataire deleted"
+                }
+            }
+        }else {
+
+            return {
+                code: 400,
+                data:{
+                    success: false,
+                    message: "No locataire with this email was found"
+                }
+            }
+        }
+    }catch (e){
+        console.log("delete");
+        return {
+            code: 500,
+            data: `Server error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
 }
 
 const deleteAM = async (email) => {
@@ -34,7 +66,7 @@ const deleteAM = async (email) => {
     }catch (e){
         return {
             code: 500,
-            data: "Server error",
+            data: "Server error, could not delete Agent",
             serviceError: e
         }
     }

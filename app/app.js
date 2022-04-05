@@ -18,6 +18,8 @@ const webLoginRouter = require("./routes/auth/webLogin.router");
 
 const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
 
+const vehiclesRouter = require("./routes/vehicules/vehicles.router");
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
@@ -58,6 +60,8 @@ app.use("/api/web_settings", websettingsRouter);
 
 // TOGGLE BLOCK ACCOUNTS
 app.use("/api/accounts/toggle-block" , blockAccountsRouter);
+
+app.use("/api/vehicles", vehiclesRouter);
 
 
 app.listen(app.get("port"), () => {

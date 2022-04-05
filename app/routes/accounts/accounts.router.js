@@ -4,7 +4,7 @@ const accountsController = require("../../controllers/accounts/accounts.controll
 const auth = require("../../middlewares/auth/authorize");
 const Role = require("../../middlewares/auth/roles");
 
-router.delete("/locataire", auth.authorize([Role.Admin, Role.Decideur]), accountsController.deleteLocataire);
+router.delete("/locataire", accountsController.deleteLocataire);
 
 router.delete("/agent", auth.authorize([Role.Admin, Role.Decideur]), accountsController.deleteAM);
 
