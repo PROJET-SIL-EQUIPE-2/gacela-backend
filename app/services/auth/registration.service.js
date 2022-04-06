@@ -30,7 +30,8 @@ const signUpLocataire = async (req,
                     errors: [{
                         msg: "Locataire already exists"
                     }]
-                }
+                },
+                log: "Locataire already exists"
             }
         }
 
@@ -71,7 +72,8 @@ const signUpLocataire = async (req,
                     data: {
                         msg: "Locataire registered"
                     }
-                }
+                },
+                log: "Locataire registered"
             }
 
 
@@ -83,7 +85,8 @@ const signUpLocataire = async (req,
                     errors: [{
                         msg: 'Photos must be provided'
                     }]
-                }
+                },
+                log: "Photos must be provided"
             }
         }
 
@@ -92,7 +95,8 @@ const signUpLocataire = async (req,
 
         return {
             code: 500,
-            data: "Server error",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -115,7 +119,8 @@ const validateLocataire = async (email) => {
                     errors: [{
                         msg: "Locataire doesn't exist"
                     }]
-                }
+                },
+                log: "Locataire doesn't exist"
             }
         }
 
@@ -127,7 +132,8 @@ const validateLocataire = async (email) => {
                     errors: [{
                         msg: "Locataire is already validated"
                     }]
-                }
+                },
+                log: "Locataire is already validated"
             }
         }
 
@@ -189,7 +195,8 @@ const validateLocataire = async (email) => {
                             validated: true,
                             updatedLocataire
                         }
-                    }
+                    },
+                    log: "Locataire validated"
                 }
             }
             // TODO: Should we handle the case where locataire was rejected before?
@@ -201,7 +208,8 @@ const validateLocataire = async (email) => {
                             msg: "This demand was rejected before"
                         }
                     ]
-                }
+                },
+                log: "This demand was rejected before"
             }
 
         }
@@ -214,13 +222,15 @@ const validateLocataire = async (email) => {
                         msg: "No demand found"
                     }
                 ]
-            }
+            },
+            log: "No demand found"
         }
 
     }catch (e){
         return {
             code: 500,
-            data: "Server error",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -246,7 +256,8 @@ const rejectLocataire = async (email, justificatif) => {
                     errors: [{
                         msg: "Locataire doesn't exist"
                     }]
-                }
+                },
+                log: "Locataire doesn't exist"
             }
         }
         // Check if locataire demand is validated
@@ -257,7 +268,8 @@ const rejectLocataire = async (email, justificatif) => {
                     errors: [{
                         msg: "Locataire is already validated"
                     }]
-                }
+                },
+                log: "Locataire is already validated"
             }
         }
 
@@ -284,7 +296,8 @@ const rejectLocataire = async (email, justificatif) => {
                         errors: [{
                             msg: "This demand is rejected before"
                         }]
-                    }
+                    },
+                    log: "This demand is rejected before"
                 }
 
             }
@@ -337,7 +350,8 @@ const rejectLocataire = async (email, justificatif) => {
                     success: true,
                     data: data,
                     message: "An email is sent to locataire"
-                }
+                },
+                log: "An email is sent to locataire"
             }
         }
 
@@ -347,13 +361,15 @@ const rejectLocataire = async (email, justificatif) => {
                 errors: [{
                     msg: "No demand found"
                 }]
-            }
+            },
+            log: "No demand found"
         }
 
     }catch (e){
         return {
             code: 500,
-            data: "Server error",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -381,7 +397,8 @@ const signUpAM = async (name,
                     errors: [{
                         msg: "Agent already exists"
                     }]
-                }
+                },
+                log: "Agent already exists"
             }
         }
         // Create a brand new agent
@@ -405,12 +422,14 @@ const signUpAM = async (name,
                 data: {
                     msg: "New agent added"
                 }
-            }
+            },
+            log: "New agent added"
         }
     }catch (e){
         return {
             code: 500,
-            data: "Server error...",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -437,7 +456,8 @@ const registerAdmin = async (name,
                     errors: [{
                         msg: "Admin already exists"
                     }]
-                }
+                },
+                log: "Admin already exists"
             }
 
         }
@@ -460,13 +480,15 @@ const registerAdmin = async (name,
                 data: {
                     msg: "Admin added"
                 }
-            }
+            },
+            log: "Admin added"
         }
 
     }catch (e){
         return {
             code: 500,
-            data: "Server error...",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -493,7 +515,8 @@ const registerDecideur = async (name,
                     errors: [{
                         msg: "Decideur already exists"
                     }]
-                }
+                },
+                log: "Decideur already exists"
             }
 
         }
@@ -518,17 +541,15 @@ const registerDecideur = async (name,
                 data: {
                     msg: "Decideur added"
                 }
-            }
+            },
+            log: "Decideur added"
         }
 
     }catch (e){
         return {
             code: 500,
-            data: {
-                errors:[{
-                    msg: "Server error"
-                }]
-            },
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }

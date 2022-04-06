@@ -22,7 +22,8 @@ const getAll = async () => {
     }catch (e){
         return {
             code: 500,
-            data: "Server error",
+            data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -52,13 +53,15 @@ const getById = async (id) => {
                 data: {
                     success: false,
                     data: `No vehicule with id ${id} that was found`
-                }
+                },
+                log: `No vehicule with id ${id} that was found`
             }
         }
     }catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -86,22 +89,23 @@ const addVehicle = async (
                     data: {
                         msg: "Vehicle registered"
                     }
-                }
+                },
+                log: "Vehicle registered"
             }
         }
         return {
             code: 400,
             data: {
                 success: false,
-                errors: [{
-                    msg: 'Vehicle can not be added'
-                }]
-            }
+                data: 'Vehicle can not be added'
+            },
+            log: 'Vehicle can not be added'
         }
     }catch (e) {
         return {
             code: 500,
-            data: "Server error",
+            data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -121,7 +125,8 @@ const deleteVehicule = async (id) => {
                 data: {
                     success: true,
                     data: "Vehicule deleted"
-                }
+                },
+                log: "Vehicule deleted"
             }
         }else{
             return {
@@ -129,13 +134,15 @@ const deleteVehicule = async (id) => {
                 data: {
                     success: false,
                     data: "Vehicule could not be deleted"
-                }
+                },
+                log: "Vehicule could not be deleted"
             }
         }
     }catch (e){
         return {
             code: 500,
             data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }

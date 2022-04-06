@@ -34,22 +34,6 @@ const getValidatedLocataires = async (req, res) => {
 
 const getWaitingLocataires = async (req, res) => {
     try {
-        // const validated = await prisma.locataires.findMany({
-        //     where: {
-        //         validated: false
-        //     },
-        //     select:{
-        //         id: true,
-        //         email: true,
-        //         phone_number: true,
-        //         photo_identity: true,
-        //         personal_photo: true,
-        //         name: true,
-        //         family_name: true,
-        //         validated: true
-        //     }
-        // });
-        // return res.send(validated);
         const r = await prisma.DemandesInscription.findMany({
             where: {
                 etat_demande: DEMAND_STATE_PENDING

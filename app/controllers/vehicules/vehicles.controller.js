@@ -1,20 +1,22 @@
 const Joi = require("joi")
 const vehiclesService = require("../../services/vehicules/vehicles.service");
+const logger = require("../../services/logger");
 
 
 // TODO: Add only query parameter
 const getAllVehicles = async (req, res) => {
     // Invoke service
-    const {code, data, serviceError} = await vehiclesService.getAll();
+    const {code, data, serviceError, log} = await vehiclesService.getAll();
 
     if (!serviceError){
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
-        console.log(serviceError);
-        res.status(code).json(serviceError)
+        logger.error(log);
+        res.status(code).json(data);
     }
 }
 
@@ -23,15 +25,16 @@ const getVehicleById = async (req, res) => {
         const id = parseInt(req.params.id);
 
         // Invoke service
-        const {code, data, serviceError} = await vehiclesService.getById(id);
+        const {code, data, serviceError, log} = await vehiclesService.getById(id);
         if (!serviceError){
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
         }else{
             // Invoke error logger
-            console.log(serviceError);
-            res.status(code).json(serviceError)
+            logger.error(log);
+            res.status(code).json(data);
         }
     }catch (e){
         res.json("Number my be provided");
@@ -61,16 +64,17 @@ const addVehicle = async (req, res) => {
     } = req.body;
 
     // Invoke service
-    const {code, data, serviceError} = await vehiclesService.addVehicle(type, parseFloat(mileage), parseFloat(price_per_hour));
+    const {code, data, serviceError, log} = await vehiclesService.addVehicle(type, parseFloat(mileage), parseFloat(price_per_hour));
 
     if (!serviceError){
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
-        console.log(serviceError);
-        res.status(code).json(serviceError)
+        logger.error(log);
+        res.status(code).json(data);
     }
 }
 
@@ -80,16 +84,17 @@ const deleteVehicle = async (req, res) => {
         const id = parseInt(req.params.id);
         
         // Invoke service
-        const {code, data, serviceError} = await vehiclesService.deleteVehicule(id);
+        const {code, data, serviceError, log} = await vehiclesService.deleteVehicule(id);
 
         if (!serviceError){
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
         }else{
             // Invoke error logger
-            console.log(serviceError);
-            res.status(code).json(data)
+            logger.error(log);
+            res.status(code).json(data);
         }
 
     }catch (e) {

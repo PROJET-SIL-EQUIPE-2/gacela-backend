@@ -27,6 +27,7 @@ const getAllDecideurs = async () => {
         return {
             code: 500,
             data: `Server error ${e.meta.cause}`,
+            log: `Server error ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -64,13 +65,15 @@ const getDecideurById = async (id) => {
                 data: {
                     success: false,
                     data: `No decideur with id ${id} that was found`
-                }
+                },
+                log: `No decideur with id ${id} that was found`
             }
         }
     }catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -90,7 +93,8 @@ const deleteById = async (id) => {
                 data: {
                     success: true,
                     data: "Decideur deleted"
-                }
+                },
+                log: "Decideur deleted"
             }
         }else{
             return {
@@ -98,13 +102,15 @@ const deleteById = async (id) => {
                 data: {
                     success: false,
                     data: "Decideur could not be deleted"
-                }
+                },
+                log: "Decideur could not be deleted"
             }
         }
     }catch (e){
         return {
             code: 500,
             data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -124,7 +130,8 @@ const deleteByEmail = async (email) => {
                 data: {
                     success: true,
                     data: "Decideur deleted"
-                }
+                },
+                log: "Decideur deleted"
             }
         }else{
             return {
@@ -132,13 +139,15 @@ const deleteByEmail = async (email) => {
                 data: {
                     success: false,
                     data: "Decideur could not be deleted"
-                }
+                },
+                log: "Decideur could not be deleted"
             }
         }
     }catch (e){
         return {
             code: 500,
             data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }
