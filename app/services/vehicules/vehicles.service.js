@@ -1,8 +1,9 @@
-
+const upload = require("../../utils/upload");
+const path = require("path");
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
-
+const uploadPath = "images/vehicles/";
 const getAll = async () => {
     try {
         const allVehicles = await prisma.Vehicules.findMany({
@@ -66,18 +67,39 @@ const getById = async (id) => {
 
 
 const addVehicle = async (
+    req,
     type,
     mileage,
-    price_per_hour
+    price_per_hour,
+    matricule
 ) => {
     try {
-        const newVehicle = await prisma.Vehicules.create({
-            data:  {
-                type_vehicule: type,
-                kilometrage: mileage,
-                price_per_hour: price_per_hour
-            }
-        });
+        // if (req.file.car_photo){
+        //
+        // }
+        const car_photo = req.file;
+        upload(car_photo)
+        let newVehicle
+        if (car_photo){
+            newVehicle = await prisma.Vehicules.create({
+                data:  {
+                    type_vehicule: type,
+                    kilometrage: mileage,
+                    price_per_hour: price_per_hour,
+                    matricule: matricule,
+                    car_photo: path.join(uploadPath, car_photo.filename)
+                }
+            });
+        }else{
+            newVehicle = await prisma.Vehicules.create({
+                data:  {
+                    type_vehicule: type,
+                    kilometrage: mileage,
+                    price_per_hour: price_per_hour,
+                    matricule: matricule,
+                }
+            });
+        }
         if (newVehicle){
             return {
                 code: 201,
@@ -101,7 +123,7 @@ const addVehicle = async (
     }catch (e) {
         return {
             code: 500,
-            data: "Server error",
+            data: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }

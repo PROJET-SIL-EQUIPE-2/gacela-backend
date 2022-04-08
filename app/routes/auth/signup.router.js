@@ -4,7 +4,10 @@ const auth = require("../../middlewares/auth/authorize");
 const Role = require("../../middlewares/auth/roles");
 
 const multer  = require('multer')
-const uploader = multer({ dest: 'uploads/' })
+const path = require("path");
+const uploadPath = "images/locataires/";
+
+const uploader = multer({ dest: path.join("uploads", uploadPath) })
 
 // register new locataire route
 router.post("/locataire", uploader.fields([

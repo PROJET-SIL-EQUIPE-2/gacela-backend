@@ -4,9 +4,7 @@ const  registrationService = require("../../services/auth/registration.service")
 
 
 
-const DEMAND_STATE_VALIDATED = 1;
-const DEMAND_STATE_PENDING = 2;
-const DEMAND_STATE_REJECTED = 3;
+
 
 
 const locataireSignupDataValidate = (data) => {
