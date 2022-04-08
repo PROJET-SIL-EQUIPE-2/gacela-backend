@@ -1,14 +1,10 @@
-PUT http://localhost:3000/api/mobile_settings/locataire/password/1
-Content-Type: application/json
-
-{
-    "password" : "updateupdate"
-}
+get http://localhost:3000/api/tasks/1
 
 ###
-PATCH http://localhost:3000/api/web_passwordReset/admin/1/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9kZWNpZGV1ciI6MSwiaWF0IjoxNjQ4MDQ3ODY4fQ.PTddgG-ZktQvEDZ3HZbrBwmW9zw-X_ofgs4dP8Gyd6Y
-Content-Type: application/json
+get http://localhost:3000/api/tasks/completed/1
 
-{
-    "password" : "hibahibahiba"
-}
+###
+get http://localhost:3000/api/tasks/unfinished/1
+
+###
+get http://localhost:3000/api/tasks/details/1

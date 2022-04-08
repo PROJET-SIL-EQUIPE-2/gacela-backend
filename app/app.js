@@ -15,6 +15,8 @@ const websettingsRouter = require("./routes/settings/webSettings.route")
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
 
+const tasksRouter = require("./routes/tasks/tasks.route")
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
@@ -47,6 +49,8 @@ app.use("/api/web_login" , webLoginRouter)
 app.use("/api/locataire", locataireRouter);
 app.use("/api/mobile_settings", settingsRouter);
 app.use("/api/web_settings", websettingsRouter);
+
+app.use("/api/tasks", tasksRouter);
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);
