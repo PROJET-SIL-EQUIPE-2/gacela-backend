@@ -19,6 +19,9 @@ const webLoginRouter = require("./routes/auth/webLogin.router");
 const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
 
 const vehiclesRouter = require("./routes/vehicules/vehicles.router");
+const decideurRouter = require("./routes/decideurs/decideurs.router");
+
+const agentsRouter = require("./routes/agents/agents.router")
 
 // Configure dotenv
 dotenv.config({
@@ -63,6 +66,9 @@ app.use("/api/accounts/toggle-block" , blockAccountsRouter);
 
 app.use("/api/vehicles", vehiclesRouter);
 
+app.use("/api/decideurs", decideurRouter);
+
+app.use("/api/agents", agentsRouter);
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);

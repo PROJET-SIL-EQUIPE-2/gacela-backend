@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const upload = require("../../utils/upload");
+const path = require("path");
 
 const PrismaClient = require("@prisma/client").PrismaClient;
 
@@ -8,6 +9,7 @@ const prisma = new PrismaClient();
 const DEMAND_STATE_VALIDATED = 1;
 const DEMAND_STATE_PENDING = 2;
 const DEMAND_STATE_REJECTED = 3;
+const uploadPath = "images/locataires/";
 
 const signUpLocataire = async (req,
                                 name,
@@ -41,8 +43,10 @@ const signUpLocataire = async (req,
         // Rename uploaded files
 
         if (req.files.personal_photo && req.files.photo_identity){
-            const personal_photo = upload(req.files.personal_photo[0]);
-            const photo_identity = upload(req.files.photo_identity[0]);
+            const personal_photo = req.files.personal_photo[0];
+            upload(personal_photo);
+            const photo_identity = req.files.photo_identity[0]
+            upload(photo_identity);
 
             // TODO: Must be a transaction ?
             const newLocataire = await prisma.locataires.create({
@@ -52,8 +56,8 @@ const signUpLocataire = async (req,
                     email: email,
                     phone_number: phone_number,
                     password: passwordHash,
-                    personal_photo: personal_photo, // TODO: Change this
-                    photo_identity: photo_identity  // TODO: Change this
+                    personal_photo: path.join(uploadPath, personal_photo.filename), // TODO: Change this
+                    photo_identity: path.join(uploadPath, photo_identity.filename)  // TODO: Change this
                 }
             })
             await prisma.DemandesInscription.create({
