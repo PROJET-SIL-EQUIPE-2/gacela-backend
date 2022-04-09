@@ -52,14 +52,14 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
                 done();
             });
     });
-});  
+});   
 
 // TEST FOR RESET PASSWORD 
 
 /*  describe('PATCH : Reset password des locataire', () => {
     it('returns 200 OK when token still valid and password is updated', (done) => {
         Request
-            .patch('/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0Nzg4NTA4Nn0.40EXkBd6ChbjSTHXCvY-B3-M5hv6iBjI6WhxxjNZA-s')
+            .patch('/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0ODA3NjA3NX0.KkBm3kuy69Oo5gfDck2SU7xFQ7DwPSzt_Ftp4SIkqmg')
             .send({
                 password: 'resetreset',
             })
@@ -76,7 +76,7 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
 
     it('returns 400 Bad Request when using invalid password', (done) => {
         Request
-        .patch('/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0Nzg4NTA4Nn0.40EXkBd6ChbjSTHXCvY-B3-M5hv6iBjI6WhxxjNZA-s')
+        .patch('/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0ODA3NjA3NX0.KkBm3kuy69Oo5gfDck2SU7xFQ7DwPSzt_Ftp4SIkqmg')
         .send({
                 password: 'reset',
             })
@@ -93,7 +93,7 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
     // the link is invalid or expired
     it('returns 400 Bad Request when Locataire doesnt exist', (done) => {
         Request
-        .patch('/locataire/17/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM')
+        .patch('/locataire/17/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0ODA3NjA3NX0.KkBm3kuy69Oo5gfDck2SU7xFQ7DwPSzt_Ftp4SIkqmg')
         .send({
                 password: 'resetreset',
             })
@@ -109,7 +109,7 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
     // the token doesnt exist
     it('returns 400 Bad Request when the link is invalid', (done) => {
         Request
-        .patch('/locataire/1/yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM')
+        .patch('/locataire/1/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0ODA3NjA3NX0.KkBm3kuy69Oo5gfDck2SU7xFQ7DwPSzt_Ftp4SIkqm')
         .send({
                 password: 'resetreset',
             })
@@ -124,7 +124,7 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
     });
 
     // il depasse 2h
-    it('returns 400 Bad Request when the link is expired', (done) => {
+     it('returns 400 Bad Request when the link is expired', (done) => {
         Request
         .patch('/locataire/1/yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9sb2NhdGFpcmUiOjEsImlhdCI6MTY0NzgxMTI3MH0.BXm5rw_evu9avzv1oPX40TUG03DJoVrb7_881jW_ncM')
         .send({
@@ -138,5 +138,5 @@ Request = Request('http://localhost:3000/api/mobile_passwordReset');
                 expect(res.body.success == false).toBe(true);
                 done();
             });
-    });
-}); */
+    }); 
+});  */

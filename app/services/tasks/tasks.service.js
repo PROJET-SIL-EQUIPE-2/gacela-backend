@@ -96,12 +96,7 @@ const getTaskDetail = async(id) =>{
                 panne_id : Number(id),
             },
             include : {
-                Vehicules : {
-                    include : {
-                        EtatVehicule : true,
-                        TypesVehicules : true
-                    }
-                }
+                Vehicules : true
             }
         });
 

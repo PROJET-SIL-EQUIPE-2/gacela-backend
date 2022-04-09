@@ -8,3 +8,6 @@ get http://localhost:3000/api/tasks/unfinished/1
 
 ###
 get http://localhost:3000/api/tasks/details/1
+
+###
+put http://localhost:3000/api/tasks/1
