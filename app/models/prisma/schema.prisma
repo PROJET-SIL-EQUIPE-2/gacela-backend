@@ -9,13 +9,13 @@ datasource db {
 
 model Admins {
   admin_id     Int      @id @default(autoincrement())
-  name          String?  @db.VarChar
-  family_name       String?  @db.VarChar
+  name         String?  @db.VarChar
+  family_name  String?  @db.VarChar
   email        String?  @unique @db.VarChar
   isSuperAdmin Boolean?
-  password     String?           @db.VarChar
-  Token           Token[]
-  blocked Boolean @default(false)
+  password     String?  @db.VarChar
+  blocked      Boolean  @default(false)
+  Token        Token[]
 }
 
 model AgentsMaintenance {
@@ -25,33 +25,32 @@ model AgentsMaintenance {
   password        String?           @db.VarChar
   family_name     String?           @db.VarChar
   name            String?           @db.VarChar
+  blocked         Boolean           @default(false)
   NotificationsAM NotificationsAM[]
   Task            Task[]
-  Vehicules       Vehicules[]
   Token           Token[]
-  blocked Boolean @default(false)
+  Vehicules       Vehicules[]
 }
 
 model Decideurs {
   decideur_id  Int     @id @default(autoincrement())
-  name          String? @db.VarChar
-  family_name       String? @db.VarChar
+  name         String? @db.VarChar
+  family_name  String? @db.VarChar
   phone_number String? @db.VarChar
   email        String? @unique @db.VarChar
   password     String? @db.VarChar
-  Token Token[]
-  blocked Boolean @default(false)
-
+  blocked      Boolean @default(false)
+  Token        Token[]
 }
 
 model DemandesInscription {
-  demande_id                  Int                          @id @default(autoincrement())
-  locataire_id                Int?                         @unique(map: "demande_unique_locataire")
-  date_demande                DateTime?                    @db.Timestamp(6)
-  etat_demande                Int?
-  etatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
-  locataire                  Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  rejected DemandesInscriptionRejected?
+  demande_id             Int                          @id @default(autoincrement())
+  locataire_id           Int?                         @unique(map: "demande_unique_locataire")
+  date_demande           DateTime?                    @db.Timestamp(6)
+  etat_demande           Int?
+  etatDemandeInscription EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
+  locataire              Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  rejected               DemandesInscriptionRejected?
 }
 
 model DemandesInscriptionRejected {
@@ -85,7 +84,6 @@ model EtatDemandeInscription {
   DemandesInscription DemandesInscription[]
 }
 
-
 model Facture {
   facture_id Int       @id @default(autoincrement())
   trajet_id  Int?
@@ -105,13 +103,13 @@ model Locataires {
   family_name            String?                  @db.VarChar
   name                   String?                  @db.VarChar
   validated              Boolean?                 @default(false)
+  blocked                Boolean                  @default(false)
   DemandesInscription    DemandesInscription?
   DemandesReservation    DemandesReservation[]
   DemandesSupport        DemandesSupport[]
   NotificationsLocataire NotificationsLocataire[]
-  Trajets                Trajets[]
   Token                  Token[]
-  blocked Boolean @default(false)
+  Trajets                Trajets[]
 }
 
 model NotificationsAM {
@@ -181,40 +179,37 @@ model TypePaiment {
   Paiment     Paiment[]
 }
 
-
-
 model Vehicules {
   vehicule_id       Int                @id @default(autoincrement())
+  matricule         String             @unique(map: "unique_matricule")
+  car_photo         String?
   responsable       Int?
   type_vehicule     String
-  kilometrage       Float          @default(0.0)
-  etat              VehicleState    @default(WORKING)
-  disponible        Boolean         @default(true)
-  price_per_hour    Float          @default(0)
+  kilometrage       Float              @default(0.0)
+  etat              VehicleState       @default(WORKING)
+  disponible        Boolean            @default(true)
+  price_per_hour    Float              @default(0)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Trajets           Trajets[]
+}
+
+model Token {
+  id                Int                @id @default(autoincrement())
+  id_locataire      Int?
+  id_AM             Int?
+  id_admin          Int?
+  id_decideur       Int?
+  email             String?            @db.VarChar
+  token             String
+  createdAt         DateTime           @default(now())
+  AgentsMaintenance AgentsMaintenance? @relation(fields: [id_AM], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
+  Admins            Admins?            @relation(fields: [id_admin], references: [admin_id], onDelete: NoAction, onUpdate: NoAction)
+  Decideurs         Decideurs?         @relation(fields: [id_decideur], references: [decideur_id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires        Locataires?        @relation(fields: [id_locataire], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum VehicleState {
   WORKING
   OUTOFORDER
 }
-
-model Token {
-  id Int @id @default(autoincrement())
-  id_locataire Int?
-  id_AM Int?
-  id_admin Int?
-  id_decideur Int?
-  email String? @db.VarChar
-  token String
-  createdAt DateTime @default(now())
-  AgentsMaintenance AgentsMaintenance? @relation(fields: [id_AM], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
-  Locataires        Locataires?  @relation(fields: [id_locataire], references: [id], onDelete: Cascade, onUpdate: NoAction)
-    Admins        Admins?  @relation(fields: [id_admin], references: [admin_id], onDelete: NoAction, onUpdate: NoAction)
-    Decideurs        Decideurs?  @relation(fields: [id_decideur], references: [decideur_id], onDelete: NoAction, onUpdate: NoAction)
-
-}
-
-
