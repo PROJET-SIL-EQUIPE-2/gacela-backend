@@ -31,7 +31,7 @@ app.use(bodyParser.json())
 
 
 //// Apply routers
-
+app.use('/api/notification' , require('./routes/locataire/notificationLoc.route')) ; 
 app.use(authRouter);
 app.use('/api/mobile_passwordReset',passwordResetRouter);
 

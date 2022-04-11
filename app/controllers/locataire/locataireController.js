@@ -1,4 +1,5 @@
 const PrismaClient = require("@prisma/client").PrismaClient;
+const locataireService = require("../../services/mailLoc.service") ;
 
 const prisma = new PrismaClient();
 
@@ -114,8 +115,23 @@ const getRejectedLocataires = async (req, res) => {
 
 
 
+//valider une demande d'inscription d'un locataire dans
+const Demandevalidate = (req , res) => {
+    locataireService.Demandevalidate(req, res) ; 
+
+}
+//rejeter une demande d'inscription d'un locataire
+const DemandeReject = (req , res) => { 
+    locataireService.DemandeReject(req , res) ; 
+
+}
+
+
+
 module.exports = {
     getValidatedLocataires,
     getRejectedLocataires,
-    getWaitingLocataires
+    getWaitingLocataires ,
+    Demandevalidate ,
+    DemandeReject
 }
