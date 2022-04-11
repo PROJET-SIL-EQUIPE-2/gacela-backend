@@ -49,11 +49,12 @@ const addVehicle = async (req, res) => {
     })
     const {error} = validator.validate(req.body);
     if (error){
-        // Bad request
+
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
     }
+
     // Extract data
     const {
         type,
@@ -99,9 +100,36 @@ const deleteVehicle = async (req, res) => {
     }
 }
 
+const assign = async (req, res) => {
+    const validator = Joi.object({
+        matricule: Joi.string().required(),
+        email: Joi.string().email().required()
+    })
+
+    const {error} = validator.validate(req.body);
+    if (error){
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {matricule, email} = req.body;
+
+    const {code, data, serviceError, log} = await vehiclesService.assign(matricule, email);
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        console.log(serviceError);
+        res.status(code).json(data)
+    }
+}
+
 module.exports = {
     getAllVehicles,
     getVehicleById,
     addVehicle,
-    deleteVehicle
+    deleteVehicle,
+    assign
 }
