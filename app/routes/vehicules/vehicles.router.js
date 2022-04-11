@@ -15,6 +15,11 @@ router.get("/:id", vehiclesController.getVehicleById);
 // Add new vehicle
 router.post("/add", uploader.single('car_photo'), vehiclesController.addVehicle);
 
+
+// assign to agent
+router.post("/assign", vehiclesController.assign);
+
+
 // delete vehicle
 
 router.delete("/delete/:id", vehiclesController.deleteVehicle);
