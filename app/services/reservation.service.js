@@ -93,7 +93,7 @@ const deverouillerVoiture = (reserv) => {
     const id_vehicule = reserv.vehicule_id ; 
     let dev = await prisma.Vehicules.update({ 
         data : {
-            etat_voiture : 1 //deverouillé
+            etat_vehicule : 1 //deverouillé
         } ,
         where : {
         vehicule_id : id_vehicule,
@@ -112,7 +112,7 @@ const verrouillerVoiture = (reserv) => {
     const id_vehicule = reserv.vehicule_id ; 
     let ver = await prisma.Vehicules.update({ 
         data : {
-            etat_voiture : 0 //verouillé
+            etat_vehicule : 0 //verouillé
         } ,
         where : {
         vehicule_id: id_vehicule,
@@ -152,7 +152,7 @@ module.exports = {
     createReservation , 
     validerTrajet ,
     verifyCode ,
-    validerReservation ,
+    validerReservation 
 
     
     
