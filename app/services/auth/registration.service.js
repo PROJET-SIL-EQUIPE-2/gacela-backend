@@ -60,13 +60,13 @@ const signUpLocataire = async (req,
                     photo_identity: path.join(uploadPath, photo_identity.filename)
                 }
             })
-            console.log("LOCATAIRE ADDED")
+            // console.log("LOCATAIRE ADDED")
             await prisma.DemandesInscription.create({
                 data: {
                     locataire_id: newLocataire.id,
-                    etat_demande: DEMAND_STATE_PENDING
                 }
             });
+            // await prisma.$queryRaw`INSERT INTO "DemandesInscription" (locataire_id, etat_demande) VALUES (${new}, ${})`
 
             console.log("DEMANDE ADDED")
 
@@ -141,9 +141,6 @@ const validateLocataire = async (email) => {
         let demand = await prisma.DemandesInscription.findMany({
             where: {
                 locataire_id:locataire.id
-            },
-            include:{
-                etatDemandeInscription: true
             }
         });
         // res.json(demand);
@@ -167,7 +164,7 @@ const validateLocataire = async (email) => {
                             demande_id: demand[0].demande_id
                         },
                         data: {
-                            etat_demande: DEMAND_STATE_VALIDATED
+                            etat_demande: "VALIDATED"
                         }
                     }),
                     prisma.locataires.update({
@@ -271,9 +268,6 @@ const rejectLocataire = async (email, justificatif) => {
         let demand = await prisma.DemandesInscription.findFirst({
             where: {
                 locataire_id:locataire.id
-            },
-            include:{
-                etatDemandeInscription: true
             }
         });
 
@@ -310,7 +304,7 @@ const rejectLocataire = async (email, justificatif) => {
                         demande_id: demand.demande_id
                     },
                     data: {
-                        etat_demande: DEMAND_STATE_REJECTED
+                        etat_demande: REJECTED
                     }
                 })
             ]);

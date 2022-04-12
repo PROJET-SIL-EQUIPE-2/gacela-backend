@@ -2,8 +2,6 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
-const DEMAND_STATE_VALIDATED = 1;
-const DEMAND_STATE_PENDING = 2;
 const DEMAND_STATE_REJECTED = 3;
 
 const getValidatedLocataires = async (req, res) => {
@@ -52,7 +50,7 @@ const getWaitingLocataires = async (req, res) => {
         // return res.send(validated);
         const r = await prisma.DemandesInscription.findMany({
             where: {
-                etat_demande: DEMAND_STATE_PENDING
+                etat_demande: "PENDING"
             },
             include: {
                 locataire:{
@@ -65,7 +63,6 @@ const getWaitingLocataires = async (req, res) => {
                         photo_identity: true
                     }
                 },
-                etatDemandeInscription: true
             }
         })
 
@@ -82,7 +79,7 @@ const getRejectedLocataires = async (req, res) => {
     try {
         const r = await prisma.DemandesInscription.findMany({
             where: {
-                etat_demande: DEMAND_STATE_REJECTED
+                etat_demande: "REJECTED"
             },
             include: {
                 locataire:{
@@ -100,7 +97,6 @@ const getRejectedLocataires = async (req, res) => {
                         justificatif: true,
                     }
                 },
-                etatDemandeInscription: true
             }
         })
 
