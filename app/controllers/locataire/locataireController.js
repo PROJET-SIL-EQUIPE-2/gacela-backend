@@ -3,8 +3,6 @@ const locataireService = require("../../services/mailLoc.service") ;
 
 const prisma = new PrismaClient();
 
-const DEMAND_STATE_VALIDATED = 1;
-const DEMAND_STATE_PENDING = 2;
 const DEMAND_STATE_REJECTED = 3;
 
 const getValidatedLocataires = async (req, res) => {
@@ -53,7 +51,7 @@ const getWaitingLocataires = async (req, res) => {
         // return res.send(validated);
         const r = await prisma.DemandesInscription.findMany({
             where: {
-                etat_demande: DEMAND_STATE_PENDING
+                etat_demande: "PENDING"
             },
             include: {
                 locataire:{
@@ -66,7 +64,6 @@ const getWaitingLocataires = async (req, res) => {
                         photo_identity: true
                     }
                 },
-                etatDemandeInscription: true
             }
         })
 
@@ -83,7 +80,7 @@ const getRejectedLocataires = async (req, res) => {
     try {
         const r = await prisma.DemandesInscription.findMany({
             where: {
-                etat_demande: DEMAND_STATE_REJECTED
+                etat_demande: "REJECTED"
             },
             include: {
                 locataire:{
@@ -101,7 +98,6 @@ const getRejectedLocataires = async (req, res) => {
                         justificatif: true,
                     }
                 },
-                etatDemandeInscription: true
             }
         })
 
@@ -109,6 +105,74 @@ const getRejectedLocataires = async (req, res) => {
     }catch (e){
         console.error(e);
         return res.status(500).json("Server error");
+
+    }
+}
+
+const getBlockedLocataires = async (req, res) => {
+    try {
+        const blocked = await prisma.locataires.findMany({
+            where: {
+                blocked: true
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
+            }
+        });
+        return res.status(200).json({
+            data: {
+                success: true,
+                data : blocked
+            }
+        });
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json({
+            code: 500,
+            message: e.message
+        });
+
+    }
+}
+
+const getNotBlockedLocataires = async (req, res) => {
+    try {
+        const non_blocked = await prisma.locataires.findMany({
+            where: {
+                blocked: false
+            },
+            select:{
+                id: true,
+                email: true,
+                phone_number: true,
+                photo_identity: true,
+                personal_photo: true,
+                name: true,
+                family_name: true,
+                validated: true
+            }
+        });
+        return res.send({
+            data: {
+                success: true,
+                data : non_blocked
+            }
+        });
+
+    }catch (e){
+        console.error(e);
+        return res.status(500).json({
+            code: 500,
+            message: e.message
+        });
 
     }
 }
@@ -133,5 +197,9 @@ module.exports = {
     getRejectedLocataires,
     getWaitingLocataires ,
     Demandevalidate ,
-    DemandeReject
+    DemandeReject,
+
+    
+    getBlockedLocataires,
+    getNotBlockedLocataires
 }

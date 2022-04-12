@@ -4,7 +4,10 @@ const auth = require("../../middlewares/auth/authorize");
 const Role = require("../../middlewares/auth/roles");
 
 const multer  = require('multer')
-const uploader = multer({ dest: 'uploads/' })
+const path = require("path");
+const uploadPath = "images/locataires/";
+
+const uploader = multer({ dest: path.join("uploads", uploadPath) })
 
 // register new locataire route
 router.post("/locataire", uploader.fields([
@@ -22,12 +25,12 @@ router.post("/locataire/reject", auth.authorize(Role.Admin), signUpController.re
 
 
 // Register a new agent route
-router.post("/agent", signUpController.signUpAM);
+router.post("/agent", auth.authorize([Role.Admin, Role.Decideur]),signUpController.signUpAM);
 
 // Register new admin
-router.post("/admin", signUpController.registerAdmin);
+router.post("/admin", auth.authorize([Role.Admin]),signUpController.registerAdmin);
 
 // Register a new dicedeur
-router.post("/decideur", signUpController.registerDicedeur);
+router.post("/decideur", auth.authorize([Role.Admin]),signUpController.registerDicedeur);
 
 module.exports = router;

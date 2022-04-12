@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 
 
 POST http://localhost:3000/api/web_passwordReset/admin
+=======
+PUT http://localhost:3000/api/mobile_settings/locataire/password/1
+>>>>>>> 896e1aebd40a8ef60e4df4ebb9a4a618879079f0
 Content-Type: application/json
 
 {
-    "email" : "ninamimi305@gmail.com"
+    "password" : "updateupdate"
 }
 
 ###

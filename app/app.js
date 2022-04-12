@@ -10,17 +10,28 @@ const passwordResetRouter = require("./routes/auth/passwordReset.router")
 const signUpRouter = require("./routes/auth/signup.router");
 const passwordResetRouterWeb = require("./routes/auth/passwordResetWeb.route");
 const locataireRouter = require("./routes/locataire/locataire.route");
+const accountsRouter = require("./routes/accounts/accounts.router");
+const settingsRouter = require("./routes/settings/mobileSettings.route")
+const websettingsRouter = require("./routes/settings/webSettings.route")
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
+
+const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
+
+const vehiclesRouter = require("./routes/vehicules/vehicles.router");
+const decideurRouter = require("./routes/decideurs/decideurs.router");
+
+const agentsRouter = require("./routes/agents/agents.router")
 
 // Configure dotenv
 dotenv.config({
     path: ".env"
 })
 
-const app = express()
+const app = express();
 app.set("port", process.env.PORT || 3000) ;
-app.use(express.static('uploads'))
+app.use(express.static('uploads'));
+
 //// Apply middlewares
 // Allow cross-origin
 app.use(cors())
@@ -29,7 +40,9 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
-
+app.get("/", (req, res) => {
+    res.send("Gacela API is up and running")
+})
 //// Apply routers
 app.use('/api/notification' , require('./routes/locataire/notificationLoc.route')) ; 
 app.use(authRouter);
@@ -43,6 +56,19 @@ app.use("/api/signup", signUpRouter);
 app.use("/api/web_login" , webLoginRouter)
 
 app.use("/api/locataire", locataireRouter);
+
+app.use("/api/accounts", accountsRouter);
+app.use("/api/mobile_settings", settingsRouter);
+app.use("/api/web_settings", websettingsRouter);
+
+// TOGGLE BLOCK ACCOUNTS
+app.use("/api/accounts/toggle-block" , blockAccountsRouter);
+
+app.use("/api/vehicles", vehiclesRouter);
+
+app.use("/api/decideurs", decideurRouter);
+
+app.use("/api/agents", agentsRouter);
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);

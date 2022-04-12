@@ -1,18 +1,10 @@
 const Joi = require("joi");
-const bcrypt = require("bcrypt");
-const upload = require("../../utils/upload");
-const sendEmail = require("../../utils/sendEmail");
 
-
-const PrismaClient = require("@prisma/client").PrismaClient;
-
-const prisma = new PrismaClient();
+const  registrationService = require("../../services/auth/registration.service");
 
 
 
-const DEMAND_STATE_VALIDATED = 1;
-const DEMAND_STATE_PENDING = 2;
-const DEMAND_STATE_REJECTED = 3;
+
 
 
 const locataireSignupDataValidate = (data) => {
@@ -52,83 +44,24 @@ const signUpLocataire = async (req, res) => {
         password,
     } = req.body;
 
-    try {
-        // Check if locataire already exists
-        const locataire = await prisma.locataires.findUnique({
-            where: {
-                email: email
-            }
-        });
-        if (locataire) {
-            // User exists
-            return res.status(400).json({
-                errors: [{
-                    msg: "Locataire already exists"
-                }]
-            });
-        }
-
-        // Create a brand new locataire
-        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS) || 10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        // Rename uploaded files
-        console.log(req.files.personal_photo);
-        console.log(req.files.photo_identity);
-        if (req.files.personal_photo && req.files.photo_identity){
-            const personal_photo = upload(req.files.personal_photo[0]);
-            const photo_identity = upload(req.files.photo_identity[0]);
-
-            // TODO: Must be a transaction ?
-            const newLocataire = await prisma.locataires.create({
-                data: {
-                    name: name,
-                    family_name: family_name,
-                    email: email,
-                    phone_number: phone_number,
-                    password: passwordHash,
-                    personal_photo: personal_photo, // TODO: Change this
-                    photo_identity: photo_identity  // TODO: Change this
-                }
-            })
-            await prisma.DemandesInscription.create({
-                data: {
-                    locataire_id: newLocataire.id,
-                    date_demande: new Date().toISOString(),
-                    etat_demande: DEMAND_STATE_PENDING
-                }
-            });
-
-            return res.status(201).json({
-                success: true,
-                data: {
-                    msg: "Locataire registered"
-                }
-            });
-        }else{
-            return res.status(400).json({
-                success: false,
-                errors: [{
-                    msg: 'Photos must be provided'
-                }]
-            })
-        }
-
-
-    } catch (e) {
-        console.error(e);
-        return res.status(500).send("Server error");
+    const {code, data, serviceError} = await registrationService.signUpLocataire(req, name, family_name, email, phone_number, password)
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
 }
 
 // Validate locataire based on there emails
 const validateLocataire = async (req, res) => {
-    const data = req.body;
+
     const validationSchema = Joi.object({
         email: Joi.string().email().required()
     });
 
-    const {error} = validationSchema.validate(data);
+    const {error} = validationSchema.validate(req.body);
     if (error){
         // Bad request
         return res.status(400).json({
@@ -137,125 +70,27 @@ const validateLocataire = async (req, res) => {
     }
 
     const {email} = req.body;
+    const {code, data, serviceError} = await registrationService.validateLocataire(email);
 
-    try {
-        // Find locataire demand
-        const locataire = await prisma.locataires.findUnique({
-            where: {
-                email: email
-            }
-        });
-
-        // Check if locataire doesn't exist
-        if (!locataire) {
-            return res.status(400).json({
-                errors: [{
-                    msg: "Locataire doesn't exist"
-                }]
-            });
-        }
-
-        // Check if locataire demand is validated
-        if (locataire.validated){
-            return res.status(400).json({
-                errors: [{
-                    msg: "Locataire is already validated"
-                }]
-            });
-        }
-
-        // Find demand
-        let demand = await prisma.DemandesInscription.findMany({
-            where: {
-                locataire_id:locataire.id
-            },
-            include:{
-                etatDemandeInscription: true
-            }
-        });
-        // res.json(demand);
-        console.log(locataire.id);
-        if (demand.length > 0){
-            let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
-                where: {
-                    demande_id: demand[0].demande_id
-                }
-            })
-            if (!demandRejected){
-                // Locataire is not rejected before
-
-                // Create a transaction that does the following
-                // 1. Update DemandesInscription
-                // 2. Update validated column
-
-                const [updatedDemand, updatedLocataire] = await prisma.$transaction([
-                    prisma.DemandesInscription.update({
-                        where: {
-                            demande_id: demand[0].demande_id
-                        },
-                        data: {
-                            etat_demande: DEMAND_STATE_VALIDATED
-                        }
-                    }),
-                    prisma.locataires.update({
-                        where: {
-                            id: locataire.id
-                        },
-                        data: {
-                            validated: true
-                        },
-                        select: {
-                            id: true,
-                            email: true,
-                            phone_number: true,
-                            name: true,
-                            family_name: true,
-                            validated: true
-                        }
-                    })
-                ]);
-
-                return res.send({
-                    success: true,
-                    data: {
-                        validated: true,
-                        updatedLocataire
-                    }
-                });
-
-            }
-            // TODO: Should we handle the case where locataire was rejected before?
-            return res.status(400).json({
-                errors: [
-                    {
-                        msg: "This demand was rejected before"
-                    }
-                ]
-            })
-        }
-        return res.status(400).json({
-            errors: [
-                {
-                    msg: "No demand found"
-                }
-            ]
-        })
-    }catch (e){
-        console.error(e);
-        return res.json(e);
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
+
 }
 
 // TODO: Delete records ?
 // Reject locataire based on email
 const rejectLocataire = async (req, res) => {
-    const data = req.body;
     const validationSchema = Joi.object({
         email: Joi.string().email().required(),
         justificatif: Joi.string().required()
     });
 
-    const {error} = validationSchema.validate(data);
+    const {error} = validationSchema.validate(req.body);
     if (error){
         // Bad request
         return res.status(400).json({
@@ -265,118 +100,16 @@ const rejectLocataire = async (req, res) => {
 
     const {email, justificatif} = req.body;
 
-    try {
+    const {code, data, serviceError} = await registrationService.rejectLocataire(email, justificatif);
 
-        // 1. Find non validated locataire
-        // 2. Create a rejection record
-        // 3. Send an email along with a justification
-        const locataire = await prisma.locataires.findUnique({
-            where: {
-                email: email
-            }
-        });
-
-        // Check if locataire doesn't exist
-        if (!locataire) {
-            return res.status(400).json({
-                errors: [{
-                    msg: "Locataire doesn't exist"
-                }]
-            });
-        }
-        // Check if locataire demand is validated
-        if (locataire.validated){
-            return res.status(400).json({
-                errors: [{
-                    msg: "Locataire is already validated"
-                }]
-            });
-        }
-
-        // Check if locataire is rejected before
-        let demand = await prisma.DemandesInscription.findFirst({
-            where: {
-                locataire_id:locataire.id
-            },
-            include:{
-                etatDemandeInscription: true
-            }
-        });
-
-        if (demand) {
-            let demandRejected = await prisma.DemandesInscriptionRejected.findUnique({
-                where: {
-                    demande_id: demand.demande_id
-                }
-            })
-            if (demandRejected){
-                return res.status(400).json({
-                    errors: [{
-                        msg: "This demand is rejected before"
-                    }]
-                });
-            }
-
-            // A transaction containing
-            // 1. Create  a rejection record
-            // 2. Update DemandesInscription
-            await prisma.$transaction([
-                prisma.DemandesInscriptionRejected.create({
-                    data: {
-                        demande_id: demand.demande_id,
-                        justificatif: justificatif
-                    }
-                }),
-                prisma.DemandesInscription.update({
-                    where: {
-                        demande_id: demand.demande_id
-                    },
-                    data: {
-                        etat_demande: DEMAND_STATE_REJECTED
-                    }
-                })
-            ]);
-            // TODO: Send email and delete records
-            // await sendEmail(email, "Motif de rejet", justificatif)
-
-            // Delete records
-            // await prisma.$transaction([
-            //     prisma.DemandesInscriptionRejected.delete({
-            //         where: {
-            //             demande_id: demand.demande_id,
-            //         }
-            //     }),
-            //     prisma.DemandesInscription.delete({
-            //         where: {
-            //             demande_id: demand.demande_id
-            //         }
-            //     }),
-            //     prisma.Locataires.delete({
-            //         where: {
-            //             email: email
-            //         }
-            //     }),
-            // ]);
-
-            // Send success response
-            return res.json({
-                success: true,
-                data: data,
-                message: "An email is sent to locataire"
-            })
-        }
-
-        return res.status(400).json({
-            errors: [{
-                msg: "No demand found"
-            }]
-        })
-
-
-    }catch (e){
-        console.error(e);
-        return res.status(500).json("Server error");
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
+
 }
 
 
@@ -408,47 +141,16 @@ const signUpAM = async (req, res) => {
         phone_number,
         password
     } = req.body;
+    const {code, data, serviceError} = await registrationService.signUpAM(name, family_name, email, phone_number, password)
 
-    try {
-        // Check if agent already exits
-        const agent = await prisma.AgentsMaintenance.findUnique({
-            where: {
-                email: email
-            }
-        });
-
-        if (agent){
-            // Agent exists
-            return res.status(400).json({
-                errors: [{
-                    msg: "Agent already exists"
-                }]
-            });
-        }
-        // Create a brand new agent
-        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        const newAgent = await prisma.AgentsMaintenance.create({
-            data: {
-                name: name,
-                family_name: family_name,
-                email: email,
-                phone_number: phone_number,
-                password: passwordHash,
-            }
-        })
-        console.log(passwordHash);
-        return res.status(201).json({
-            success: true,
-            data: {
-                msg: "New agent added"
-            }
-        });
-    }catch (e){
-        console.error(e);
-        return res.status(500).send("Server error...");
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
+
 }
 
 const registerAdmin = async (req, res) => {
@@ -473,43 +175,14 @@ const registerAdmin = async (req, res) => {
         password
     } = req.body;
 
-    try {
-        // Check if agent already exits
-        const admin = await prisma.Admins.findUnique({
-            where: {
-                email: email
-            }
-        });
+    const {code, data, serviceError} = await registrationService.registerAdmin(name, family_name, email, password);
 
-        if (admin){
-            // Agent exists
-            return res.status(400).json({
-                errors: [{
-                    msg: "Admin already exists"
-                }]
-            });
-        }
-        // Create a brand new agent
-        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        const newAdmin = await prisma.Admins.create({
-            data: {
-                name: name,
-                family_name: family_name,
-                email: email,
-                password: passwordHash,
-            }
-        })
-        return res.status(201).json({
-            success: true,
-            data: {
-                msg: "Admin added"
-            }
-        });
-    }catch (e){
-        console.error(e);
-        return res.status(500).send("Server error...");
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
 }
 
@@ -530,49 +203,14 @@ const registerDicedeur = async (req, res) => {
         password
     } = req.body;
 
-    try {
-        // Check if agent already exits
-        const decideur = await prisma.Decideurs.findUnique({
-            where: {
-                email: email
-            }
-        });
+    const {code, data, serviceError} = await registrationService.registerDecideur(name, family_name, email, phone_number, password);
 
-        if (decideur){
-            // Agent exists
-            return res.status(400).json({
-                errors: [{
-                    msg: "Decideur already exists"
-                }]
-            });
-        }
-        // Create a brand new agent
-        const salt = await bcrypt.genSalt(process.env.BCRYPT_ROUNDS || 10);
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        await prisma.Decideurs.create({
-            data: {
-                name: name,
-                family_name: family_name,
-                email: email,
-                phone_number: phone_number,
-                password: passwordHash,
-            }
-        })
-
-        return res.status(201).json({
-            success: true,
-            data: {
-                msg: "Decideur added"
-            }
-        });
-    }catch (e){
-        console.error(e);
-        return res.status(500).send({
-            errors:[{
-                msg: "Server error"
-            }]
-        });
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
     }
 }
 

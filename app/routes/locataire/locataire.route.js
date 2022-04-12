@@ -13,5 +13,12 @@ router.get("/rejected", locataireController.getRejectedLocataires) ;
 // validate locataire
 router.get("/validateLoc", locataireController.Demandevalidate);
 //reject locataire
-router.get("/validated", locataireController.DemandeReject);
+
+router.get("/rejected", locataireController.getRejectedLocataires)
+
+
+router.get("/blocked", locataireController.getBlockedLocataires)
+
+router.get("/not-blocked", locataireController.getNotBlockedLocataires)
+
 module.exports = router;

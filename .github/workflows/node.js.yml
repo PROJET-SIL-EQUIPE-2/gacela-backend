@@ -28,3 +28,24 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
+    - name: Heroku Action
+      uses: CDNievas/heroku-action@v1.0
+      with:
+    # Used for authentication. You can find it in your heroku homepage account settings
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+    # Email from Heroku Account
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+    # The appname to use for deploying/updating
+        heroku_app_name: "gacelaapp"
+    # The branch that you would like to deploy to Heroku
+        branch: "main"
+        
+    - name: Post Slack messages
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  # You may pin to the exact commit or the version.
+  # uses: abinoda/slack-action@57a7d97f371bb7da83ab7576019be7316deeb668
+      uses: abinoda/slack-action@v1.0.7
+      with:
+        args: '{\"channel\":\"C0346NRULLW\",\"text\":\"New API version deployed successflly on Heroku\"}'
+

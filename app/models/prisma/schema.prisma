@@ -9,12 +9,13 @@ datasource db {
 
 model Admins {
   admin_id     Int      @id @default(autoincrement())
-  name          String?  @db.VarChar
-  family_name       String?  @db.VarChar
+  name         String?  @db.VarChar
+  family_name  String?  @db.VarChar
   email        String?  @unique @db.VarChar
   isSuperAdmin Boolean?
-  password     String?           @db.VarChar
-  Token           Token[]
+  password     String?  @db.VarChar
+  blocked      Boolean  @default(false)
+  Token        Token[]
 }
 
 model AgentsMaintenance {
@@ -24,30 +25,36 @@ model AgentsMaintenance {
   password        String?           @db.VarChar
   family_name     String?           @db.VarChar
   name            String?           @db.VarChar
+  blocked         Boolean           @default(false)
   NotificationsAM NotificationsAM[]
   Task            Task[]
-  Vehicules       Vehicules[]
   Token           Token[]
+  Vehicules       Vehicules[]
 }
 
 model Decideurs {
   decideur_id  Int     @id @default(autoincrement())
-  name          String? @db.VarChar
-  family_name       String? @db.VarChar
+  name         String? @db.VarChar
+  family_name  String? @db.VarChar
   phone_number String? @db.VarChar
   email        String? @unique @db.VarChar
   password     String? @db.VarChar
-  Token Token[]
+  blocked      Boolean @default(false)
+  Token        Token[]
 }
 
 model DemandesInscription {
-  demande_id                  Int                          @id @default(autoincrement())
-  locataire_id                Int?                         @unique(map: "demande_unique_locataire")
-  date_demande                DateTime?                    @db.Timestamp(6)
-  etat_demande                Int?
-  etatDemandeInscription      EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
-  locataire                  Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  rejected DemandesInscriptionRejected?
+  demande_id             Int                          @id @default(autoincrement())
+  locataire_id           Int?                         @unique(map: "demande_unique_locataire")
+  date_demande           DateTime?                    @db.Timestamp(6) @default(now())
+  etat_demande           EtatDemande                  @default(PENDING)
+  locataire              Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  rejected               DemandesInscriptionRejected?
+}
+enum EtatDemande{
+    PENDING
+    VALIDATED
+    REJECTED
 }
 
 model DemandesInscriptionRejected {
@@ -56,43 +63,23 @@ model DemandesInscriptionRejected {
   DemandesInscription DemandesInscription @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model DemandesReservation {
-  demande_id       Int                   @id @default(autoincrement())
-  locataire_id     Int?
-  etat_reservation String?               @db.VarChar
-  date_reservation DateTime?             @db.Date
-  start_point      Unsupported("point")?
-  end_point        Unsupported("point")?
-  Locataires       Locataires?           @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Trajets          Trajets[]
-}
+
 
 model DemandesSupport {
   demande_id   Int         @id @default(autoincrement())
   locataire_id Int?
   message      String?     @db.VarChar
   date_demande DateTime?   @db.Timestamp(6)
-  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model EtatDemandeInscription {
-  etat_id             Int                   @id @default(autoincrement())
-  description         String?               @db.VarChar
-  DemandesInscription DemandesInscription[]
-}
-
-model EtatVehicule {
-  etat_id     Int         @id @default(autoincrement())
-  description String?     @db.VarChar
-  Vehicules   Vehicules[]
-}
 
 model Facture {
   facture_id Int       @id @default(autoincrement())
-  trajet_id  Int?
+  reservation_id  Int?
   price      Int?
   paid       Boolean?
-  Trajets    Trajets?  @relation(fields: [trajet_id], references: [trajet_id], onDelete: NoAction, onUpdate: NoAction)
+  Reservations    Reservations?  @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
   Paiment    Paiment[]
 }
 
@@ -106,11 +93,11 @@ model Locataires {
   family_name            String?                  @db.VarChar
   name                   String?                  @db.VarChar
   validated              Boolean?                 @default(false)
+  blocked                Boolean                  @default(false)
   DemandesInscription    DemandesInscription?
-  DemandesReservation    DemandesReservation[]
+  Reservations           Reservations[]
   DemandesSupport        DemandesSupport[]
   NotificationsLocataire NotificationsLocataire[]
-  Trajets                Trajets[]
   Token                  Token[]
 }
 
@@ -129,7 +116,7 @@ model NotificationsLocataire {
   date_notif   DateTime?   @db.Date
   titre        String?     @db.VarChar
   message      String?     @db.VarChar
-  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Paiment {
@@ -163,16 +150,27 @@ model Task {
   AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model Trajets {
-  trajet_id           Int                  @id @default(autoincrement())
-  locataire_id        Int?
-  vehicule_id         Int?
-  demande_id          Int?
-  etat                String?              @db.VarChar
-  DemandesReservation DemandesReservation? @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
-  Locataires          Locataires?          @relation(fields: [locataire_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Reservations {
+  reservation_id      Int                  @id @default(autoincrement())
+  locataire_id        Int
+  vehicule_id         Int
+  code                String?
+  etat                EtatReservation?     @default(INVALIDE)
+  departLat           Float?
+  departLong          Float?
+  destLat             Float?
+  destLong            Float?
+  date_reservation    DateTime             @default(now())
+  Locataires          Locataires?          @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Vehicules           Vehicules?           @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
   Facture             Facture[]
+}
+
+enum EtatReservation{
+    INVALIDE
+    ENCOURS
+    COMPLETED
+    REJECTED
 }
 
 model TypePaiment {
@@ -181,42 +179,37 @@ model TypePaiment {
   Paiment     Paiment[]
 }
 
-model TypesVehicules {
-  type_id     Int         @id @default(autoincrement())
-  description String?     @db.VarChar
-  unit_price  Float?
-  Vehicules   Vehicules[]
-}
-
 model Vehicules {
   vehicule_id       Int                @id @default(autoincrement())
+  matricule         String             @unique(map: "unique_matricule")
+  car_photo         String?
   responsable       Int?
-  type_vehicule     Int?
-  kilometrage       Float?
-  etat_vehicule     Int?
-  EtatVehicule      EtatVehicule?      @relation(fields: [etat_vehicule], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
-  Vehicules         Vehicules?         @relation("VehiculesToVehicules_etat_vehicule", fields: [etat_vehicule], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction, map: "Vehicules_etat_vehicule_fkey1")
+  type_vehicule     String
+  kilometrage       Float              @default(0.0)
+  etat              VehicleState       @default(WORKING)
+  disponible        Boolean            @default(true)
+  price_per_hour    Float              @default(0)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
-  TypesVehicules    TypesVehicules?    @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
-  Trajets           Trajets[]
-  other_Vehicules   Vehicules[]        @relation("VehiculesToVehicules_etat_vehicule")
+  Reservations           Reservations[]
 }
 
 model Token {
-  id Int @id @default(autoincrement())
-  id_locataire Int?
-  id_AM Int?
-  id_admin Int?
-  id_decideur Int?
-  email String? @db.VarChar
-  token String 
-  createdAt DateTime @default(now())
+  id                Int                @id @default(autoincrement())
+  id_locataire      Int?
+  id_AM             Int?
+  id_admin          Int?
+  id_decideur       Int?
+  email             String?            @db.VarChar
+  token             String
+  createdAt         DateTime           @default(now())
   AgentsMaintenance AgentsMaintenance? @relation(fields: [id_AM], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
-  Locataires        Locataires?  @relation(fields: [id_locataire], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    Admins        Admins?  @relation(fields: [id_admin], references: [admin_id], onDelete: NoAction, onUpdate: NoAction)
-    Decideurs        Decideurs?  @relation(fields: [id_decideur], references: [decideur_id], onDelete: NoAction, onUpdate: NoAction)
-
+  Admins            Admins?            @relation(fields: [id_admin], references: [admin_id], onDelete: NoAction, onUpdate: NoAction)
+  Decideurs         Decideurs?         @relation(fields: [id_decideur], references: [decideur_id], onDelete: NoAction, onUpdate: NoAction)
+  Locataires        Locataires?        @relation(fields: [id_locataire], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-
+enum VehicleState {
+  WORKING
+  OUTOFORDER
+}
