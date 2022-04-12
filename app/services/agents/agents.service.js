@@ -5,14 +5,22 @@ const prisma = new PrismaClient();
 
 const getAllAgents = async () => {
     try {
-        const allAgents = await prisma.AgentsMaintenance.findMany({});
+        const allAgents = await prisma.AgentsMaintenance.findMany({
+            select: {
+                name: true,
+                family_name: true,
+                email: true,
+                phone_number: true,
+                blocked: true
+
+            }
+        });
         return {
             code: 200,
             data: {
                 success: true,
-                data: {
-                    allAgents
-                }
+                data: allAgents
+
             },
         }
     }catch (e){

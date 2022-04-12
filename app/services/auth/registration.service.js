@@ -56,17 +56,19 @@ const signUpLocataire = async (req,
                     email: email,
                     phone_number: phone_number,
                     password: passwordHash,
-                    personal_photo: path.join(uploadPath, personal_photo.filename), // TODO: Change this
-                    photo_identity: path.join(uploadPath, photo_identity.filename)  // TODO: Change this
+                    personal_photo: path.join(uploadPath, personal_photo.filename),
+                    photo_identity: path.join(uploadPath, photo_identity.filename)
                 }
             })
+            console.log("LOCATAIRE ADDED")
             await prisma.DemandesInscription.create({
                 data: {
                     locataire_id: newLocataire.id,
-                    date_demande: new Date().toISOString(),
                     etat_demande: DEMAND_STATE_PENDING
                 }
             });
+
+            console.log("DEMANDE ADDED")
 
             return {
                 code: 201,

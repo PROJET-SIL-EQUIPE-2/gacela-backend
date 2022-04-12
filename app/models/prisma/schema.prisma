@@ -46,7 +46,7 @@ model Decideurs {
 model DemandesInscription {
   demande_id             Int                          @id @default(autoincrement())
   locataire_id           Int?                         @unique(map: "demande_unique_locataire")
-  date_demande           DateTime?                    @db.Timestamp(6)
+  date_demande           DateTime?                    @db.Timestamp(6) @default(now())
   etat_demande           Int?
   etatDemandeInscription EtatDemandeInscription?      @relation(fields: [etat_demande], references: [etat_id], onDelete: NoAction, onUpdate: NoAction)
   locataire              Locataires?                  @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -59,16 +59,7 @@ model DemandesInscriptionRejected {
   DemandesInscription DemandesInscription @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model DemandesReservation {
-  demande_id       Int                   @id @default(autoincrement())
-  locataire_id     Int?
-  etat_reservation String?               @db.VarChar
-  date_reservation DateTime?             @db.Date
-  start_point      Unsupported("point")?
-  end_point        Unsupported("point")?
-  Locataires       Locataires?           @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Trajets          Trajets[]
-}
+
 
 model DemandesSupport {
   demande_id   Int         @id @default(autoincrement())
@@ -86,10 +77,10 @@ model EtatDemandeInscription {
 
 model Facture {
   facture_id Int       @id @default(autoincrement())
-  trajet_id  Int?
+  reservation_id  Int?
   price      Int?
   paid       Boolean?
-  Trajets    Trajets?  @relation(fields: [trajet_id], references: [trajet_id], onDelete: NoAction, onUpdate: NoAction)
+  Reservations    Reservations?  @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
   Paiment    Paiment[]
 }
 
@@ -105,11 +96,10 @@ model Locataires {
   validated              Boolean?                 @default(false)
   blocked                Boolean                  @default(false)
   DemandesInscription    DemandesInscription?
-  DemandesReservation    DemandesReservation[]
+  Reservations           Reservations[]
   DemandesSupport        DemandesSupport[]
   NotificationsLocataire NotificationsLocataire[]
   Token                  Token[]
-  Trajets                Trajets[]
 }
 
 model NotificationsAM {
@@ -161,16 +151,27 @@ model Task {
   AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model Trajets {
-  trajet_id           Int                  @id @default(autoincrement())
-  locataire_id        Int?
-  vehicule_id         Int?
-  demande_id          Int?
-  etat                String?              @db.VarChar
-  DemandesReservation DemandesReservation? @relation(fields: [demande_id], references: [demande_id], onDelete: NoAction, onUpdate: NoAction)
+model Reservations {
+  reservation_id      Int                  @id @default(autoincrement())
+  locataire_id        Int
+  vehicule_id         Int
+  code                String?
+  etat                EtatReservation?     @default(INVALIDE)
+  departLat           Float?
+  departLong          Float?
+  destLat             Float?
+  destLong            Float?
+  date_reservation    DateTime             @default(now())
   Locataires          Locataires?          @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Vehicules           Vehicules?           @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
   Facture             Facture[]
+}
+
+enum EtatReservation{
+    INVALIDE
+    ENCOURS
+    COMPLETED
+    REJECTED
 }
 
 model TypePaiment {
@@ -191,7 +192,7 @@ model Vehicules {
   price_per_hour    Float              @default(0)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
-  Trajets           Trajets[]
+  Reservations           Reservations[]
 }
 
 model Token {
