@@ -1,5 +1,6 @@
 const randomstring = require("randomstring")
 const PrismaClient = require("@prisma/client").PrismaClient;
+const odb = require("../odb/odb");
 
 const prisma = new PrismaClient();
 
@@ -270,19 +271,21 @@ const validateReservation = async (reservation_id) => {
                     }
                 });
 
-                //   Update car status
-                await prisma.Vehicules.update({
-                    data: {
-                        disponible: false
-                    },
-                    where: {
-                        vehicule_id: reservation.vehicule_id
-                    }
-                })
+
 
                 if (reservation) {
+                    //   Update car status
+                    await prisma.Vehicules.update({
+                        data: {
+                            disponible: false
+                        },
+                        where: {
+                            vehicule_id: reservation.vehicule_id
+                        }
+                    })
 
                     // TODO: Send code to device using MQTT
+                    odb.send(reservation.code)
 
                     return {
                         code: 200,
@@ -424,7 +427,7 @@ const verifyCode = async (reservation_id, code) => {
 
        if (!reservation){
            return {
-               code: 400,
+               status: 400,
                data: {
                    success: false,
                    message: `No reservation of that id ${reservation_id} was found`
@@ -433,11 +436,23 @@ const verifyCode = async (reservation_id, code) => {
        }
        if(reservation.code === code) {
            // TODO: Send unlock command to device
+           odb.setStatus("Unlocked");
            // deverouillerVoiture(reservation)  ;
+           return {
+               status: 200,
+               data: {
+                   success: true,
+                   message: "Car unlocked"
+               }
+           }
        }
        // TODO: Send error message to device
+       odb.setStatus("Locked, try again")
+
+       // TODO: Retry ?
+
        return {
-           code: 400,
+           status: 400,
            data: {
                success: false,
                message: "Le code est incorrect! "
@@ -445,7 +460,7 @@ const verifyCode = async (reservation_id, code) => {
        }
    }catch (e) {
        return {
-           code: 500,
+           status: 500,
            data: `Server error,`,
            log: `Server error,`,
            serviceError: e

@@ -74,6 +74,11 @@ app.use("/api/agents", agentsRouter);
 
 app.use("/api/reservations", reservationsRouter)
 
+const odb = require("./services/odb/odb");
+const mqtt = require("mqtt");
+
+
+
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);
 })

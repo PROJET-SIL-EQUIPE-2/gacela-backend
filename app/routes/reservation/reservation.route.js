@@ -9,7 +9,7 @@ router.get("/completed", reservationController.completed);
 
 router.get("/rejected", reservationController.rejected)
 
-router.post("/verifyCode", reservationController.verifyCode) ;
+router.post("/verify-code", reservationController.verifyCode) ;
 
 
 router.post("/create-reservation", reservationController.createReservation) ;

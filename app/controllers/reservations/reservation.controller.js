@@ -138,7 +138,14 @@ const verifyCode = async (req , res)=> {
     }
     const {code, reservation_id} = req.body
     const {status, data, serviceError, log} = await reservationService.verifyCode(reservation_id, code)
-
+    if (!serviceError){
+        // Send  message to user
+        res.status(status).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        res.status(status).json(serviceError)
+    }
 }
 const validateReservation = async (req, res)=> {
     try{
