@@ -228,40 +228,82 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
 const validateReservation = async (reservation_id) => {
 
     try {
-
-        let reservation = await prisma.Reservations.update({
-            data : {
-                etat : "ENCOURS", //completed
-                code: randomstring.generate(7)
-            },
+        let reservation = await prisma.Reservations.findUnique({
             where : {
-                reservation_id : reservation_id,
-            }
-        });
-
-        //   Update car status
-        await prisma.Vehicules.update({
-            data: {
-                disponible: false
-            },
-            where: {
-                vehicule_id: reservation.vehicule_id
+                reservation_id: reservation_id,
             }
         })
-
-        if (reservation) {
-
-            // TODO: Send code to device using MQTT
-
+        if (!reservation){
             return {
-                code: 200,
+                code: 400,
                 data: {
-                    success: true,
-                    message: "La reservation a été validée."
+                    success: false,
+                    message: `No reservation of that id ${reservation_id} was found`,
                 }
             }
-
         }
+        switch (reservation.etat) {
+            case "ENCOURS":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} is en cours`
+                    }
+                }
+            case "COMPLETED":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} was completed before`
+                    }
+                }
+            case "INVALIDE":
+                reservation = await prisma.Reservations.update({
+                    data : {
+                        etat : "ENCOURS", //completed
+                        code: randomstring.generate(7)
+                    },
+                    where : {
+                        reservation_id : reservation_id,
+                    }
+                });
+
+                //   Update car status
+                await prisma.Vehicules.update({
+                    data: {
+                        disponible: false
+                    },
+                    where: {
+                        vehicule_id: reservation.vehicule_id
+                    }
+                })
+
+                if (reservation) {
+
+                    // TODO: Send code to device using MQTT
+
+                    return {
+                        code: 200,
+                        data: {
+                            success: true,
+                            message: "La reservation a été validée."
+                        }
+                    }
+
+                }
+                break;
+            case "REJECTED":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} was rejected and can not be validated`
+                    }
+                }
+        }
+
         return {
             code: 400,
             data: {
@@ -278,6 +320,97 @@ const validateReservation = async (reservation_id) => {
         }
     }
 
+}
+
+const rejectReservation = async (reservation_id) => {
+    try {
+        let reservation = await prisma.Reservations.findUnique({
+            where : {
+                reservation_id: reservation_id,
+            }
+        })
+        if (!reservation){
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    message: `No reservation of that id ${reservation_id} was found`,
+                }
+            }
+        }
+        switch (reservation.etat) {
+            case "ENCOURS":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} is en cours`
+                    }
+                }
+            case "COMPLETED":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} was completed before`
+                    }
+                }
+            case "INVALIDE":
+                reservation = await prisma.Reservations.update({
+                    data : {
+                        etat : "REJECTED",
+                    },
+                    where : {
+                        reservation_id : reservation_id,
+                    }
+                });
+
+                //   Update car status
+                await prisma.Vehicules.update({
+                    data: {
+                        disponible: true
+                    },
+                    where: {
+                        vehicule_id: reservation.vehicule_id
+                    }
+                })
+
+                if (reservation) {
+                    return {
+                        code: 200,
+                        data: {
+                            success: true,
+                            message: "La reservation a été rejete."
+                        }
+                    }
+
+                }
+                break;
+            case "REJECTED":
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        message: `Reservation of id ${reservation_id} was rejected before`
+                    }
+                }
+        }
+
+        return {
+            code: 400,
+            data: {
+                success: false,
+                message: "La reservation n'a pas pu être validée."
+            }
+        }
+    }catch (e){
+        return {
+            code: 500,
+            data: `Server error,`,
+            log: `Server error,`,
+            serviceError: e
+        }
+    }
 }
 
 const verifyCode = async (reservation_id, code) => {
@@ -373,7 +506,7 @@ const validateTrajet = async (reservation_id) => {
             }
         }
         switch (reservation.etat) {
-            case "INVALIDE":
+            case "ENCOURS":
                 let valid = await prisma.Reservations.update({
                         data : {
                             etat: 'COMPLETED'
@@ -383,6 +516,15 @@ const validateTrajet = async (reservation_id) => {
                         }
                     }
                 );
+                // Update Vehicule
+                await prisma.Vehicules.update({
+                    data: {
+                        disponible: true
+                    },
+                    where: {
+                        vehicule_id: reservation.vehicule_id
+                    }
+                })
                 if(valid) {
                     // deverouillerVoiture(valid) ;
                     return {
@@ -402,12 +544,12 @@ const validateTrajet = async (reservation_id) => {
                         message: `Reservation of id ${reservation_id} was completed before`
                     }
                 }
-            case "ENCOURS":
+            case "INVALIDE":
                 return {
                     code: 400,
                     data: {
                         success: false,
-                        message: `Reservation of id ${reservation_id} is en cours and can not be validated one more time`
+                        message: `Reservation of id ${reservation_id} is not validated`
                     }
                 }
             case "REJECTED":
@@ -444,6 +586,7 @@ module.exports = {
     validateTrajet ,
     verifyCode ,
     validateReservation ,
+    rejectReservation,
     pending,
     validated,
     completed,

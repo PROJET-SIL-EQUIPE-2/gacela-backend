@@ -22,9 +22,12 @@ router.post("/create-reservation", reservationController.createReservation) ;
 
 router.patch("/validate-trajet/:reservation_id", reservationController.validateTrajet) ;
 
+
+
 // Fixed
 router.patch("/validate-reservation/:reservation_id", reservationController.validateReservation) ;
 
+router.patch("/reject-reservation/:reservation_id", reservationController.rejectReservation)
 
 module.exports = router;
 

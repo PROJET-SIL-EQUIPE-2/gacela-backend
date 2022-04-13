@@ -103,7 +103,10 @@ const createReservation = async (req , res)=> {
         res.status(code).json(serviceError)
     }
 
-} 
+}
+
+
+
 const validateTrajet = async (req , res)=> {
     try {
         let reservation_id = parseInt(req.params.reservation_id)
@@ -157,6 +160,28 @@ const validateReservation = async (req, res)=> {
     }
 }
 
+
+
+const rejectReservation = async (req, res) => {
+    try{
+        let reservation_id = parseInt(req.params.reservation_id)
+        const {code, data, serviceError, log} = await reservationService.rejectReservation(reservation_id)
+
+        // Send response to client
+        if (!serviceError){
+            // Send  message to user
+            res.status(code).json(data)
+            // Invoke logger
+        }else{
+            // Invoke error logger
+            res.status(code).json(serviceError)
+        }
+
+    }catch (e) {
+        res.status(400).json("Reservation must be a number")
+    }
+}
+
 module.exports = {
     // unlockCar,
     // lockCar,
@@ -164,6 +189,7 @@ module.exports = {
     validateTrajet ,
     verifyCode ,
     validateReservation,
+    rejectReservation,
     pending,
     validated,
     completed,
