@@ -180,8 +180,8 @@ const getNotBlockedLocataires = async (req, res) => {
 
 
 //valider une demande d'inscription d'un locataire dans
-const Demandevalidate = (req , res) => {
-    locataireService.Demandevalidate(req, res) ; 
+const Demandevalidate = async (req , res) => {
+    await locataireService.Demandevalidate(req, res) ;
 
 }
 //rejeter une demande d'inscription d'un locataire
