@@ -165,7 +165,7 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 code: 400,
                 data: {
                     success: false,
-                    message: `Cat of matricule ${matricule} is not disponible`
+                    message: `Car of matricule ${matricule} is not disponible`
                 }
             }
         }
@@ -436,7 +436,7 @@ const verifyCode = async (reservation_id, code) => {
        }
        if(reservation.code === code) {
            // TODO: Send unlock command to device
-           odb.setStatus("Unlocked");
+           odb.setStatus("unlocked");
            await unlockCar(reservation.vehicule_id)
            // deverouillerVoiture(reservation)  ;
            return {
