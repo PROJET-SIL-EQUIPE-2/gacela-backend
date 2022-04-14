@@ -437,6 +437,7 @@ const verifyCode = async (reservation_id, code) => {
        if(reservation.code === code) {
            // TODO: Send unlock command to device
            odb.setStatus("Unlocked");
+           await unlockCar(reservation.vehicule_id)
            // deverouillerVoiture(reservation)  ;
            return {
                status: 200,
@@ -469,40 +470,30 @@ const verifyCode = async (reservation_id, code) => {
 
 }
 
-// const deverouillerVoiture = (reserv) => {
-//     const id_vehicule = reserv.vehicule_id ;
-//     let dev = await prisma.Vehicules.update({
-//         data : {
-//             etat_voiture : 1 //deverouillé
-//         } ,
-//         where : {
-//         vehicule_id : id_vehicule,
-//     }});
-//     if (dev) {
-//         return res.status(200).send({message :"La voiture est déverrouillée "});
-//
-//     }
-//     return res.status(400).send({message :"Il y'a un problème, la voiture n'a pas pu être déverrouillée."});
-//
-//
-// }
+const unlockCar = async (vehicule_id) => {
+
+    let dev = await prisma.Vehicules.update({
+        data : {
+            locked : false
+        } ,
+        where : {
+        vehicule_id : vehicule_id,
+    }});
+    return !!dev;
+}
 
 
-// const verrouillerVoiture = (reserv) => {
-//     const id_vehicule = reserv.vehicule_id ;
-//     let ver = await prisma.Vehicules.update({
-//         data : {
-//             etat_voiture : 0 //verouillé
-//         } ,
-//         where : {
-//         vehicule_id: id_vehicule,
-//     }});
-//     if (ver) {
-//         return res.status(200).send({message :"La voiture est verrouillée "});
-//
-//     }
-//     return res.status(400).send({message :"Il y'a un problème, la voiture n'a pas pu être verrouillée."});
-// }
+const lockCar = async (vehicule_id) => {
+
+    let dev = await prisma.Vehicules.update({
+        data : {
+            locked : true
+        } ,
+        where : {
+            vehicule_id : vehicule_id,
+        }});
+    return !!dev;
+}
 
 const validateTrajet = async (reservation_id) => {
     try {
@@ -542,6 +533,7 @@ const validateTrajet = async (reservation_id) => {
                 })
                 if(valid) {
                     // deverouillerVoiture(valid) ;
+                    await unlockCar(reservation.vehicule_id)
                     return {
                         code: 200,
                         data: {
@@ -595,8 +587,6 @@ const validateTrajet = async (reservation_id) => {
 
 
 module.exports = {
-    // deverouillerVoiture,
-    // verrouillerVoiture,
     createReservation ,
     validateTrajet ,
     verifyCode ,
@@ -605,5 +595,7 @@ module.exports = {
     pending,
     validated,
     completed,
-    rejected
+    rejected,
+    lockCar,
+    unlockCar
 }

@@ -189,6 +189,7 @@ model Vehicules {
   etat              VehicleState       @default(WORKING)
   disponible        Boolean            @default(true)
   price_per_hour    Float              @default(0)
+  locked            Boolean            @default(true)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Reservations           Reservations[]
