@@ -16,6 +16,7 @@ const websettingsRouter = require("./routes/settings/webSettings.route")
 
 const webLoginRouter = require("./routes/auth/webLogin.router");
 
+const tasksRouter = require("./routes/tasks/tasks.route")
 const blockAccountsRouter = require("./routes/blockAccounts/block.Router");
 
 const vehiclesRouter = require("./routes/vehicules/vehicles.router");
@@ -63,6 +64,7 @@ app.use("/api/accounts", accountsRouter);
 app.use("/api/mobile_settings", settingsRouter);
 app.use("/api/web_settings", websettingsRouter);
 
+app.use("/api/tasks", tasksRouter);
 // TOGGLE BLOCK ACCOUNTS
 app.use("/api/accounts/toggle-block" , blockAccountsRouter);
 
