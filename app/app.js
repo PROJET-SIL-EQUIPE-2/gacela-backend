@@ -25,13 +25,16 @@ const agentsRouter = require("./routes/agents/agents.router");
 
 const reservationsRouter = require("./routes/reservation/reservation.route")
 
+// firebase admin
+const firebaseAdminInitializeApp = require("./config/firebase-admin.config")
+
 // Configure dotenv
 dotenv.config({
     path: ".env"
 })
 
 const app = express();
-app.set("port", process.env.PORT || 3000) ;
+app.set("port", process.env.PORT || 3000);
 app.use(express.static('uploads'));
 
 //// Apply middlewares
@@ -39,23 +42,23 @@ app.use(express.static('uploads'));
 app.use(cors())
 
 // Parse data as json
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.get("/", (req, res) => {
     res.send("Gacela API is up and running")
 })
 //// Apply routers
-app.use('/api/notification' , require('./routes/locataire/notificationLoc.route')) ; 
+app.use('/api/notification', require('./routes/locataire/notificationLoc.route'));
 app.use(authRouter);
-app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/mobile_passwordReset', passwordResetRouter);
 
-app.use('/api/web_passwordReset',passwordResetRouterWeb);
-app.use('/api/mobile_passwordReset',passwordResetRouter);
+app.use('/api/web_passwordReset', passwordResetRouterWeb);
+app.use('/api/mobile_passwordReset', passwordResetRouter);
 
 app.use("/api/mobile_login", mobileLoginRouter);
 app.use("/api/signup", signUpRouter);
-app.use("/api/web_login" , webLoginRouter)
+app.use("/api/web_login", webLoginRouter)
 
 app.use("/api/locataire", locataireRouter);
 
@@ -64,7 +67,7 @@ app.use("/api/mobile_settings", settingsRouter);
 app.use("/api/web_settings", websettingsRouter);
 
 // TOGGLE BLOCK ACCOUNTS
-app.use("/api/accounts/toggle-block" , blockAccountsRouter);
+app.use("/api/accounts/toggle-block", blockAccountsRouter);
 
 app.use("/api/vehicles", vehiclesRouter);
 
@@ -77,7 +80,9 @@ app.use("/api/reservations", reservationsRouter)
 const odb = require("./services/odb/odb");
 const mqtt = require("mqtt");
 
-
+// firebase cloud messaging
+firebaseAdminInitializeApp();
+app.use("/api/notifications", require("./routes/notifications/notifications.route"))
 
 app.listen(app.get("port"), () => {
     console.log(`App is served under ${app.get("port")} port`);

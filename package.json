@@ -29,6 +29,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "firebase": "^9.6.10",
+    "firebase-admin": "^10.0.2",
     "google-auth-library": "^7.14.0",
     "googleapis": "^97.0.0",
     "jasmin": "^0.0.2",
