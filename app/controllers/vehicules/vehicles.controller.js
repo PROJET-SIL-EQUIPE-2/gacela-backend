@@ -5,7 +5,8 @@ const vehiclesService = require("../../services/vehicules/vehicles.service");
 // TODO: Add only query parameter
 const getAllVehicles = async (req, res) => {
     // Invoke service
-    const {code, data, serviceError} = await vehiclesService.getAll();
+    let vehiculeType = req.query.type;
+    const {code, data, serviceError} = await vehiclesService.getAll(vehiculeType);
 
     if (!serviceError){
         // Send  message to user
@@ -95,7 +96,7 @@ const deleteVehicle = async (req, res) => {
         }
 
     }catch (e) {
-        res.json("Number my be provided");
+        res.json("Number must be provided");
     }
 }
 

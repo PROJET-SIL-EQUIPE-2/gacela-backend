@@ -4,13 +4,26 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
 const uploadPath = "images/vehicles/";
-const getAll = async () => {
+const getAll = async (vehiculeType) => {
     try {
-        const allVehicles = await prisma.Vehicules.findMany({
-            include: {
-                AgentsMaintenance: true
-            }
-        });
+        let allVehicles;
+        if (vehiculeType){
+            allVehicles = await prisma.Vehicules.findMany({
+                where: {
+                    type_vehicule: vehiculeType
+                },
+                include: {
+                    AgentsMaintenance: true
+                }
+            });
+        }
+        else{
+            allVehicles = await prisma.Vehicules.findMany({
+                include: {
+                    AgentsMaintenance: true
+                }
+            });
+        }
         return {
             code: 200,
             data: {
