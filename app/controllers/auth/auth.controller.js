@@ -49,7 +49,9 @@ const authAdmins=(req , res, next)=>{
                     res.setHeader('Content-Types', 'application/json');
                     res.statusCode = 200;
                     //TODO: Add  admin role
-                    res.json({success: true, data: {token: generateAccessToken(theUser, Role.Admin) , accountType : "Admin"}})
+                    delete theUser.admin_id
+                    delete theUser.password
+                    res.json({success: true, data: {token: generateAccessToken(theUser, Role.Admin) , accountType : "Admin" , accountData : theUser}})
                 }else{
                     throw new Error("Password is wrong")
                 }
@@ -83,7 +85,9 @@ const authDecideurs=(req , res, next)=>{
                 res.setHeader('Content-Types', 'application/json');
                 res.statusCode = 200;
                 // TODO: Add Decideur role
-                res.json({success: true, data: {token: generateAccessToken(theUser, Role.Decideur) , accountType : "Decideur"}})
+                delete theUser.decideur_id
+                delete theUser.password
+                res.json({success: true, data: {token: generateAccessToken(theUser, Role.Decideur) , accountType : "Decideur" , accountData: theUser}})
             }else{
                 throw new Error("Password is wrong")
             }
