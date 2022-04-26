@@ -9,12 +9,12 @@ client.on("connect", () => {
 const send = (message) => {
     const topic = "device/reservation/code";
     console.log(client.connected)
-    client.publish(topic, message, {retain: true});
+    client.publish(topic, message, { retain: true });
 }
 
 const setStatus = (message) => {
     const topic = "device/status";
-    client.publish(topic, message, {retain: true});
+    client.publish(topic, message, { retain: true });
 }
 
 
