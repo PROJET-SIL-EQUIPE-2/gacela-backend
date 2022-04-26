@@ -227,8 +227,9 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
 
 // Validate reservation
 const validateReservation = async (reservation_id) => {
-
+    console.log("Validating ...")
     try {
+        console.log("Validating ...")
         let reservation = await prisma.Reservations.findUnique({
             where : {
                 reservation_id: reservation_id,
@@ -261,6 +262,7 @@ const validateReservation = async (reservation_id) => {
                     }
                 }
             case "INVALIDE":
+
                 reservation = await prisma.Reservations.update({
                     data : {
                         etat : "ENCOURS", //completed

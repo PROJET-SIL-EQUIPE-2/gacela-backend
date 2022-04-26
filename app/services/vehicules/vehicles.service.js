@@ -13,14 +13,32 @@ const getAll = async (vehiculeType) => {
                     type_vehicule: vehiculeType
                 },
                 include: {
-                    AgentsMaintenance: true
+                    AgentsMaintenance: {
+                        select: {
+                            agent_id: true,
+                            email: true,
+                            phone_number: true,
+                            family_name: true,
+                            name: true,
+                            blocked: true
+                        }
+                    }
                 }
             });
         }
         else{
             allVehicles = await prisma.Vehicules.findMany({
                 include: {
-                    AgentsMaintenance: true
+                    AgentsMaintenance: {
+                        select: {
+                            agent_id: true,
+                            email: true,
+                            phone_number: true,
+                            family_name: true,
+                            name: true,
+                            blocked: true
+                        }
+                    }
                 }
             });
         }
@@ -28,9 +46,8 @@ const getAll = async (vehiculeType) => {
             code: 200,
             data: {
                 success: true,
-                data: {
-                    allVehicles
-                }
+                data: allVehicles
+
             }
         }
     }catch (e){
@@ -47,6 +64,18 @@ const getById = async (id) => {
         const vehicule = await prisma.Vehicules.findUnique({
             where: {
                 vehicule_id: id
+            },
+            include: {
+                AgentsMaintenance: {
+                    select: {
+                        agent_id: true,
+                        email: true,
+                        phone_number: true,
+                        family_name: true,
+                        name: true,
+                        blocked: true
+                    }
+                }
             }
         })
         if (vehicule){
@@ -54,9 +83,8 @@ const getById = async (id) => {
                 code: 200,
                 data: {
                     success: true,
-                    data: {
-                        vehicule
-                    }
+                    data: vehicule
+
                 }
             }
         }
@@ -78,6 +106,133 @@ const getById = async (id) => {
     }
 }
 
+
+const getAvailable = async () => {
+    try {
+        const available = await prisma.Vehicules.findMany({
+            where: {
+                disponible: true,
+                etat: "WORKING"
+            },
+            include: {
+                AgentsMaintenance: {
+                    select: {
+                        agent_id: true,
+                        email: true,
+                        phone_number: true,
+                        family_name: true,
+                        name: true,
+                        blocked: true
+                    }
+                }
+            }
+        })
+
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: available
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
+}
+
+const getReserved = async () => {
+    try {
+        const reserved = await prisma.Vehicules.findMany({
+            where: {
+                disponible: false,
+                etat: "WORKING"
+            },
+            select: {
+                vehicule_id: true,
+                matricule: true,
+                car_photo: true,
+                responsable: true,
+                type_vehicule: true,
+                kilometrage: true,
+                etat: true,
+                disponible: true,
+                price_per_hour: true,
+                locked: true,
+                AgentsMaintenance: {
+                    select: {
+                        agent_id: true,
+                        email: true,
+                        phone_number: true,
+                        family_name: true,
+                        name: true,
+                        blocked: true
+                    }
+                },
+                Reservations: {
+                    where: {
+                        etat: "ENCOURS"
+                    }
+                }
+            }
+        })
+
+        //TODO Include reservation details
+
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: reserved
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
+}
+
+const getDefective = async () => {
+    try {
+        const defective = await prisma.Vehicules.findMany({
+            where: {
+                etat: "OUTOFORDER"
+            },
+            include: {
+                AgentsMaintenance: {
+                    select: {
+                        agent_id: true,
+                        email: true,
+                        phone_number: true,
+                        family_name: true,
+                        name: true,
+                        blocked: true
+                    }
+                }
+            }
+        })
+
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: defective
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
+}
 
 const addVehicle = async (
     req,
@@ -237,6 +392,9 @@ const assign = async (matricule, email) => {
 module.exports = {
     getAll,
     getById,
+    getAvailable,
+    getReserved,
+    getDefective,
     addVehicle,
     deleteVehicule,
     assign

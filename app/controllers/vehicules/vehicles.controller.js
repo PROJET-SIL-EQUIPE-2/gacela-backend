@@ -39,6 +39,47 @@ const getVehicleById = async (req, res) => {
     }
 }
 
+const getAvailable = async (req, res) => {
+    const {code, data, serviceError} = await vehiclesService.getAvailable();
+
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        console.log(serviceError);
+        res.status(code).json(serviceError)
+    }
+}
+
+const getReserved = async (req, res) => {
+    const {code, data, serviceError} = await vehiclesService.getReserved();
+
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        console.log(serviceError);
+        res.status(code).json(serviceError)
+    }
+}
+
+const getDefective = async (req, res) => {
+    const {code, data, serviceError} = await vehiclesService.getDefective();
+
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        console.log(serviceError);
+        res.status(code).json(serviceError)
+    }
+}
 
 
 const addVehicle = async (req, res) => {
@@ -130,6 +171,9 @@ const assign = async (req, res) => {
 module.exports = {
     getAllVehicles,
     getVehicleById,
+    getAvailable,
+    getReserved,
+    getDefective,
     addVehicle,
     deleteVehicle,
     assign

@@ -12,6 +12,19 @@ router.get("/all", vehiclesController.getAllVehicles);
 // Vehicle by id
 router.get("/:id", vehiclesController.getVehicleById);
 
+// Get all vehicules with detailed response
+
+// Get available vehicules
+router.get("/all/available", vehiclesController.getAvailable)
+
+// Get reserved vehicules
+router.get("/all/reserved", vehiclesController.getReserved)
+
+// Get out of order vehicules
+router.get("/all/defective", vehiclesController.getDefective)
+
+
+
 // Add new vehicle
 router.post("/add", uploader.single('car_photo'), vehiclesController.addVehicle);
 
