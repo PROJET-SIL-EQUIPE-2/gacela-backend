@@ -168,6 +168,32 @@ const assign = async (req, res) => {
     }
 }
 
+const unassign = async (req, res) => {
+    const validator = Joi.object({
+        matricule: Joi.string().required(),
+        email: Joi.string().email().required()
+    })
+
+    const {error} = validator.validate(req.body);
+    if (error){
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {matricule, email} = req.body;
+
+    const {code, data, serviceError, log} = await vehiclesService.unassign(matricule, email);
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    }else{
+        // Invoke error logger
+        console.log(serviceError);
+        res.status(code).json(data)
+    }
+}
+
 module.exports = {
     getAllVehicles,
     getVehicleById,
@@ -176,5 +202,6 @@ module.exports = {
     getDefective,
     addVehicle,
     deleteVehicle,
-    assign
+    assign,
+    unassign
 }

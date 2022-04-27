@@ -32,6 +32,8 @@ router.post("/add", uploader.single('car_photo'), vehiclesController.addVehicle)
 // assign to agent
 router.post("/assign", vehiclesController.assign);
 
+// unassign agent
+router.post("/unassign", vehiclesController.unassign)
 
 // delete vehicle
 

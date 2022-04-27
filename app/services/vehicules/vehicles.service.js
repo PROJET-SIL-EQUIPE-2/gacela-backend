@@ -23,6 +23,9 @@ const getAll = async (vehiculeType) => {
                             blocked: true
                         }
                     }
+                },
+                orderBy: {
+                    vehicule_id: 'asc'
                 }
             });
         }
@@ -39,6 +42,9 @@ const getAll = async (vehiculeType) => {
                             blocked: true
                         }
                     }
+                },
+                orderBy: {
+                    vehicule_id: 'asc'
                 }
             });
         }
@@ -349,20 +355,20 @@ const assign = async (matricule, email) => {
 
             }
         }
-        const car = await prisma.Vehicules.findFirst({
-            where: {
-                matricule: matricule,
-            }
-        });
-        if (car.responsable){
-            return {
-                code: 400,
-                data: {
-                    success: false,
-                    data: `Car of matricule ${matricule} is already assigned to agent ${email}`
-                }
-            }
-        }
+        // const car = await prisma.Vehicules.findFirst({
+        //     where: {
+        //         matricule: matricule,
+        //     }
+        // });
+        // if (car.responsable){
+        //     return {
+        //         code: 400,
+        //         data: {
+        //             success: false,
+        //             data: `Car of matricule ${matricule} is already assigned to agent ${email}`
+        //         }
+        //     }
+        // }
         await prisma.Vehicules.updateMany({
             where: {
                 matricule: matricule,
@@ -389,6 +395,72 @@ const assign = async (matricule, email) => {
 }
 
 
+const unassign = async (matricule, email) => {
+    try {
+        const agent = await prisma.AgentsMaintenance.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (!agent){
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: "No agent of this email was found"
+                },
+
+            }
+        }
+        const car = await prisma.Vehicules.findFirst({
+            where: {
+                matricule: matricule,
+            }
+        });
+        if (!car.responsable){
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        data: `Car of matricule ${matricule} is not assigned to agent ${email}`
+                    }
+                }
+        }
+        // if (car.responsable){
+        //     return {
+        //         code: 400,
+        //         data: {
+        //             success: false,
+        //             data: `Car of matricule ${matricule} is already assigned to agent ${email}`
+        //         }
+        //     }
+        // }
+        await prisma.Vehicules.updateMany({
+            where: {
+                matricule: matricule,
+
+            },
+            data: {
+                responsable: null
+            }
+        })
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: `Car of matricule ${matricule} unassigned from agent ${email}`
+            }
+        }
+    }catch (e){
+        return {
+            code: 500,
+            data: `Service error`,
+            serviceError: e
+        }
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -397,5 +469,6 @@ module.exports = {
     getDefective,
     addVehicle,
     deleteVehicule,
-    assign
+    assign,
+    unassign
 }
