@@ -4,8 +4,9 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 const Role = require("../../middlewares/auth/roles")
 const prisma = new PrismaClient();
 
-const IN_QUEUE = 2;
-const REJECTED = 3;
+const PENDING = "PENDING";
+const REJECTED = "REJECTED";
+const VALIDATED = "VALIDATED";
 
 const loginLocataire = async (email, password) => {
   try {
@@ -33,6 +34,7 @@ const loginLocataire = async (email, password) => {
           locataire_id: user.id,
         }
       })
+      console.log(demandesInscription);
       if (!demandesInscription)
         return {
           code: 401,
@@ -42,7 +44,8 @@ const loginLocataire = async (email, password) => {
           }
         }
 
-      if (demandesInscription.etat_demande === IN_QUEUE)
+
+      if (demandesInscription.etat_demande === PENDING)
         return {
           code: 401,
           data: {
