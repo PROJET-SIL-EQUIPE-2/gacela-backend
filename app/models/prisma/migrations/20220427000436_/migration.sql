@@ -2,6 +2,9 @@
 CREATE TYPE "EtatDemande" AS ENUM ('PENDING', 'VALIDATED', 'REJECTED');
 
 -- CreateEnum
+CREATE TYPE "TypeSupport" AS ENUM ('Batterie', 'Demarreur', 'Amortisseurs', 'Vitesses', 'Moteur', 'Bruits', 'Freinage', 'Climatisation', 'Autres');
+
+-- CreateEnum
 CREATE TYPE "EtatReservation" AS ENUM ('INVALIDE', 'ENCOURS', 'COMPLETED', 'REJECTED');
 
 -- CreateEnum
@@ -68,10 +71,25 @@ CREATE TABLE "DemandesInscriptionRejected" (
 CREATE TABLE "DemandesSupport" (
     "demande_id" SERIAL NOT NULL,
     "locataire_id" INTEGER,
+    "agent_id" INTEGER,
+    "vehicule_id" INTEGER,
+    "type_support" "TypeSupport" NOT NULL DEFAULT E'Autres',
     "message" VARCHAR,
+    "read" BOOLEAN DEFAULT false,
     "date_demande" TIMESTAMP(6),
 
     CONSTRAINT "DemandesSupport_pkey" PRIMARY KEY ("demande_id")
+);
+
+-- CreateTable
+CREATE TABLE "Reply" (
+    "reply_id" SERIAL NOT NULL,
+    "demande_id" INTEGER,
+    "locataire_id" INTEGER,
+    "admin_id" INTEGER,
+    "message" VARCHAR,
+
+    CONSTRAINT "Reply_pkey" PRIMARY KEY ("reply_id")
 );
 
 -- CreateTable
@@ -193,6 +211,7 @@ CREATE TABLE "Vehicules" (
     "etat" "VehicleState" NOT NULL DEFAULT E'WORKING',
     "disponible" BOOLEAN NOT NULL DEFAULT true,
     "price_per_hour" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "locked" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Vehicules_pkey" PRIMARY KEY ("vehicule_id")
 );
@@ -209,6 +228,15 @@ CREATE TABLE "Token" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NotificationsAMToken" (
+    "id" SERIAL NOT NULL,
+    "agent_id" INTEGER,
+    "token" TEXT,
+
+    CONSTRAINT "NotificationsAMToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -236,7 +264,22 @@ ALTER TABLE "DemandesInscription" ADD CONSTRAINT "DemandesInscription_locataire_
 ALTER TABLE "DemandesInscriptionRejected" ADD CONSTRAINT "DemandesInscriptionRejected_demande_id_fkey" FOREIGN KEY ("demande_id") REFERENCES "DemandesInscription"("demande_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "DemandesSupport" ADD CONSTRAINT "DemandesSupport_agent_id_fkey" FOREIGN KEY ("agent_id") REFERENCES "AgentsMaintenance"("agent_id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "DemandesSupport" ADD CONSTRAINT "DemandesSupport_locataire_id_fkey" FOREIGN KEY ("locataire_id") REFERENCES "Locataires"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "DemandesSupport" ADD CONSTRAINT "DemandesSupport_vehicule_id_fkey" FOREIGN KEY ("vehicule_id") REFERENCES "Vehicules"("vehicule_id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "Admins"("admin_id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_demande_id_fkey" FOREIGN KEY ("demande_id") REFERENCES "DemandesSupport"("demande_id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_locataire_id_fkey" FOREIGN KEY ("locataire_id") REFERENCES "Locataires"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "Facture" ADD CONSTRAINT "Facture_reservation_id_fkey" FOREIGN KEY ("reservation_id") REFERENCES "Reservations"("reservation_id") ON DELETE NO ACTION ON UPDATE NO ACTION;

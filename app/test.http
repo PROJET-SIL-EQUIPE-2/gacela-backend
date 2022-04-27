@@ -1,33 +1,17 @@
-get http://localhost:3000
-### 
 
-post http://localhost:3000
+POST http://localhost:3000/api/supports/1
 Content-Type: application/json
 
 {
-    "email" : "ih_merakchi@esi.dz" ,
-    "userId" : "1"
-
+    "typeSupport" : "Batterie",
+    "message" : "..."
 }
-### 
-get http://localhost:3000/admin
-
-### 
-POST http://localhost:3000/api/web_passwordReset/agent
-Content-Type: application/json
-
-{
-    "email" : "id_bouloudene@esi.dz"
-}
+###
+get http://localhost:3000/api/supports/1
 
 ###
-PATCH http://localhost:3000/api/web_passwordReset/admin/1/KbzjYWmu0q6MsUXwIsyGPMC6VcDFka5cVRJPtyBnjT8
-Content-Type: application/json
+get http://localhost:3000/api/supports
 
-{
-    "password" : "hiba"
-}
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Sec
+###
+
+put http://localhost:3000/api/supports/2
