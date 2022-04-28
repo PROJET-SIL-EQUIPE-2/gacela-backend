@@ -16,6 +16,7 @@ model Admins {
   password     String?  @db.VarChar
   blocked      Boolean  @default(false)
   Token        Token[]
+  Reply        Reply[]
 }
 
 model AgentsMaintenance {
@@ -30,6 +31,7 @@ model AgentsMaintenance {
   Task            Task[]
   Token           Token[]
   Vehicules       Vehicules[]
+  DemandesSupport DemandesSupport[]
 }
 
 model Decideurs {
@@ -65,11 +67,42 @@ model DemandesInscriptionRejected {
 }
 
 model DemandesSupport {
-  demande_id   Int         @id @default(autoincrement())
-  locataire_id Int?
-  message      String?     @db.VarChar
-  date_demande DateTime?   @db.Timestamp(6)
-  Locataires   Locataires? @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  demande_id        Int                @id @default(autoincrement())
+  locataire_id      Int?
+  agent_id          Int?
+  vehicule_id       Int?
+  type_support      TypeSupport        @default(Autres)
+  message           String?            @db.VarChar
+  read              Boolean?           @default(false)
+  date_demande      DateTime?          @db.Timestamp(6)
+  Locataires        Locataires?        @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: Cascade, onUpdate: NoAction)
+  Vehicules         Vehicules?         @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: Cascade, onUpdate: NoAction)
+  Reply             Reply[]
+}
+
+enum TypeSupport {
+  Batterie
+  Demarreur
+  Amortisseurs
+  Vitesses
+  Moteur
+  Bruits
+  Freinage
+  Climatisation
+  Autres
+}
+
+model Reply {
+  reply_id        Int              @id @default(autoincrement())
+  demande_id      Int?
+  locataire_id    Int?
+  admin_id        Int?
+  message         String?          @db.VarChar
+  Locataires      Locataires?      @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  DemandesSupport DemandesSupport? @relation(fields: [demande_id], references: [demande_id], onDelete: Cascade, onUpdate: NoAction)
+  Admins          Admins?          @relation(fields: [admin_id], references: [admin_id], onDelete: Cascade, onUpdate: NoAction)
+
 }
 
 model Facture {
@@ -97,6 +130,7 @@ model Locataires {
   DemandesSupport        DemandesSupport[]
   NotificationsLocataire NotificationsLocataire[]
   Token                  Token[]
+  Reply                  Reply[]
 }
 
 model NotificationsAM {
@@ -191,6 +225,8 @@ model Vehicules {
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Reservations      Reservations[]
+  DemandesSupport   DemandesSupport[]
+
 }
 
 model Token {
