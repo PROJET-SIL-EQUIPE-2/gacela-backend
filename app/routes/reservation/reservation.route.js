@@ -25,7 +25,7 @@ router.patch("/validate-trajet/:reservation_id", reservationController.validateT
 
 
 // Fixed
-router.patch("/validate-reservation/:reservation_id", reservationController.validateReservation) ;
+router.patch("/validate-reservation", reservationController.validateReservation) ;
 
 router.patch("/reject-reservation/:reservation_id", reservationController.rejectReservation)
 

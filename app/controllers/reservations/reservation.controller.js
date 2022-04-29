@@ -148,9 +148,20 @@ const verifyCode = async (req , res)=> {
     }
 }
 const validateReservation = async (req, res)=> {
-    try{
-        let reservation_id = parseInt(req.params.reservation_id)
-        const {code, data, serviceError, log} = await reservationService.validateReservation(reservation_id)
+
+    const validator = Joi.object({
+        reservation_id: Joi.number().required(),
+        locataire_email: Joi.string().email().required()
+    })
+    const {error} = validator.validate(req.body)
+    if(error){
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+
+        const {reservation_id, locataire_email} = req.body
+        const {code, data, serviceError, log} = await reservationService.validateReservation(reservation_id, locataire_email)
 
         // Send response to client
         if (!serviceError){
@@ -159,12 +170,11 @@ const validateReservation = async (req, res)=> {
             // Invoke logger
         }else{
             // Invoke error logger
-            res.status(code).json(serviceError)
+            console.error(serviceError)
+            res.status(code).json(data)
         }
 
-    }catch (e) {
-        res.status(400).json("Reservation must be a number")
-    }
+
 }
 
 

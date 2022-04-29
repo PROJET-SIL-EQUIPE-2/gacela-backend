@@ -17,7 +17,13 @@ const setStatus = (message) => {
     client.publish(topic, message, { retain: true });
 }
 
+const lockCar = () => {
 
+}
+
+const unlockCar = () => {
+
+}
 
 module.exports = {
     send,

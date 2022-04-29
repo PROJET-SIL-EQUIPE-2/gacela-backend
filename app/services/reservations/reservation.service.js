@@ -226,13 +226,29 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
 }
 
 // Validate reservation
-const validateReservation = async (reservation_id) => {
-    console.log("Validating ...")
+const validateReservation = async (reservation_id, locataire_email) => {
+
     try {
-        console.log("Validating ...")
+        let client = await prisma.Locataires.findFirst({
+            where: {
+                email: locataire_email
+            }
+        })
+        if (!client){
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    message: `No client of that email ${locataire_email} was found`,
+                }
+            }
+        }
         let reservation = await prisma.Reservations.findUnique({
             where : {
                 reservation_id: reservation_id,
+            },
+            include: {
+                locataire: true
             }
         })
         if (!reservation){
@@ -244,6 +260,18 @@ const validateReservation = async (reservation_id) => {
                 }
             }
         }
+
+        // Check if this client has requested this reservation
+        if (reservation.locataire.email !== locataire_email){
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    message: `Locataire of email ${locataire_email} has not requested this reservation`,
+                }
+            }
+        }
+
         switch (reservation.etat) {
             case "ENCOURS":
                 return {
