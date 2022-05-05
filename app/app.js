@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors")
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 
@@ -52,6 +53,11 @@ app.get("/", (req, res) => {
     res.send("Gacela API is up and running")
 })
 //// Apply routers
+
+
+app.post('/create-checkout-session', (req, res) => {
+    res.json({ url: "" })
+})
 app.use('/api/notification', require('./routes/locataire/notificationLoc.route'));
 app.use(authRouter);
 app.use('/api/mobile_passwordReset', passwordResetRouter);
