@@ -110,8 +110,16 @@ model Facture {
   reservation_id Int?
   price          Int?
   paid           Boolean?
-  Reservations   Reservations? @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
-  Paiment        Paiment[]
+  reservation   Reservations? @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
+  paiment        Paiment[]
+}
+
+model Refund {
+  refund_id         Int           @id @default(autoincrement())
+  paiment_id        Int?
+  paiment           Paiment? @relation(fields: [paiment_id], references: [paiment_id], onDelete: NoAction, onUpdate: NoAction)
+  amount            Int?
+
 }
 
 model Locataires {
@@ -156,7 +164,8 @@ model Paiment {
   facture_id   Int?
   date_paiment DateTime?    @db.Timestamp(6)
   type_paiment Int?
-  Facture      Facture?     @relation(fields: [facture_id], references: [facture_id], onDelete: NoAction, onUpdate: NoAction)
+  facture      Facture?     @relation(fields: [facture_id], references: [facture_id], onDelete: NoAction, onUpdate: NoAction)
+  refunds      Refund[]
   TypePaiment  TypePaiment? @relation(fields: [type_paiment], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
