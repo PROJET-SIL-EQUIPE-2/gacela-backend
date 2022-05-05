@@ -1,33 +1,40 @@
-get http://localhost:3000
-### 
 
-post http://localhost:3000
+
+POST http://localhost:3000/api/verifyCode
 Content-Type: application/json
 
 {
-    "email" : "ih_merakchi@esi.dz" ,
-    "userId" : "1"
-
+    "code" : "1234567" ,
+    "reservation_id" : "1"
 }
-### 
-get http://localhost:3000/admin
 
-### 
-POST http://localhost:3000/api/web_passwordReset/agent
+
+POST http://localhost:3000/api/create-reservation
 Content-Type: application/json
 
 {
-    "email" : "id_bouloudene@esi.dz"
+    "vehicule_id" : "1" ,
+    "locataire_id" : "1" , 
+    "departLat" : "0" , 
+    "departLong" : "0" ,
+    "destLat" : "0" ,
+    "destLong" : "0" ,
 }
 
-###
-PATCH http://localhost:3000/api/web_passwordReset/admin/1/KbzjYWmu0q6MsUXwIsyGPMC6VcDFka5cVRJPtyBnjT8
+
+POST http://localhost:3000/api/valider-trajet
 Content-Type: application/json
 
 {
-    "password" : "hiba"
+    "id_reservation" : "1" ,
+    
 }
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Sec
+
+POST http://localhost:3000/api/valider-reservation
+Content-Type: application/json
+
+{
+    "id_reservation" : "1" ,
+    
+}
+

@@ -6,7 +6,7 @@ router.get("/create-reservation", reservationController.createReservation) ;
 router.get("/deverouillage", reservationController.deverouillerVoiture) ;
 router.get("/verrouillage", reservationController.verrouillerVoiture) ;
 router.get("/valider-trajet", reservationController.validerTrajet) ;
-router.get("/valider-reservation", reservationController.validerReservation) ;
+router.get("/valider-reservation/:reservation_id", reservationController.validerReservation) ;
 
 
 module.exports = router;
