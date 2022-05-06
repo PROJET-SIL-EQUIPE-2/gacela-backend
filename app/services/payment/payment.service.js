@@ -2,9 +2,8 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
 
-
 /**
- * Makes a call to an external service for the actual checkout
+ * Makes a call to an external service for the actual checkout of a facturation
  * @param  {[type]} in [description]
  * @return {[type]}     [description]
  */
@@ -24,8 +23,31 @@ const registerLocalCheckout = () => {
  * @param {[Int]} reservation_id
  * @return {[Payment]} payment object of that reservation
  */
-const getPaymentOfReservation = (reservation_id) => {
-    return null
+const getPaymentOfReservation = async (reservation_id) => {
+    try {
+        return await prisma.Paiment.findFirst({
+            select: {
+                paiment_id: true,
+                facture_id: true,
+                date_paiment: true,
+                type_paiment: true,
+                facture: {
+                    select: {
+                        facture_id: true,
+                        reservation_id: true,
+                        estimated_price: true,
+                        real_price: true,
+                        paid: true
+                    },
+                    where: {
+                        reservation_id: reservation_id
+                    }
+                }
+            }
+        })
+    }catch (e) {
+
+    }
 }
 
 

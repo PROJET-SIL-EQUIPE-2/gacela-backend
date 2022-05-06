@@ -3,7 +3,7 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 let stripe = require("stripe")(stripeSecretKey)
 const PrismaClient = require("@prisma/client").PrismaClient;
 const paymentService = require("payment.service");
-const facturationService = require("facturation.service")
+
 const prisma = new PrismaClient();
 
 const getRefundablePayments = () => {
@@ -51,6 +51,11 @@ const refund = async (payment_id, amount) => {
         await registerLocalRefund(payment_id, r)
         return r;
     }
+}
+
+module.exports = {
+    refund,
+    getRefundablePayments
 }
 
 

@@ -16,3 +16,10 @@ router.post("/checkout")
 * Makes a refund to a client
 * */
 router.post("/refund")
+
+
+/*
+* Cancels a payment
+* NOTE: To be discussed
+* */
+router.post("/cancel")

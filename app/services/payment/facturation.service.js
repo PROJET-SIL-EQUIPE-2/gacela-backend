@@ -5,7 +5,6 @@ const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
 
-
 const createFacturation = async (reservation_id , estimated_price) => {
     let newFacturation;
     try {
