@@ -29,6 +29,8 @@ const agentsRouter = require("./routes/agents/agents.router");
 
 const reservationsRouter = require("./routes/reservation/reservation.route")
 
+const paymentRouter = require("./routes/payment/payment.route")
+
 // firebase admin
 const firebaseAdminInitializeApp = require("./config/firebase-admin.config")
 
@@ -88,6 +90,8 @@ app.use("/api/decideurs", decideurRouter);
 app.use("/api/agents", agentsRouter);
 
 app.use("/api/reservations", reservationsRouter)
+
+app.use("/api/payment", paymentRouter)
 
 const odb = require("./services/odb/odb");
 const mqtt = require("mqtt");

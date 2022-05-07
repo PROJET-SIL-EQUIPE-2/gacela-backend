@@ -1,5 +1,5 @@
 const router = require("express").Router()
-
+const paymentController = require("../../controllers/payment/payment.controller")
 /*
 * Estimates reservation charges
 * */
@@ -9,13 +9,13 @@ router.get("/estimate")
 /*
 * Makes the real checkout
 * */
-router.post("/checkout")
+router.post("/checkout", paymentController.checkout)
 
 
 /*
 * Makes a refund to a client
 * */
-router.post("/refund")
+router.post("/refund", paymentController.refund)
 
 
 /*
@@ -23,3 +23,6 @@ router.post("/refund")
 * NOTE: To be discussed
 * */
 router.post("/cancel")
+
+
+module.exports = router

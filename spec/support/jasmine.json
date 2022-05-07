@@ -9,5 +9,9 @@
   "env": {
     "stopSpecOnExpectationFailure": false,
     "random": true
-  }
+  },
+  "collectCoverageFrom": [
+    "app/**/*.js*",
+    ""
+  ]
 }

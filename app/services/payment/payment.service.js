@@ -4,10 +4,10 @@ const prisma = new PrismaClient();
 
 /**
  * Makes a call to an external service for the actual checkout of a facturation
- * @param  {[type]} in [description]
+ * @param  {[type]} reservation_id [description]
  * @return {[type]}     [description]
  */
-const checkout = () => {
+const checkout = async (reservation_id) => {
 
 }
 

@@ -216,13 +216,6 @@ enum EtatReservation {
   REJECTED
 }
 
-enum EtatReservation{
-    INVALIDE
-    ENCOURS
-    COMPLETED
-    REJECTED
-}
-
 model TypePaiment {
   type_id     Int       @id @default(autoincrement())
   description String?   @db.VarChar

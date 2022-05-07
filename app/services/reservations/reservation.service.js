@@ -616,6 +616,40 @@ const validateTrajet = async (reservation_id) => {
 }
 
 
+
+const exists = async (reservation_id) => {
+    try {
+
+        let reservation = await prisma.Reservations.findUnique({
+            where: {
+                reservation_id: reservation_id
+            }
+        })
+
+        return reservation != null
+    }catch (e) {
+
+        return false
+    }
+}
+/**
+ * Checks whether a reservation is finished or not
+ * */
+const isFinished = async (reservation_id) => {
+    try {
+        let reservation = await prisma.Reservations.findUnique({
+            where: {
+                reservation_id: reservation_id
+            }
+        })
+        return reservation.etat === "COMPLETED";
+
+    }catch (e) {
+        return false
+    }
+}
+
+
 module.exports = {
     createReservation ,
     validateTrajet ,
@@ -627,5 +661,7 @@ module.exports = {
     completed,
     rejected,
     lockCar,
-    unlockCar
+    unlockCar,
+    exists,
+    isFinished
 }

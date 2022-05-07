@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const reservationService = require('../../services/reservations/reservation.service') ;
+const reservationService = require('../../services/reservations/reservation.service');
 
 // const unlockCar = async (reserv)=> {
 //
@@ -11,14 +11,14 @@ const reservationService = require('../../services/reservations/reservation.serv
 
 // Get pending reservations
 const pending = async (req, res) => {
-    const {code, data, serviceError, log} = await reservationService.pending()
+    const { code, data, serviceError, log } = await reservationService.pending()
 
     // Send response to client
-    if (!serviceError){
+    if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(code).json(serviceError)
     }
@@ -26,14 +26,14 @@ const pending = async (req, res) => {
 
 // Get validated reservations
 const validated = async (req, res) => {
-    const {code, data, serviceError, log} = await reservationService.validated()
+    const { code, data, serviceError, log } = await reservationService.validated()
 
     // Send response to client
-    if (!serviceError){
+    if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(code).json(serviceError)
     }
@@ -41,14 +41,14 @@ const validated = async (req, res) => {
 
 // Get completed reservations
 const completed = async (req, res) => {
-    const {code, data, serviceError, log} = await reservationService.completed()
+    const { code, data, serviceError, log } = await reservationService.completed()
 
     // Send response to client
-    if (!serviceError){
+    if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(code).json(serviceError)
     }
@@ -56,19 +56,19 @@ const completed = async (req, res) => {
 
 // Get rejected reservations
 const rejected = async (req, res) => {
-    const {code, data, serviceError, log} = await reservationService.rejected()
+    const { code, data, serviceError, log } = await reservationService.rejected()
     // Send response to client
-    if (!serviceError){
+    if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(code).json(serviceError)
     }
 }
 
-const createReservation = async (req , res)=> {
+const createReservation = async (req, res) => {
     const validator = Joi.object({
         matricule: Joi.string().required(),
         locataire: Joi.string().email().required(),
@@ -77,8 +77,8 @@ const createReservation = async (req , res)=> {
         destLong: Joi.number().required(),
         destLat: Joi.number().required()
     })
-    const {error} = validator.validate(req.body);
-    if (error){
+    const { error } = validator.validate(req.body);
+    if (error) {
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
@@ -91,14 +91,14 @@ const createReservation = async (req , res)=> {
         destLat,
         destLong
     } = req.body
-    const {code, data, serviceError, log} = await reservationService.createReservation(matricule,locataire, departLat, departLong, destLat, destLong) ;
+    const { code, data, serviceError, log } = await reservationService.createReservation(matricule, locataire, departLat, departLong, destLat, destLong);
 
     // Send response to client
-    if (!serviceError){
+    if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(code).json(serviceError)
     }
@@ -107,72 +107,72 @@ const createReservation = async (req , res)=> {
 
 
 
-const validateTrajet = async (req , res)=> {
+const validateTrajet = async (req, res) => {
     try {
         let reservation_id = parseInt(req.params.reservation_id)
-        const {code, data, serviceError, log} = await reservationService.validateTrajet(reservation_id);
-        if (!serviceError){
+        const { code, data, serviceError, log } = await reservationService.validateTrajet(reservation_id);
+        if (!serviceError) {
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
-        }else{
+        } else {
             // Invoke error logger
             res.status(code).json(serviceError)
         }
-    }catch (e){
+    } catch (e) {
         res.status(400).json("Reservation id must be a number")
     }
 
 
 }
-const verifyCode = async (req , res)=> {
+const verifyCode = async (req, res) => {
     const validator = Joi.object({
         reservation_id: Joi.number().required(),
         code: Joi.string().required()
     });
-    const {error} = validator.validate(req.body)
-    if(error){
+    const { error } = validator.validate(req.body)
+    if (error) {
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
     }
-    const {code, reservation_id} = req.body
-    const {status, data, serviceError, log} = await reservationService.verifyCode(reservation_id, code)
-    if (!serviceError){
+    const { code, reservation_id } = req.body
+    const { status, data, serviceError, log } = await reservationService.verifyCode(reservation_id, code)
+    if (!serviceError) {
         // Send  message to user
         res.status(status).json(data)
         // Invoke logger
-    }else{
+    } else {
         // Invoke error logger
         res.status(status).json(serviceError)
     }
 }
-const validateReservation = async (req, res)=> {
+const validateReservation = async (req, res) => {
 
     const validator = Joi.object({
         reservation_id: Joi.number().required(),
         locataire_email: Joi.string().email().required()
     })
-    const {error} = validator.validate(req.body)
-    if(error){
+    const { error } = validator.validate(req.body)
+    if (error) {
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
     }
 
-        const {reservation_id, locataire_email} = req.body
-        const {code, data, serviceError, log} = await reservationService.validateReservation(reservation_id, locataire_email)
+    const { reservation_id, locataire_email } = req.body
+    const { code, data, serviceError, log } = await reservationService.validateReservation(reservation_id, locataire_email)
 
-        // Send response to client
-        if (!serviceError){
-            // Send  message to user
-            res.status(code).json(data)
-            // Invoke logger
-        }else{
-            // Invoke error logger
-            console.error(serviceError)
-            res.status(code).json(data)
-        }
+    // Send response to client
+    if (!serviceError) {
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+    } else {
+        // Invoke error logger
+        console.error(serviceError)
+        res.status(code).json(data)
+    }
 
 
 }
@@ -180,21 +180,21 @@ const validateReservation = async (req, res)=> {
 
 
 const rejectReservation = async (req, res) => {
-    try{
+    try {
         let reservation_id = parseInt(req.params.reservation_id)
-        const {code, data, serviceError, log} = await reservationService.rejectReservation(reservation_id)
+        const { code, data, serviceError, log } = await reservationService.rejectReservation(reservation_id)
 
         // Send response to client
-        if (!serviceError){
+        if (!serviceError) {
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
-        }else{
+        } else {
             // Invoke error logger
             res.status(code).json(serviceError)
         }
 
-    }catch (e) {
+    } catch (e) {
         res.status(400).json("Reservation must be a number")
     }
 }
@@ -202,9 +202,9 @@ const rejectReservation = async (req, res) => {
 module.exports = {
     // unlockCar,
     // lockCar,
-    createReservation ,
-    validateTrajet ,
-    verifyCode ,
+    createReservation,
+    validateTrajet,
+    verifyCode,
     validateReservation,
     rejectReservation,
     pending,
