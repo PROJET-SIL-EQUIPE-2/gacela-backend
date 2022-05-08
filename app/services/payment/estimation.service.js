@@ -104,3 +104,8 @@ let stripeHandler = StripeCheckout.configure({
 const payment = (req , res) => {
     res.render({stripePublicKey : stripePublicKey })
 }
+
+module.exports = {
+    calculateEstimatedPrice,
+    calculateRealPrice
+}

@@ -1,4 +1,6 @@
 const PrismaClient = require("@prisma/client").PrismaClient;
+const estimationService = require("./estimation.service")
+const facturationService = require("./facturation.service")
 
 const prisma = new PrismaClient();
 
@@ -8,14 +10,27 @@ const prisma = new PrismaClient();
  * @return {[type]}     [description]
  */
 const checkout = async (reservation_id) => {
+    try {
+        await facturationService.createFacturation(reservation_id, 0)
 
+    }catch (e) {
+
+    }
 }
 
 /**
  * Registers a local image for the checkout that links to reservation
  */
-const registerLocalCheckout = () => {
-
+const createPayment = async (payment_id, facture_id, type) => {
+    try {
+        let payment = await prisma.Paiment.create({
+            paiment_id: payment_id,
+            facture_id: facture_id,
+            type_paiment: type
+        })
+    }catch (e) {
+        return new Error("Payment could not be created")
+    }
 }
 
 /**
@@ -64,8 +79,6 @@ const getPaymentById = async (payment_id) => {
 }
 
 module.exports = {
-    checkout,
-    registerLocalCheckout,
     getPaymentOfReservation,
     getPaymentById
 }

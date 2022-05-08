@@ -1,4 +1,3 @@
-const stripePublicKey = process.env.STRIPE_PUBLIC_KEY
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 let stripe = require("stripe")(stripeSecretKey)
 const PrismaClient = require("@prisma/client").PrismaClient;

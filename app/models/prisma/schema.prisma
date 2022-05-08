@@ -161,9 +161,9 @@ model NotificationsLocataire {
 }
 
 model Paiment {
-  paiment_id   Int          @id @default(autoincrement())
+  paiment_id   String          @id
   facture_id   Int?
-  date_paiment DateTime?    @db.Timestamp(6)
+  date_paiment DateTime?    @db.Timestamp(6) @defult(now())
   type_paiment Int?
   facture      Facture?     @relation(fields: [facture_id], references: [facture_id], onDelete: NoAction, onUpdate: NoAction)
   refunds      Refund[]
