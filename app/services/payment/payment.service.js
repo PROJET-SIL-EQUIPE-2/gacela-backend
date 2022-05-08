@@ -1,6 +1,5 @@
 const PrismaClient = require("@prisma/client").PrismaClient;
 const estimationService = require("./estimation.service")
-const facturationService = require("./facturation.service")
 
 const prisma = new PrismaClient();
 
@@ -11,7 +10,6 @@ const prisma = new PrismaClient();
  */
 const checkout = async (reservation_id) => {
     try {
-        await facturationService.createFacturation(reservation_id, 0)
 
     }catch (e) {
 
@@ -41,27 +39,12 @@ const createPayment = async (payment_id, facture_id, type) => {
 const getPaymentOfReservation = async (reservation_id) => {
     try {
         return await prisma.Paiment.findFirst({
-            select: {
-                paiment_id: true,
-                facture_id: true,
-                date_paiment: true,
-                type_paiment: true,
-                facture: {
-                    select: {
-                        facture_id: true,
-                        reservation_id: true,
-                        estimated_price: true,
-                        real_price: true,
-                        paid: true
-                    },
-                    where: {
-                        reservation_id: reservation_id
-                    }
-                }
+            where: {
+                reservation_id: reservation_id
             }
         })
     }catch (e) {
-
+        console.log(e)
     }
 }
 

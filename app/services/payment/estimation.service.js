@@ -1,5 +1,4 @@
 const carsService = require("../vehicules/vehicles.service")
-const facturationService = require("facturation.service")
 const PrismaClient = require("@prisma/client").PrismaClient;
 
 const prisma = new PrismaClient();
@@ -38,7 +37,6 @@ const calculateEstimatedPrice = async (
 
 
     const estimated_price = duration * priceHour + constant ;
-    let facturation = await facturationService.createFacturation(reservation_id, estimated_price);
     return estimated_price ;
 
 
@@ -73,30 +71,30 @@ const calculateRealPrice = async (reservation_id) => {
 }
 
 
-let stripeHandler = StripeCheckout.configure({
-    key : stripePublicKey , 
-    locale : 'en' , 
-    token : (token ) => {
-        fetch('pay', {
-            method: 'POST',
-            header: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                stripeTokenId: token.id,
-
-            })
-        }).then(r => {
-
-        }).then(() => {
-
-        }).catch(e => {
-
-        })
-
-    }
-})
+// let stripeHandler = StripeCheckout.configure({
+//     key : stripePublicKey ,
+//     locale : 'en' ,
+//     token : (token ) => {
+//         fetch('pay', {
+//             method: 'POST',
+//             header: {
+//                 'Content-Type': 'application/json',
+//                 'Accept': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 stripeTokenId: token.id,
+//
+//             })
+//         }).then(r => {
+//
+//         }).then(() => {
+//
+//         }).catch(e => {
+//
+//         })
+//
+//     }
+// })
 /*in the front  end we must add :
 <script src = "https://checkout.stripe.com/checkout.js" defer></script>
 <script> let stripePublicKey = '<%= stripePublicKey %>'</script>

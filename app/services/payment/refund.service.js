@@ -10,27 +10,16 @@ const getRefundablePayments = () => {
 
 }
 
-const checkRefundable = async (payment_id) => {
-    try {
-        let payment = await paymentService.getPaymentById(payment_id)
-        let facturation = await prisma.Facture.findUnique({
-            where: {
-                facturation_id: payment.paiment_id
-            },
-        })
-        return facturation.estimated_price > facturation.real_price
-
-    }catch (e) {
-
-    }
+const checkRefundable = async (payment) => {
+    return payment.estimated_price > payment.real_price
 }
 
-const registerLocalRefund = async (payment_id, refund) => {
+const registerLocalRefund = async (payment, refund) => {
     try {
         await prisma.Refund.create({
             data: {
                 refund_id: refund.id,
-                paiment_id: payment_id,
+                paiment_id: payment.payment_id,
                 amount: refund.amount
             }
         })
@@ -40,19 +29,8 @@ const registerLocalRefund = async (payment_id, refund) => {
     }
 }
 
-const calcRefundAmount = async (payment_id) => {
-    try {
-        let payment = await paymentService.getPaymentById(payment_id)
-        let facturation = await prisma.Facture.findUnique({
-            where: {
-                facturation_id: payment.paiment_id
-            },
-        })
-        return facturation.estimated_price - facturation.real_price
-
-    }catch (e) {
-        return 0
-    }
+const calcRefundAmount = async (payment) => {
+    return payment.estimated_price - payment.real_price
 }
 
 const refund = async (reservation_id) => {
@@ -61,25 +39,37 @@ const refund = async (reservation_id) => {
         let isFinished = await reservationService.isFinished(reservation_id)
         if (isFinished){
             // get payment id of that reservation
-            let payment = paymentService.getPaymentOfReservation(reservation_id)
+            let payment = await paymentService.getPaymentOfReservation(reservation_id)
+            console.log(payment)
             if (payment){
-                let payment_id = payment.paiment_id
-                const isRefundable = await checkRefundable(payment_id)
+                const isRefundable = await checkRefundable(payment)
                 if (isRefundable){
-                    let refund_amount = await calcRefundAmount(payment_id)
-                    const r =  await stripe.refunds.create({
-                        charge: payment_id,
-                        amount: refund_amount
-                    })
-
-                    await registerLocalRefund(payment_id, r)
-                    return {
-                        code: 200,
-                        data: {
-                            success: true,
-                            data: r
+                    let refund_amount = await calcRefundAmount(payment)
+                    console.log(payment)
+                    try {
+                        const r =  await stripe.refunds.create({
+                            charge: payment.paiment_id,
+                            amount: refund_amount
+                        })
+                        await registerLocalRefund(payment, r)
+                        return {
+                            code: 200,
+                            data: {
+                                success: true,
+                                data: r
+                            }
+                        }
+                    }catch (e) {
+                        return {
+                            code: 500,
+                            data: {
+                                success: false,
+                                data: e.message
+                            }
                         }
                     }
+
+
                 }else{
                     // Payment is not refundable
                     return {
@@ -96,7 +86,7 @@ const refund = async (reservation_id) => {
                     code: 401,
                     data: {
                         success: false,
-                        data: `No payment of that id was found`
+                        data: `No payment of that reservation was found`
                     }
                 }
             }
