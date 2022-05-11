@@ -73,7 +73,7 @@ const refund = async (reservation_id) => {
                 }else{
                     // Payment is not refundable
                     return {
-                        code: 401,
+                        code: 400,
                         data: {
                             success: false,
                             data: "Payment is not refundable"
@@ -83,7 +83,7 @@ const refund = async (reservation_id) => {
             }else{
                 // No payment was found
                 return {
-                    code: 401,
+                    code: 400,
                     data: {
                         success: false,
                         data: `No payment of that reservation was found`
@@ -95,7 +95,7 @@ const refund = async (reservation_id) => {
             // Reservation not finished yet
 
             return {
-                code: 401,
+                code: 400,
                 data: {
                     success: false,
                     data: "Reservation is not finished yet"
@@ -107,7 +107,7 @@ const refund = async (reservation_id) => {
         console.log("hi")
         // No reservation of that id
         return {
-            code: 401,
+            code: 400,
             data: {
                 success: false,
                 data: "No reservation of that id was found"

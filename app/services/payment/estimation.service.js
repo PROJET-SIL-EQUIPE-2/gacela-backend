@@ -8,6 +8,7 @@ const getDuration = (reservation) => {
     let departLat = reservation.data.departLat;
     let destLong = reservation.data.destLong;
     let destLat = reservation.data.destLat;
+    // Call api
     return 1 ; 
 }
 
@@ -16,29 +17,27 @@ const calculateEstimatedPrice = async (
     reservation_id
 ) => {
    
-    let priceHour ;
-    let vehicule_id ;
-    let duration ; 
-    let constant ;
-    let reservation = await carsService.getById(reservation_id);
-    let vehicule;
-    if (reservation) {
-        vehicule_id = Number(reservation.data.vehicule_id);
-        vehicule = await carsService.getById(vehicule_id);
-        if (vehicule) {
-            priceHour = parseFloat(vehicule.data.price_per_hour);
-        }
+    // let priceHour ;
+    // let vehicule_id ;
+    // let duration ;
+    // let constant ;
+    // let reservation = await carsService.getById(reservation_id);
+    // let vehicule;
+    // if (reservation) {
+    //     vehicule_id = Number(reservation.data.vehicule_id);
+    //     vehicule = await carsService.getById(vehicule_id);
+    //     if (vehicule) {
+    //         priceHour = parseFloat(vehicule.data.price_per_hour);
+    //     }
+    //
+    // }
+    // duration = getDuration(reservation) ;
+    // let heure = reservation.data.date ;
+    // if(heure > '') constant = 1 ;
+    // constant = 0 ;
+    // return duration * priceHour + constant ;
 
-    }
-    duration = getDuration(reservation) ; 
-    let heure = reservation.data.date ;
-    if(heure > '') constant = 1 ;
-    constant = 0 ;
-
-
-    const estimated_price = duration * priceHour + constant ;
-    return estimated_price ;
-
+    return 100
 
     /*facturation : prix_estim et prix_reel*/ 
     //ajouter date to reseration
@@ -51,23 +50,24 @@ const calculateEstimatedPrice = async (
 const calculateRealPrice = async (reservation_id) => {
     //time stamp when deverrouillage
     //timestamp when the client arrives 
-    let departHour;
-    let finishHour;
-    let duration = finishHour - departHour;
-    let constant;
-
-    let reservation = await carsService.getById(reservation_id);
-    let heure = reservation.data.date;
-    if (heure > '') constant = 1;
-    constant = 0;
-    if (reservation) {
-        const vehicule_id = Number(reservation.data.vehicule_id);
-        const vehicule = await carsService.getById(vehicule_id);
-        if (vehicule) {
-            const priceHour = parseFloat(vehicule.data.price_per_hour);
-            return duration * priceHour + constant;  //return real price
-        }
-    }
+    // let departHour;
+    // let finishHour;
+    // let duration = finishHour - departHour;
+    // let constant;
+    //
+    // let reservation = await carsService.getById(reservation_id);
+    // let heure = reservation.data.date;
+    // if (heure > '') constant = 1;
+    // constant = 0;
+    // if (reservation) {
+    //     const vehicule_id = Number(reservation.data.vehicule_id);
+    //     const vehicule = await carsService.getById(vehicule_id);
+    //     if (vehicule) {
+    //         const priceHour = parseFloat(vehicule.data.price_per_hour);
+    //         return duration * priceHour + constant;  //return real price
+    //     }
+    // }
+    return 50
 }
 
 
@@ -99,9 +99,9 @@ const calculateRealPrice = async (reservation_id) => {
 <script src = "https://checkout.stripe.com/checkout.js" defer></script>
 <script> let stripePublicKey = '<%= stripePublicKey %>'</script>
 */
-const payment = (req , res) => {
-    res.render({stripePublicKey : stripePublicKey })
-}
+// const payment = (req , res) => {
+//     res.render({stripePublicKey : stripePublicKey })
+// }
 
 module.exports = {
     calculateEstimatedPrice,

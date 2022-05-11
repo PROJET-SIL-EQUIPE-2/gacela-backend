@@ -6,6 +6,7 @@ const getAllDecideurs = async () => {
     try {
         const allDecideurs = await prisma.Decideurs.findMany({
             select: {
+                decideur_id: true,
                 name: true,
                 family_name: true,
                 email: true,

@@ -154,8 +154,8 @@ model NotificationsLocataire {
 model Paiment {
   paiment_id   String          @id
   reservation_id  Int?
-  estimated_price Int?
-  real_price      Int?
+  estimated_price Float?
+  real_price      Float?      @default(0)
   date_paiment DateTime?    @db.Timestamp(6) @default(now())
   type_paiment Int?
   refunds      Refund[]
