@@ -1,15 +1,19 @@
-const carsService = require("../vehicules/vehicles.service")
-const PrismaClient = require("@prisma/client").PrismaClient;
+const fetch = require("node-fetch")
 
-const prisma = new PrismaClient();
+/**
+ * Returns duration in secons
+ * */
+const getDuration = async (departLat, departLong, destLat, destLong) => {
 
-const getDuration = (reservation) => {
-    let departLong = reservation.data.departLong;
-    let departLat = reservation.data.departLat;
-    let destLong = reservation.data.destLong;
-    let destLat = reservation.data.destLat;
-    // Call api
-    return 1 ; 
+        let endpoint = `https://api.tomtom.com/routing/1/calculateRoute/${departLat}%2C${departLong}%3A${destLat}%2C${destLong}/json?key=DGN137adravN52Y5SA1TMXip7GQusRQp`
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                return data["routes"][0]["summary"]["travelTimeInSeconds"]
+            })
+            .catch(e => {
+                return e
+            });
 }
 
 
@@ -105,5 +109,6 @@ const calculateRealPrice = async (reservation_id) => {
 
 module.exports = {
     calculateEstimatedPrice,
-    calculateRealPrice
+    calculateRealPrice,
+    getDuration
 }

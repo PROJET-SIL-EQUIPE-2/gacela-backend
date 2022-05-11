@@ -1,6 +1,8 @@
 const Joi = require("joi")
 const paymentService = require("../../services/payment/payment.service")
 const refundService = require("../../services/payment/refund.service")
+const estimationService = require("../../services/payment/estimation.service")
+const fetch = require("node-fetch");
 
 const checkout = async (req, res) => {
     const validator = Joi.object({
@@ -57,8 +59,12 @@ const refund = async (req, res) => {
     }
 }
 
+const estimate = async (req, res) => {
+
+}
 
 module.exports = {
     checkout,
-    refund
+    refund,
+    estimate
 }

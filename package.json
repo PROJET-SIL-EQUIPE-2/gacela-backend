@@ -39,6 +39,7 @@
     "karma": "^6.3.17",
     "mqtt": "^4.3.7",
     "multer": "^1.4.4",
+    "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "randomstring": "^1.2.2",

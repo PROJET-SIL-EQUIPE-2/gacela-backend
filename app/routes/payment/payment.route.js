@@ -1,9 +1,10 @@
 const router = require("express").Router()
 const paymentController = require("../../controllers/payment/payment.controller")
+
 /*
 * Estimates reservation charges
 * */
-router.get("/estimate")
+router.get("/estimate", paymentController.estimate)
 
 
 /*
