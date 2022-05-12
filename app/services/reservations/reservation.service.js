@@ -23,8 +23,8 @@ const pending = async () => {
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data:`Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -49,8 +49,8 @@ const validated = async () => {
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -75,8 +75,8 @@ const completed = async () => {
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -101,8 +101,8 @@ const rejected = async () => {
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -124,7 +124,8 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 data: {
                     success: false,
                     data: `No locataire of email ${locataire} was found`
-                }
+                },
+                log: `No locataire of email ${locataire} was found`
             }
         }
         if (!loc.validated){
@@ -133,7 +134,8 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 data: {
                     success: false,
                     data: `locataire of email ${locataire} was not validated yet`
-                }
+                },
+                log: `locataire of email ${locataire} was not validated yet`
             }
         }
 
@@ -143,7 +145,8 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 data: {
                     success: false,
                     data: `locataire of email ${locataire} is blocked`
-                }
+                },
+                log: `locataire of email ${locataire} is blocked\``
             }
         }
         let car = await prisma.Vehicules.findFirst({
@@ -157,7 +160,8 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 data: {
                     success: false,
                     message: `No car of matricule ${matricule} was found`
-                }
+                },
+                log: `No car of matricule ${matricule} was found`
             }
         }
         if (!car.disponible){
@@ -166,7 +170,8 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 data: {
                     success: false,
                     message: `Car of matricule ${matricule} is not disponible`
-                }
+                },
+                log: `Car of matricule ${matricule} is not disponible`
             }
         }
 
@@ -208,16 +213,17 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 code: 400,
                 data: {
                     success: false,
-                    data: `Cette réservation est toujours en cours`
-                }
+                    data: `Cette réservation ${reservation.reservation_id} est toujours en cours`
+                },
+                log: `Cette réservation ${reservation.reservation_id} est toujours en cours`
             }
 
         }
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -240,7 +246,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                 data: {
                     success: false,
                     message: `No client of that email ${locataire_email} was found`,
-                }
+                },
+                log: `No client of that email ${locataire_email} was found`,
             }
         }
         let reservation = await prisma.Reservations.findUnique({
@@ -257,7 +264,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
 
@@ -268,7 +276,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                 data: {
                     success: false,
                     message: `Locataire of email ${locataire_email} has not requested this reservation`,
-                }
+                },
+                log: `Locataire of email ${locataire_email} has not requested this reservation`,
             }
         }
 
@@ -279,7 +288,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is en cours`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is en cours`
                 }
             case "COMPLETED":
                 return {
@@ -287,7 +297,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log:  `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
 
@@ -322,7 +333,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                         data: {
                             success: true,
                             message: "La reservation a été validée."
-                        }
+                        },
+                        log: `La reservation ${reservation_id} a été validée.`
                     }
 
                 }
@@ -333,7 +345,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected and can not be validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was rejected and can not be validated`
                 }
         }
 
@@ -342,13 +355,14 @@ const validateReservation = async (reservation_id, locataire_email) => {
             data: {
                 success: false,
                 message: "La reservation n'a pas pu être validée."
-            }
+            },
+            log: `La reservation de l\'id ${reservation_id} n'a pas pu être validée.`
         }
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -368,7 +382,8 @@ const rejectReservation = async (reservation_id) => {
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
         switch (reservation.etat) {
@@ -378,7 +393,8 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is en cours`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is en cours`
                 }
             case "COMPLETED":
                 return {
@@ -386,7 +402,8 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
                 reservation = await prisma.Reservations.update({
@@ -414,7 +431,8 @@ const rejectReservation = async (reservation_id) => {
                         data: {
                             success: true,
                             message: "La reservation a été rejete."
-                        }
+                        },
+                        log: `La reservation de l\'id ${reservation_id} a été rejete.`
                     }
 
                 }
@@ -425,7 +443,8 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was rejected before`
                 }
         }
 
@@ -434,13 +453,14 @@ const rejectReservation = async (reservation_id) => {
             data: {
                 success: false,
                 message: "La reservation n'a pas pu être validée."
-            }
+            },
+            log: "La reservation n'a pas pu être validée."
         }
     }catch (e){
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -461,7 +481,8 @@ const verifyCode = async (reservation_id, code) => {
                data: {
                    success: false,
                    message: `No reservation of that id ${reservation_id} was found`
-               }
+               },
+               log: `No reservation of that id ${reservation_id} was found`
            }
        }
        if(reservation.code === code) {
@@ -474,7 +495,8 @@ const verifyCode = async (reservation_id, code) => {
                data: {
                    success: true,
                    message: "Car unlocked"
-               }
+               },
+               log: `Car of code ${code} unlocked`
            }
        }
        // TODO: Send error message to device
@@ -487,13 +509,14 @@ const verifyCode = async (reservation_id, code) => {
            data: {
                success: false,
                message: "Le code est incorrect! "
-           }
+           },
+           log: "Le code est incorrect! "
        }
    }catch (e) {
        return {
            status: 500,
-           data: `Server error,`,
-           log: `Server error,`,
+           data: `Server error, ${e.message}`,
+           log: `Server error,`${e.message},
            serviceError: e
        }
    }
@@ -538,7 +561,8 @@ const validateTrajet = async (reservation_id) => {
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
         switch (reservation.etat) {
@@ -569,7 +593,8 @@ const validateTrajet = async (reservation_id) => {
                         data: {
                             success: true,
                             message: "Le trajet est marqué comme complet."
-                        }
+                        },
+                        log: `Le trajet ${reservation_id} est marqué comme complet.`
                     }
                 }
                 break;
@@ -579,7 +604,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
                 return {
@@ -587,7 +613,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is not validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is not validated`
                 }
             case "REJECTED":
                 return {
@@ -595,7 +622,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected and can not be validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is not validated`
                 }
         }
         return {
@@ -603,13 +631,14 @@ const validateTrajet = async (reservation_id) => {
             data: {
                 success: false,
                 message: "Un probleme est survenue lors de la modification"
-            }
+            },
+            log: `Un probleme est survenue lors de la modification du trajet ${reservation_id}`
         }
     }catch (e){
         return {
             code: 500,
-            data: `Server error`,
-            log: `Server error`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }

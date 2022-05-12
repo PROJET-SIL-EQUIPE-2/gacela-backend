@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const reservationService = require('../../services/reservations/reservation.service') ;
-
+const logger = require("../../..")
 // const unlockCar = async (reserv)=> {
 //
 // }
@@ -98,6 +98,7 @@ const createReservation = async (req , res)=> {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
