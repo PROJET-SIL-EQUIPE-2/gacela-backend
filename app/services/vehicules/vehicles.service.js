@@ -7,7 +7,7 @@ const uploadPath = "images/vehicles/";
 const getAll = async (vehiculeType) => {
     try {
         let allVehicles;
-        if (vehiculeType){
+        if (vehiculeType) {
             allVehicles = await prisma.Vehicules.findMany({
                 where: {
                     type_vehicule: vehiculeType
@@ -29,7 +29,7 @@ const getAll = async (vehiculeType) => {
                 }
             });
         }
-        else{
+        else {
             allVehicles = await prisma.Vehicules.findMany({
                 include: {
                     AgentsMaintenance: {
@@ -56,10 +56,11 @@ const getAll = async (vehiculeType) => {
 
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: "Server error",
+            data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -84,7 +85,7 @@ const getById = async (id) => {
                 }
             }
         })
-        if (vehicule){
+        if (vehicule) {
             return {
                 code: 200,
                 data: {
@@ -94,19 +95,21 @@ const getById = async (id) => {
                 }
             }
         }
-        else{
+        else {
             return {
                 code: 400,
                 data: {
                     success: false,
                     data: `No vehicule with id ${id} that was found`
-                }
+                },
+                log: `No vehicule with id ${id} that was found`
             }
         }
-    }catch (e) {
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -141,7 +144,7 @@ const getAvailable = async () => {
                 data: available
             }
         }
-    }catch (e) {
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
@@ -195,7 +198,7 @@ const getReserved = async () => {
                 data: reserved
             }
         }
-    }catch (e) {
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
@@ -231,7 +234,7 @@ const getDefective = async () => {
                 data: defective
             }
         }
-    }catch (e) {
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
@@ -254,9 +257,9 @@ const addVehicle = async (
         const car_photo = req.file;
         upload(car_photo)
         let newVehicle
-        if (car_photo){
+        if (car_photo) {
             newVehicle = await prisma.Vehicules.create({
-                data:  {
+                data: {
                     type_vehicule: type,
                     kilometrage: mileage,
                     price_per_hour: price_per_hour,
@@ -264,9 +267,9 @@ const addVehicle = async (
                     car_photo: path.join(uploadPath, car_photo.filename)
                 }
             });
-        }else{
+        } else {
             newVehicle = await prisma.Vehicules.create({
-                data:  {
+                data: {
                     type_vehicule: type,
                     kilometrage: mileage,
                     price_per_hour: price_per_hour,
@@ -274,7 +277,7 @@ const addVehicle = async (
                 }
             });
         }
-        if (newVehicle){
+        if (newVehicle) {
             return {
                 code: 201,
                 data: {
@@ -282,22 +285,23 @@ const addVehicle = async (
                     data: {
                         msg: "Vehicle registered"
                     }
-                }
+                },
+                log: "Vehicle registered"
             }
         }
         return {
             code: 400,
             data: {
                 success: false,
-                errors: [{
-                    msg: 'Vehicle can not be added'
-                }]
-            }
+                data: 'Vehicle can not be added'
+            },
+            log: 'Vehicle can not be added'
         }
-    }catch (e) {
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.meta.cause}`,
+            log: `Server error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -311,27 +315,30 @@ const deleteVehicule = async (id) => {
             }
         });
 
-        if (deleted){
+        if (deleted) {
             return {
                 code: 200,
                 data: {
                     success: true,
                     data: "Vehicule deleted"
-                }
+                },
+                log: "Vehicule deleted"
             }
-        }else{
+        } else {
             return {
                 code: 400,
                 data: {
                     success: false,
                     data: "Vehicule could not be deleted"
-                }
+                },
+                log: "Vehicule could not be deleted"
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
             data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
             serviceError: e
         }
     }
@@ -345,7 +352,7 @@ const assign = async (matricule, email) => {
             }
         });
 
-        if (!agent){
+        if (!agent) {
             return {
                 code: 400,
                 data: {
@@ -385,7 +392,7 @@ const assign = async (matricule, email) => {
                 data: `Car of matricule ${matricule} assigned to agent ${email}`
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
             data: `Service error`,
@@ -403,7 +410,7 @@ const unassign = async (matricule, email) => {
             }
         });
 
-        if (!agent){
+        if (!agent) {
             return {
                 code: 400,
                 data: {
@@ -418,14 +425,14 @@ const unassign = async (matricule, email) => {
                 matricule: matricule,
             }
         });
-        if (!car.responsable){
-                return {
-                    code: 400,
-                    data: {
-                        success: false,
-                        data: `Car of matricule ${matricule} is not assigned to agent ${email}`
-                    }
+        if (!car.responsable) {
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: `Car of matricule ${matricule} is not assigned to agent ${email}`
                 }
+            }
         }
         // if (car.responsable){
         //     return {
@@ -452,7 +459,7 @@ const unassign = async (matricule, email) => {
                 data: `Car of matricule ${matricule} unassigned from agent ${email}`
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
             data: `Service error`,
