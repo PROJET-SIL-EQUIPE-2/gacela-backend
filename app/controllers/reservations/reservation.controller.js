@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const reservationService = require('../../services/reservations/reservation.service') ;
-const logger = require("../../..")
+const logger = require("../../services/logger")
+const {loggers} = require("winston");
 // const unlockCar = async (reserv)=> {
 //
 // }
@@ -18,9 +19,11 @@ const pending = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
     }
 }
 
@@ -33,9 +36,12 @@ const validated = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
 }
 
@@ -48,9 +54,13 @@ const completed = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
+
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
 }
 
@@ -62,9 +72,13 @@ const rejected = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
+
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
 }
 
@@ -79,6 +93,8 @@ const createReservation = async (req , res)=> {
     })
     const {error} = validator.validate(req.body);
     if (error){
+        logger.error(error.details[0].message)
+
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
@@ -98,10 +114,12 @@ const createReservation = async (req , res)=> {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-
+        logger.debug(log)
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
 
 }
@@ -116,9 +134,13 @@ const validateTrajet = async (req , res)=> {
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
+
         }else{
             // Invoke error logger
             res.status(code).json(serviceError)
+            logger.error(log)
+
         }
     }catch (e){
         res.status(400).json("Reservation id must be a number")
@@ -133,6 +155,8 @@ const verifyCode = async (req , res)=> {
     });
     const {error} = validator.validate(req.body)
     if(error){
+        logger.error(error.details[0].message)
+
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
@@ -143,9 +167,14 @@ const verifyCode = async (req , res)=> {
         // Send  message to user
         res.status(status).json(data)
         // Invoke logger
+        logger.debug(log)
+
+
     }else{
         // Invoke error logger
         res.status(status).json(serviceError)
+        logger.error(log)
+
     }
 }
 const validateReservation = async (req, res)=> {
@@ -156,6 +185,7 @@ const validateReservation = async (req, res)=> {
     })
     const {error} = validator.validate(req.body)
     if(error){
+        logger.error(error.details[0].message)
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });
@@ -169,8 +199,12 @@ const validateReservation = async (req, res)=> {
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
+
         }else{
             // Invoke error logger
+            logger.error(log)
+
             console.error(serviceError)
             res.status(code).json(data)
         }
@@ -190,8 +224,12 @@ const rejectReservation = async (req, res) => {
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
+
         }else{
             // Invoke error logger
+            logger.error(log)
+
             res.status(code).json(serviceError)
         }
 
