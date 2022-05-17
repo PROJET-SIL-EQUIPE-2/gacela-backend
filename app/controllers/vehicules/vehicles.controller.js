@@ -5,8 +5,10 @@ const logger = require("../../services/logger");
 
 // TODO: Add only query parameter
 const getAllVehicles = async (req, res) => {
+    // Check if type is present
+    const type = req.params.type
     // Invoke service
-    const { code, data, serviceError, log } = await vehiclesService.getAll();
+    const { code, data, serviceError, log } = await vehiclesService.getAll(type);
 
     if (!serviceError) {
         // Send  message to user

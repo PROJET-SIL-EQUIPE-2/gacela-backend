@@ -8,9 +8,22 @@ const getAll = async (vehiculeType) => {
     try {
         let allVehicles;
         if (vehiculeType) {
+            // Find id of that type
+            const type = await prisma.VehiculeType.findFirst({
+                type: vehiculeType
+            })
+            if (!type){
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        data: "No vehicule of that type was found"
+                    }
+                }
+            }
             allVehicles = await prisma.Vehicules.findMany({
                 where: {
-                    type_vehicule: vehiculeType
+                    type_vehicule: type.type_id
                 },
                 include: {
                     AgentsMaintenance: {
@@ -169,7 +182,6 @@ const getReserved = async () => {
                 kilometrage: true,
                 etat: true,
                 disponible: true,
-                price_per_hour: true,
                 locked: true,
                 AgentsMaintenance: {
                     select: {
@@ -245,9 +257,8 @@ const getDefective = async () => {
 
 const addVehicle = async (
     req,
-    type,
+    carType,
     mileage,
-    price_per_hour,
     matricule
 ) => {
     try {
@@ -257,12 +268,16 @@ const addVehicle = async (
         const car_photo = req.file;
         upload(car_photo)
         let newVehicle
+        // find vehicule type id
+        let type = await prisma.VehiculeType.findFirst({
+            type: carType
+        })
+
         if (car_photo) {
             newVehicle = await prisma.Vehicules.create({
                 data: {
-                    type_vehicule: type,
+                    type_vehicule: type.type_id,
                     kilometrage: mileage,
-                    price_per_hour: price_per_hour,
                     matricule: matricule,
                     car_photo: path.join(uploadPath, car_photo.filename)
                 }
@@ -270,9 +285,8 @@ const addVehicle = async (
         } else {
             newVehicle = await prisma.Vehicules.create({
                 data: {
-                    type_vehicule: type,
+                    type_vehicule: type.type_id,
                     kilometrage: mileage,
-                    price_per_hour: price_per_hour,
                     matricule: matricule,
                 }
             });
