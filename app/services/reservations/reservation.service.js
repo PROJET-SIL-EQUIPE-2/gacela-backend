@@ -4,6 +4,17 @@ const odb = require("../odb/odb");
 
 const prisma = new PrismaClient();
 
+const paymentService = require("../payment/payment.service")
+
+const getById = async (reservation_id) => {
+    try {
+        return await prisma.Reservations.findUnique({
+            reservation_id: reservation_id
+        })
+    }catch (e){
+
+    }
+}
 // Get pending reservations
 const pending = async () => {
     try {
@@ -301,6 +312,7 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     log:  `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
+                // TODO: Checkout client here ?
 
                 reservation = await prisma.Reservations.update({
                     data : {
@@ -586,8 +598,12 @@ const validateTrajet = async (reservation_id) => {
                     }
                 })
                 if(valid) {
-                    // deverouillerVoiture(valid) ;
+                    // unlock car
                     await unlockCar(reservation.vehicule_id)
+
+                    // Update real price
+                    await paymentService.update(reservation)
+
                     return {
                         code: 200,
                         data: {
@@ -692,5 +708,6 @@ module.exports = {
     lockCar,
     unlockCar,
     exists,
-    isFinished
+    isFinished,
+    getById
 }

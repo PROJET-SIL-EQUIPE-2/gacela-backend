@@ -53,18 +53,27 @@ const refund = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
     }
 }
 
-const estimate = async (req, res) => {
+const getRefundablePayments = async () => {
+
+}
+
+const generatePaymentReport = () => {
+
+}
+
+const generateRefundReport = () => {
 
 }
 
 module.exports = {
     checkout,
     refund,
-    estimate
+    getRefundablePayments
 }

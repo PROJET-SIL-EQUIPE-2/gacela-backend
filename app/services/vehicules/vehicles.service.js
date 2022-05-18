@@ -95,7 +95,8 @@ const getById = async (id) => {
                         name: true,
                         blocked: true
                     }
-                }
+                },
+                type_car: true
             }
         })
         if (vehicule) {

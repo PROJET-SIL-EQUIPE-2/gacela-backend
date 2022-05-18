@@ -226,7 +226,7 @@ model Vehicules {
   disponible        Boolean            @default(true)
   locked            Boolean            @default(true)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
-  TypeVehicule      VehiculeType?      @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
+  type_car          VehiculeType?      @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Reservations      Reservations[]
   VehiculesStatus   VehiculesStatus[]
