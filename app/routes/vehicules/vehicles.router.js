@@ -23,8 +23,6 @@ router.get("/all/reserved", vehiclesController.getReserved)
 // Get out of order vehicules
 router.get("/all/defective", vehiclesController.getDefective)
 
-
-
 // Add new vehicle
 router.post("/add", uploader.single('car_photo'), vehiclesController.addVehicle);
 

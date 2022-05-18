@@ -220,18 +220,25 @@ model Vehicules {
   matricule         String             @unique(map: "unique_matricule")
   car_photo         String?
   responsable       Int?
-  type_vehicule     String
+  type_vehicule     Int?
   kilometrage       Float              @default(0.0)
   etat              VehicleState       @default(WORKING)
   disponible        Boolean            @default(true)
-  price_per_hour    Float              @default(0)
   locked            Boolean            @default(true)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
+  TypeVehicule      VehiculeType?      @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Reservations      Reservations[]
   VehiculesStatus   VehiculesStatus[]
   VehiculesStatusHistory   VehiculesStatusHistory[]
   DemandesSupport   DemandesSupport[]
+}
+
+model VehiculeType{
+    type_id         Int             @id @default(autoincrement())
+    type            String?
+    price_per_hour  Float           @default(0)
+    vehicules       Vehicules[]
 }
 
 model VehiculesStatus{

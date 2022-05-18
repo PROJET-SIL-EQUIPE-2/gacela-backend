@@ -1,19 +1,21 @@
 const Joi = require("joi");
 const decideurService = require("../../services/decideurs/decideur.service");
+const logger = require("../../services/logger");
 
 
 
 const getAllDecideurs = async (req, res) => {
-    const {code, data, serviceError} = await decideurService.getAllDecideurs();
+    const {code, data, serviceError, log} = await decideurService.getAllDecideurs();
 
     if (!serviceError){
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
-        console.log(serviceError);
-        res.status(code).json(serviceError)
+        logger.error(log);
+        res.status(code).json(data);
     }
 }
 
@@ -22,15 +24,16 @@ const getDecideurById = async (req, res) => {
         const id = parseInt(req.params.id);
 
         // Invoke service
-        const {code, data, serviceError} = await decideurService.getDecideurById(id);
+        const {code, data, serviceError, log} = await decideurService.getDecideurById(id);
         if (!serviceError){
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
         }else{
             // Invoke error logger
-            console.log(serviceError);
-            res.status(code).json(serviceError)
+            logger.error(log);
+            res.status(code).json(data);
         }
     }catch (e){
         res.json("Number my be provided");
@@ -43,16 +46,17 @@ const deleteById = async (req, res) => {
         const id = parseInt(req.params.id);
 
         // Invoke service
-        const {code, data, serviceError} = await decideurService.deleteById(id);
+        const {code, data, serviceError, log} = await decideurService.deleteById(id);
 
         if (!serviceError){
             // Send  message to user
             res.status(code).json(data)
             // Invoke logger
+            logger.debug(log)
         }else{
             // Invoke error logger
-            console.log(serviceError);
-            res.status(code).json(data)
+            logger.error(log);
+            res.status(code).json(data);
         }
 
     }catch (e) {
@@ -73,16 +77,17 @@ const deleteByEmail = async (req, res) => {
         });
     }
     const {email} = req.body;
-    const {code, data, serviceError} = await decideurService.deleteByEmail(email);
+    const {code, data, serviceError, log} = await decideurService.deleteByEmail(email);
 
     if (!serviceError){
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
-        console.log(serviceError);
-        res.status(code).json(data)
+        logger.error(log);
+        res.status(code).json(data);
     }
 }
 
