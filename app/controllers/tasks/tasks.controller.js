@@ -40,10 +40,17 @@ const fixPanne = async(req, res) => {
     return res.status(code).json(data)
 }
 
+
+// update progress 
+const updateProgress = async(req, res) => {
+    const { code, data } = await tasksService.updateProgress(req.params.id_task)
+    return res.status(code).json(data)
+}
 module.exports = {
     getAllTasks,
     getCompletedTasks,
     getUnfinishedTasks,
     getTaskDetail,
-    fixPanne
+    fixPanne,
+    updateProgress
 }

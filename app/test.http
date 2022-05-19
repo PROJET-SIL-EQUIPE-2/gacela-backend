@@ -1,17 +1,4 @@
 
-POST http://localhost:3000/api/supports/1
-Content-Type: application/json
+PUT  http://localhost:3000/api/tasks/progress/1
 
-{
-    "typeSupport" : "Batterie",
-    "message" : "..."
-}
-###
-get http://localhost:3000/api/supports/1
 
-###
-get http://localhost:3000/api/supports
-
-###
-
-put http://localhost:3000/api/supports/2

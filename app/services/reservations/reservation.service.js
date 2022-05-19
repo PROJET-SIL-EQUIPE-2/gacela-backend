@@ -516,7 +516,6 @@ const verifyCode = async (reservation_id, code) => {
        return {
            status: 500,
            data: `Server error, ${e.message}`,
-           log: `Server error,`${e.message},
            serviceError: e
        }
    }

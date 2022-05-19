@@ -19,4 +19,7 @@ router.get("/details/:id_panne", tasksController.getTaskDetail);
 // fix panne
 router.put("/:id_task", tasksController.fixPanne)
 
+// update progress
+router.put("/progress/:id_task", tasksController.updateProgress)
+
 module.exports = router;
