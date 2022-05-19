@@ -231,7 +231,7 @@ model Vehicules {
 
 model VehiculeType{
     type_id         Int             @id @default(autoincrement())
-    type            String?
+    type            String?         @unique
     price_per_hour  Float           @default(0)
     vehicules       Vehicules[]
 }
