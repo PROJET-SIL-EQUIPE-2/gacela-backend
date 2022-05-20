@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const vehiclesService = require("../../services/vehicules/vehicles.service");
 const logger = require("../../services/logger");
+const reservationService = require("../../services/reservations/reservation.service");
 
 
 // TODO: Add only query parameter
@@ -200,6 +201,44 @@ const unassign = async (req, res) => {
     }
 }
 
+
+
+const search = async (req, res) => {
+    const validator = Joi.object({
+        type: Joi.string().required(),
+        departLat: Joi.number().required(),
+        departLong: Joi.number().required()
+    })
+
+    const {error} = validator.validate(req.body);
+    if (error){
+        logger.error(error.details[0].message)
+
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {
+        type,
+        departLat,
+        departLong,
+    } = req.body
+    const {code, data, serviceError, log} = await reservationService.search(type, departLat, departLong) ;
+
+    // Send response to client
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+        logger.debug(log)
+    }else{
+        // Invoke error logger
+        res.status(code).json(serviceError)
+        logger.error(log)
+
+    }
+}
+
 module.exports = {
     getAllVehicles,
     getVehicleById,
@@ -209,5 +248,6 @@ module.exports = {
     addVehicle,
     deleteVehicle,
     assign,
-    unassign
+    unassign,
+    search
 }

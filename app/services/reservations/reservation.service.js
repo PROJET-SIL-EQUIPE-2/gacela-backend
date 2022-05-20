@@ -108,8 +108,9 @@ const rejected = async () => {
     }
 }
 
-const createReservation = async (matricule,locataire, departLat, departLong, destLat, destLong) => {
 
+
+const createReservation = async (matricule,locataire, departLat, departLong, destLat, destLong) => {
     try {
 
         let loc = await prisma.Locataires.findFirst({
@@ -656,5 +657,6 @@ module.exports = {
     completed,
     rejected,
     lockCar,
-    unlockCar
+    unlockCar,
+    search
 }

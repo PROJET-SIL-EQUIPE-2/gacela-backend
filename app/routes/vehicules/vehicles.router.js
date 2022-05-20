@@ -6,6 +6,9 @@ const path = require("path");
 const uploadPath = "images/vehicles/";
 const uploader = multer({ dest: path.join("uploads", uploadPath) })
 
+// nearby search
+router.post("/search", vehiclesController.search)
+
 // Get all vehicles
 router.get("/all", vehiclesController.getAllVehicles);
 

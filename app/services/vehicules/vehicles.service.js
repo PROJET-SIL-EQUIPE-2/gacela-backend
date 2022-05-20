@@ -1,5 +1,6 @@
 const upload = require("../../utils/upload");
 const path = require("path");
+const geo = require("../geoservice/geo.service");
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
@@ -79,6 +80,84 @@ const getAll = async (vehiculeType) => {
     }
 }
 
+const getDisponible = async (vehiculeType) => {
+    try {
+        let disponibles;
+        if (vehiculeType) {
+            // Find id of that type
+            const type = await prisma.VehiculeType.findFirst({
+                type: vehiculeType
+            })
+            if (!type){
+                return {
+                    code: 400,
+                    data: {
+                        success: false,
+                        data: "No vehicule of that type was found"
+                    }
+                }
+            }
+            disponibles = await prisma.Vehicules.findMany({
+                where: {
+                    type_vehicule: type.type_id,
+                    disponible: true
+                },
+                include: {
+                    AgentsMaintenance: {
+                        select: {
+                            agent_id: true,
+                            email: true,
+                            phone_number: true,
+                            family_name: true,
+                            name: true,
+                            blocked: true
+                        }
+                    }
+                },
+                orderBy: {
+                    vehicule_id: 'asc'
+                }
+            });
+        }
+        else {
+            disponibles = await prisma.Vehicules.findMany({
+                where: {
+                    disponible: true
+                },
+                include: {
+                    AgentsMaintenance: {
+                        select: {
+                            agent_id: true,
+                            email: true,
+                            phone_number: true,
+                            family_name: true,
+                            name: true,
+                            blocked: true
+                        }
+                    }
+                },
+                orderBy: {
+                    vehicule_id: 'asc'
+                }
+            });
+        }
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: disponibles
+
+            }
+        }
+    } catch (e) {
+        return {
+            code: 500,
+            data: `Service error, ${e.meta.cause}`,
+            log: `Service error, ${e.meta.cause}`,
+            serviceError: e
+        }
+    }
+}
 const getById = async (id) => {
     try {
         const vehicule = await prisma.Vehicules.findUnique({
@@ -482,6 +561,43 @@ const unassign = async (matricule, email) => {
     }
 }
 
+const search = async (type, departLat, departLong) => {
+    try {
+        let cars = await getDisponible(type)
+        let locations = await geo.carsLocation(cars)
+        let carsWithCurrentLocation = await geo.carsLocation(locations)
+        let closestIdx = await geo.findClosestCar({departLat, departLong}, carsWithCurrentLocation)
+        let closest
+        if (closestIdx >= 0){
+            closest = cars[closestIdx]
+        }else{
+            closest = null
+        }
+        if (!closest){
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: `No nearby car was found`
+                }
+            }
+        }
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: closest
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.message}`,
+
+        }
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -491,5 +607,7 @@ module.exports = {
     addVehicle,
     deleteVehicule,
     assign,
-    unassign
+    unassign,
+    getDisponible,
+    search
 }
