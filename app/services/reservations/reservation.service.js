@@ -658,5 +658,4 @@ module.exports = {
     rejected,
     lockCar,
     unlockCar,
-    search
 }
