@@ -39,11 +39,12 @@
     "karma": "^6.3.17",
     "mqtt": "^4.3.7",
     "multer": "^1.4.4",
+    "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "randomstring": "^1.2.2",
     "socket.io": "^4.4.1",
-    "stripe": "^8.209.0",
+    "stripe": "^8.220.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
     "winston": "^3.7.2"

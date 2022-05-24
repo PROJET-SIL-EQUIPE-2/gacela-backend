@@ -1,17 +1,40 @@
 
-POST http://localhost:3000/api/supports/1
+
+POST http://localhost:3000/api/verifyCode
 Content-Type: application/json
 
 {
-    "typeSupport" : "Batterie",
-    "message" : "..."
+    "code" : "1234567" ,
+    "reservation_id" : "1"
 }
-###
-get http://localhost:3000/api/supports/1
 
-###
-get http://localhost:3000/api/supports
 
-###
+POST http://localhost:3000/api/create-reservation
+Content-Type: application/json
 
-put http://localhost:3000/api/supports/2
+{
+    "vehicule_id" : "1" ,
+    "locataire_id" : "1" , 
+    "departLat" : "0" , 
+    "departLong" : "0" ,
+    "destLat" : "0" ,
+    "destLong" : "0" ,
+}
+
+
+POST http://localhost:3000/api/valider-trajet
+Content-Type: application/json
+
+{
+    "id_reservation" : "1" ,
+    
+}
+
+POST http://localhost:3000/api/valider-reservation
+Content-Type: application/json
+
+{
+    "id_reservation" : "1" ,
+    
+}
+

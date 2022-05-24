@@ -1,0 +1,80 @@
+const fetch = require("node-fetch")
+const reservationService = require("../reservations/reservation.service")
+const carsService = require("../vehicules/vehicles.service")
+
+
+/**
+ * Returns duration in seconds
+ * */
+const getDuration = async (departLat, departLong, destLat, destLong) => {
+
+        let endpoint = `https://api.tomtom.com/routing/1/calculateRoute/${departLat}%2C${departLong}%3A${destLat}%2C${destLong}/json?key=DGN137adravN52Y5SA1TMXip7GQusRQp`
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                return data.routes[0].summary["travelTimeInSeconds"]
+            })
+            .catch(e => {
+                return null
+            });
+}
+
+
+const calculateEstimatedPrice = async (
+    reservation_id
+) => {
+
+    let priceHour ;
+    let vehicule_id ;
+    let duration ;
+    let constant = 10;
+    let vehicule;
+    let reservation = await reservationService.getById(reservation_id)
+    if (reservation){
+        vehicule_id = Number(reservation.vehicule_id);
+        vehicule = await carsService.getById(vehicule_id);
+        if (vehicule) {
+            priceHour = parseFloat(vehicule.type_car.price_per_hour);
+            duration = await getDuration(reservation.departLat,
+                                        reservation.departLong,
+                                        reservation.destLat,
+                                        reservation.destLong)
+
+            return (duration / 3600) * priceHour + constant
+
+        }else{
+            throw Error(`No car was found ??`)
+        }
+
+    }else {
+        throw Error(`No reservation of that id was found`)
+    }
+           
+}
+
+const calculateRealPrice = async (reservation_id) => {
+    let priceHour ;
+    let vehicule_id ;
+    let constant = 10;
+    let vehicule;
+    let reservation = await reservationService.getById(reservation_id)
+    if (reservation){
+        vehicule_id = Number(reservation.vehicule_id);
+        vehicule = await carsService.getById(vehicule_id);
+        if (vehicule) {
+            priceHour = parseFloat(vehicule.type_car.price_per_hour);
+            return (Math.abs((new Date(reservation.real_end_course)) - new Date(reservation.real_start_course)) / 36e5) * priceHour + constant
+        }else{
+            throw Error(`No car was found ??`)
+        }
+
+    }else {
+        throw Error(`No reservation of that id was found`)
+    }
+}
+
+module.exports = {
+    calculateEstimatedPrice,
+    calculateRealPrice,
+    getDuration
+}

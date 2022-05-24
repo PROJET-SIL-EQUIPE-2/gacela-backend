@@ -105,13 +105,13 @@ model Reply {
 
 }
 
-model Facture {
-  facture_id     Int           @id @default(autoincrement())
-  reservation_id Int?
-  price          Int?
-  paid           Boolean?
-  Reservations   Reservations? @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
-  Paiment        Paiment[]
+
+model Refund {
+  refund_id         Int           @id @default(autoincrement())
+  paiment_id        String?
+  paiment           Paiment? @relation(fields: [paiment_id], references: [paiment_id], onDelete: NoAction, onUpdate: NoAction)
+  amount            Int?
+
 }
 
 model Locataires {
@@ -152,12 +152,15 @@ model NotificationsLocataire {
 }
 
 model Paiment {
-  paiment_id   Int          @id @default(autoincrement())
-  facture_id   Int?
-  date_paiment DateTime?    @db.Timestamp(6)
+  paiment_id   String          @id
+  reservation_id  Int?
+  estimated_price Float?
+  real_price      Float?      @default(0)
+  date_paiment DateTime?    @db.Timestamp(6) @default(now())
   type_paiment Int?
-  Facture      Facture?     @relation(fields: [facture_id], references: [facture_id], onDelete: NoAction, onUpdate: NoAction)
+  refunds      Refund[]
   TypePaiment  TypePaiment? @relation(fields: [type_paiment], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
+  Reservations    Reservations?  @relation(fields: [reservation_id], references: [reservation_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Panne {
@@ -182,20 +185,21 @@ model Task {
 }
 
 model Reservations {
-  reservation_id   Int              @id @default(autoincrement())
-  locataire_id     Int
-  vehicule_id      Int
-  code             String?
-  etat             EtatReservation? @default(INVALIDE)
-  departLat        Float?
-  departLong       Float?
-  destLat          Float?
-  destLong         Float?
-  date_reservation DateTime         @default(now())
-  locataire       Locataires?      @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  vehicule        Vehicules?       @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
-  facture          Facture[]
-  ReservationRegion ReservationRegion[]
+  reservation_id      Int                  @id @default(autoincrement())
+  locataire_id        Int
+  vehicule_id         Int
+  code                String?
+  etat                EtatReservation?     @default(INVALIDE)
+  departLat           Float?
+  departLong          Float?
+  destLat             Float?
+  destLong            Float?
+  date_reservation    DateTime             @default(now())
+  real_start_course   DateTime?
+  real_end_course     DateTime?
+  locataire          Locataires?          @relation(fields: [locataire_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Vehicules           Vehicules?           @relation(fields: [vehicule_id], references: [vehicule_id], onDelete: NoAction, onUpdate: NoAction)
+  Paiment             Paiment[]
 }
 
 enum EtatReservation {
@@ -223,8 +227,8 @@ model Vehicules {
   locked            Boolean            @default(true)
   region            Int?
   AgentsMaintenance AgentsMaintenance? @relation(fields: [responsable], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
-  TypeVehicule      VehiculeType?      @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
   Region            Region?            @relation(fields: [region], references: [region_id], onDelete: NoAction, onUpdate: NoAction)
+  type_car          VehiculeType?      @relation(fields: [type_vehicule], references: [type_id], onDelete: NoAction, onUpdate: NoAction)
   Panne             Panne[]
   Reservations      Reservations[]
   VehiculesStatus   VehiculesStatus[]

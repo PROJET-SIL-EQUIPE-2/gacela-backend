@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors")
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 
@@ -33,6 +34,7 @@ const typesService = require("./routes/vehicules/types.router");
 const regionsRouter = require("./routes/regions/regions.route");
 
 const statsRouter = require("./routes/stats/stats.route");
+const paymentRouter = require("./routes/payment/payment.route")
 
 // firebase admin
 const firebaseAdminInitializeApp = require("./config/firebase-admin.config")
@@ -58,6 +60,11 @@ app.get("/", (req, res) => {
     res.send("Gacela API is up and running")
 })
 //// Apply routers
+
+
+app.post('/create-checkout-session', (req, res) => {
+    res.json({ url: "" })
+})
 app.use('/api/notification', require('./routes/locataire/notificationLoc.route'));
 app.use(authRouter);
 app.use('/api/mobile_passwordReset', passwordResetRouter);
@@ -94,6 +101,8 @@ app.use("/api/types", typesService);
 app.use("/api/regions", regionsRouter);
 
 app.use("/api/stats", statsRouter);
+app.use("/api/payment", paymentRouter)
+
 const odb = require("./services/odb/odb");
 const mqtt = require("mqtt");
 
