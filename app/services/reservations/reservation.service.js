@@ -697,6 +697,41 @@ const isFinished = async (reservation_id) => {
     }
 }
 
+const history = async (email) => {
+    // Get user by email
+    try {
+        let locataire = await prisma.Locataires.findFirst({
+            where: {
+                email: email
+            }
+        })
+
+        // Find reservations of that locataire
+        let reservations = await prisma.Reservations.findMany({
+            where:{
+                locataire_id: locataire.id
+            },
+            include: {
+                vehicule: true
+            }
+        })
+
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: reservations
+            }
+        }
+    }catch (e){
+        return {
+            code: 500,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`
+        }
+    }
+}
+
 
 module.exports = {
     createReservation,
@@ -712,5 +747,6 @@ module.exports = {
     unlockCar,
     exists,
     isFinished,
-    getById
+    getById,
+    history
 }

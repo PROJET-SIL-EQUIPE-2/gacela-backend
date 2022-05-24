@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors")
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 
@@ -103,8 +102,6 @@ app.use("/api/regions", regionsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/payment", paymentRouter)
 
-const odb = require("./services/odb/odb");
-const mqtt = require("mqtt");
 
 // firebase cloud messaging
 firebaseAdminInitializeApp();

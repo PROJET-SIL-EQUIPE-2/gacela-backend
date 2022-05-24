@@ -238,6 +238,34 @@ const rejectReservation = async (req, res) => {
     }
 }
 
+
+const history = async (req, res) => {
+    const validator = Joi.object({
+        locataire_email: Joi.string().email().required()
+    })
+    const { error } = validator.validate(req.body)
+    if (error) {
+        logger.error(error.details[0].message)
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {locataire_email} = req.body
+    const {code, data, serviceError, log} = await reservationService.history(locataire_email)
+    if (!serviceError) {
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+        logger.debug(log)
+
+    } else {
+        // Invoke error logger
+        logger.error(log)
+
+        res.status(code).json(serviceError)
+    }
+}
+
 module.exports = {
     // unlockCar,
     // lockCar,
@@ -249,5 +277,6 @@ module.exports = {
     pending,
     validated,
     completed,
-    rejected
+    rejected,
+    history
 }
