@@ -50,15 +50,30 @@ const getNbrDemandesRejetAnnee = async (year) => {
 }
 
 
-const getNbrInscriptionsSemaine = async () => {
+
+const getNbrInscriptionsSemaine = async (weekNumber , month , year) => {
+    weekNumber = Number(weekNumber);
+    month = Number(month);
+    year = Number(year);
+    const result = await prisma.$queryRaw`SELECT count(*) FROM  (SELECT *,  DATEPART(week, date_demande) AS WEEK,  EXTRACT(MONTH FROM date_demande) AS MONTH, EXTRACT(YEAR FROM date_demande) AS YEAR FROM DemandesInscription) WHERE MONTH=${month} AND YEAR=${year} AND WEEK=${weekNumber}`
+    return result ;
 
 }
 
-const getNbrInscriptionsMois = async () => {
+const getNbrInscriptionsMois = async (month , year) => {
+    month = Number(month);
+    year = Number(year);
+    const result = await prisma.$queryRaw`SELECT count(*) FROM  (SELECT *, EXTRACT(MONTH FROM date_demande) AS MONTH, EXTRACT(YEAR FROM date_demande) AS YEAR FROM DemandesInscription) WHERE MONTH=${month} AND YEAR=${year} `
+    return result ;
+
 
 }
 
-const getNbrInscriptionsAnnee = async () => {
+const getNbrInscriptionsAnnee = async (year) => {
+    year = Number(year);
+    const result = await prisma.$queryRaw`SELECT count(*) FROM  (SELECT *, EXTRACT(YEAR FROM date_demande) AS YEAR FROM DemandesInscription) WHERE YEAR=${year} `
+    return result ;
+
 
 }
 
