@@ -3,6 +3,7 @@ const paymentService = require("../../services/payment/payment.service")
 const refundService = require("../../services/payment/refund.service")
 const estimationService = require("../../services/payment/estimation.service")
 const fetch = require("node-fetch");
+const logger = require("../../services/logger")
 
 const checkout = async (req, res) => {
     const validator = Joi.object({
@@ -53,11 +54,25 @@ const refund = async (req, res) => {
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
-
+        logger.debug(log)
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
+}
+
+
+const estimate = async (req, res) => {
+    const {
+        startLat,
+        startLong,
+        endLat,
+        endLong
+    } = req.body
+    const est = await estimationService.getDuration(startLat, startLong, endLat, endLong)
+    return res.json(est)
 }
 
 const getRefundablePayments = async () => {
@@ -75,5 +90,6 @@ const generateRefundReport = () => {
 module.exports = {
     checkout,
     refund,
-    getRefundablePayments
+    getRefundablePayments,
+    estimate
 }

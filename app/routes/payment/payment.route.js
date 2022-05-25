@@ -4,7 +4,7 @@ const paymentController = require("../../controllers/payment/payment.controller"
 /*
 * Estimates reservation charges
 * */
-// router.get("/estimate", paymentController.estimate)
+router.get("/estimate", paymentController.estimate)
 
 
 /*
