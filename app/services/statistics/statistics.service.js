@@ -77,3 +77,14 @@ const getNbrInscriptionsAnnee = async (year) => {
 
 }
 
+module.exports = {
+    getNbrDemandesAcceptAnnee , 
+    getNbrDemandesAcceptMois , 
+    getNbrDemandesAcceptSemaine , 
+    getNbrDemandesRejetAnnee , 
+    getNbrDemandesRejetMois , 
+    getNbrDemandesRejetSemaine , 
+    getNbrInscriptionsAnnee , 
+    getNbrInscriptionsMois , 
+    getNbrInscriptionsSemaine 
+}
