@@ -6,9 +6,9 @@ button.addEventListener('click' , () => {
             'Content-Type': 'application/json' 
         } , 
         body: JSON.stringify({
-            reservation : [
-                {id :  1 , date : new Date()}
-            ]
+            facturation_id: 1
+              
+            
 
         })
     }).then (res => {
