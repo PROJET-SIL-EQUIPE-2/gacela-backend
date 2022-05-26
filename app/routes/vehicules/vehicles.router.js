@@ -12,6 +12,9 @@ router.post("/search", vehiclesController.search)
 // Get all vehicles
 router.get("/all", vehiclesController.getAllVehicles);
 
+// TODO GET assigned cars
+router.get("/assigned", vehiclesController.getAssignedCars);
+
 // Vehicle by id
 router.get("/:id", vehiclesController.getVehicleById);
 
@@ -39,6 +42,8 @@ router.post("/unassign", vehiclesController.unassign)
 // delete vehicle
 
 router.delete("/delete/:id", vehiclesController.deleteVehicle);
+
+
 
 
 module.exports = router;

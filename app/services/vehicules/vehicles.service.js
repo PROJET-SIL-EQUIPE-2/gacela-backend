@@ -605,6 +605,40 @@ const search = async (type, departLat, departLong) => {
     }
 }
 
+const getAssignedCars = async (email) => {
+    try {
+        let agent = await prisma.AgentsMaintenance.findFirst({
+            where: {
+                email: email
+            }
+        })
+        if (agent){
+            // Get cars
+            let assignedCars = await prisma.Vehicules.findMany({
+                where: {
+                    responsable: agent.agent_id
+                }
+            })
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: assignedCars
+                }
+            }
+        }
+        return {
+            code: 404,
+            data: {
+                success: false,
+                data: `No agent of email ${email} not found`
+            }
+        }
+    }catch (e) {
+
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -616,5 +650,6 @@ module.exports = {
     assign,
     unassign,
     getDisponible,
-    search
+    search,
+    getAssignedCars
 }

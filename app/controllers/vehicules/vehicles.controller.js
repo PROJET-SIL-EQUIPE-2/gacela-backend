@@ -240,6 +240,39 @@ const search = async (req, res) => {
     }
 }
 
+
+const getAssignedCars = async (req, res) => {
+    console.log("hi")
+    const validator = Joi.object({
+        email: Joi.string().required().required()
+    })
+    const {error} = validator.validate(req.body);
+    if (error){
+        logger.error(error.details[0].message)
+
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    console.log(req.data)
+    const {email} = req.body;
+
+    const {code, data, serviceError, log} = await vehiclesService.getAssignedCars(email)
+
+    // Send response to client
+    if (!serviceError){
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+        logger.debug(log)
+    }else{
+        // Invoke error logger
+        res.status(code).json(serviceError)
+        logger.error(log)
+
+    }
+}
+
 module.exports = {
     getAllVehicles,
     getVehicleById,
@@ -250,5 +283,6 @@ module.exports = {
     deleteVehicle,
     assign,
     unassign,
-    search
+    search,
+    getAssignedCars
 }
