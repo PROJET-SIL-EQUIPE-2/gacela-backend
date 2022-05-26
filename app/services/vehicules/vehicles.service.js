@@ -1,6 +1,7 @@
 const upload = require("../../utils/upload");
 const path = require("path");
 const geo = require("../geoservice/geo.service");
+const estimationService = require("../payment/estimation.service")
 const PrismaClient = require("@prisma/client").PrismaClient;
 const prisma = new PrismaClient();
 
@@ -565,7 +566,7 @@ const unassign = async (matricule, email) => {
     }
 }
 
-const search = async (type, departLat, departLong) => {
+const search = async (type, departLat, departLong, destLat, destLong) => {
     try {
         let {data} = await getDisponible(type)
         let cars = data.data
@@ -575,8 +576,10 @@ const search = async (type, departLat, departLong) => {
         let long = departLong
         let closestIdx = await geo.findClosestCar({lat, long}, carsWithCurrentLocation)
         let closest
+        let estimatedPrice;
         if (closestIdx >= 0){
             closest = cars[closestIdx]
+            estimatedPrice = await estimationService.calculateEstimatedPrice(type, departLat, departLong, destLat, destLong)
         }else{
             closest = null
         }
@@ -593,7 +596,10 @@ const search = async (type, departLat, departLong) => {
             code: 200,
             data: {
                 success: true,
-                data: closest
+                data: {
+                    closest,
+                    estimatedPrice
+                }
             }
         }
     }catch (e) {

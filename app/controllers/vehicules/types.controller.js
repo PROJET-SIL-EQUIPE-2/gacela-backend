@@ -73,5 +73,5 @@ const addType = async (req, res) => {
 module.exports = {
     getAllTypes,
     getType,
-    addType
+    addType,
 }

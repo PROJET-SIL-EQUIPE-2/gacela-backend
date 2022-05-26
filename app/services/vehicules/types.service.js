@@ -77,8 +77,23 @@ const addType = async (type, price_per_hour) => {
     }
 }
 
+const getPriceOfType = async (type) => {
+    try {
+        let fetchedType = await prisma.VehiculeType.findFirst({
+            where: {
+                type: type
+            }
+        })
+        return fetchedType.price_per_hour
+    }catch (e) {
+        throw e
+    }
+
+}
+
 module.exports = {
     getAll,
     getType,
-    addType
+    addType,
+    getPriceOfType
 }

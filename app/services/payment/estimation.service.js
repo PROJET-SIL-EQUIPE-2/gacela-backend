@@ -1,7 +1,7 @@
 const fetch = require("node-fetch")
 const reservationService = require("../reservations/reservation.service")
 const carsService = require("../vehicules/vehicles.service")
-
+const typeService = require("../vehicules/types.service")
 
 /**
  * Returns duration in seconds
@@ -17,34 +17,26 @@ const getDuration = async (departLat, departLong, destLat, destLong) => {
 
 
 const calculateEstimatedPrice = async (
-    reservation_id
+    carType, departLat, departLong, destLat, destLong
 ) => {
+    try {
+        let priceHour = await typeService.getPriceOfType(carType);
+        let duration = await getDuration(departLat, departLong, destLat,destLong);
+        let constant = 10;
 
-    let priceHour ;
-    let vehicule_id ;
-    let duration ;
-    let constant = 10;
-    let vehicule;
-    let reservation = await reservationService.getById(reservation_id)
-    if (reservation){
-        vehicule_id = Number(reservation.vehicule_id);
-        vehicule = await carsService.getById(vehicule_id);
-        if (vehicule) {
-            priceHour = parseFloat(vehicule.type_car.price_per_hour);
-            duration = await getDuration(reservation.departLat,
-                                        reservation.departLong,
-                                        reservation.destLat,
-                                        reservation.destLong)
-
-            return (duration / 3600) * priceHour + constant
-
-        }else{
-            throw Error(`No car was found ??`)
+        return (duration / 3600) * priceHour + constant
+    }catch (e) {
+        return {
+            code: 500,
+            data: {
+                success: false,
+                data: `Error while calculating estimated price`,
+                log: `Error while calculating estimated price`
+            }
         }
-
-    }else {
-        throw Error(`No reservation of that id was found`)
     }
+
+
            
 }
 

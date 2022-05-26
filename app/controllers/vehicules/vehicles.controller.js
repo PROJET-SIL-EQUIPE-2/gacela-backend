@@ -208,7 +208,9 @@ const search = async (req, res) => {
     const validator = Joi.object({
         type: Joi.string().required(),
         departLat: Joi.number().required(),
-        departLong: Joi.number().required()
+        departLong: Joi.number().required(),
+        destLat: Joi.number().required(),
+        destLong: Joi.number().required()
     })
 
     const {error} = validator.validate(req.body);
@@ -223,8 +225,10 @@ const search = async (req, res) => {
         type,
         departLat,
         departLong,
+        destLat,
+        destLong
     } = req.body
-    const {code, data, serviceError, log} = await vehiclesService.search(type, departLat, departLong) ;
+    const {code, data, serviceError, log} = await vehiclesService.search(type, departLat, departLong, destLat, destLong) ;
 
     // Send response to client
     if (!serviceError){
