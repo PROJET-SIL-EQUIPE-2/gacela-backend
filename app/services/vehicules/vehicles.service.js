@@ -83,10 +83,13 @@ const getAll = async (vehiculeType) => {
 const getDisponible = async (vehiculeType) => {
     try {
         let disponibles;
+
         if (vehiculeType) {
             // Find id of that type
             const type = await prisma.VehiculeType.findFirst({
-                type: vehiculeType
+                where :{
+                    type: vehiculeType
+                }
             })
             if (!type){
                 return {
@@ -152,8 +155,8 @@ const getDisponible = async (vehiculeType) => {
     } catch (e) {
         return {
             code: 500,
-            data: `Service error, ${e.meta.cause}`,
-            log: `Service error, ${e.meta.cause}`,
+            data: `Service error, ${e.message}`,
+            log: `Service error, ${e.message}`,
             serviceError: e
         }
     }
@@ -564,10 +567,13 @@ const unassign = async (matricule, email) => {
 
 const search = async (type, departLat, departLong) => {
     try {
-        let cars = await getDisponible(type)
+        let {data} = await getDisponible(type)
+        let cars = data.data
         let locations = await geo.carsLocation(cars)
         let carsWithCurrentLocation = await geo.carsLocation(locations)
-        let closestIdx = await geo.findClosestCar({departLat, departLong}, carsWithCurrentLocation)
+        let lat = departLat
+        let long = departLong
+        let closestIdx = await geo.findClosestCar({lat, long}, carsWithCurrentLocation)
         let closest
         if (closestIdx >= 0){
             closest = cars[closestIdx]

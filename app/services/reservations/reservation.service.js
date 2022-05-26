@@ -313,7 +313,7 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
-                // TODO: Checkout client here ?
+                // TODO: Checkout client here
 
                 reservation = await prisma.Reservations.update({
                     data: {
@@ -748,5 +748,6 @@ module.exports = {
     exists,
     isFinished,
     getById,
-    history
+    history,
+
 }

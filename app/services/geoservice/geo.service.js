@@ -17,6 +17,7 @@ function distance(lat1, lon1, lat2, lon2, unit) {
     dist = Math.acos(dist)
     dist = dist * 180/Math.PI
     dist = dist * 60 * 1.1515
+
     if (unit==="K") { dist = dist * 1.609344 }
     if (unit==="N") { dist = dist * 0.8684 }
     return dist
@@ -32,11 +33,8 @@ const findClosestCar = async (location, cars) => {
         carLong = cars[i].long
         distances.push(distance(lat, long, carLat, carLong))
     }
-    let minIdx = distances.indexOf(Math.min(...distances))
-    if (minIdx >= 0){
-        return cars[minIdx]
-    }
-    return null
+
+    return distances.indexOf(Math.min(...distances))
 }
 
 

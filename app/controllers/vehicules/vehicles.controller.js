@@ -204,6 +204,7 @@ const unassign = async (req, res) => {
 
 
 const search = async (req, res) => {
+    console.log("hi")
     const validator = Joi.object({
         type: Joi.string().required(),
         departLat: Joi.number().required(),
@@ -223,7 +224,7 @@ const search = async (req, res) => {
         departLat,
         departLong,
     } = req.body
-    const {code, data, serviceError, log} = await reservationService.search(type, departLat, departLong) ;
+    const {code, data, serviceError, log} = await vehiclesService.search(type, departLat, departLong) ;
 
     // Send response to client
     if (!serviceError){
