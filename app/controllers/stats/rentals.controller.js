@@ -1,10 +1,10 @@
-const statsService = require("../../services/stats/stats.service")
+const rentalsService = require("../../services/stats/rentals.service")
 const logger = require("../../services/logger");
 
 
 const rental = async (req, res) => {
     let region_name = req.query.region
-    const {code, data, serviceError, log} = await statsService.rental(region_name)
+    const {code, data, serviceError, log} = await rentalsService.rental(region_name)
     if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)

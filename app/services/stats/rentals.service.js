@@ -9,6 +9,15 @@ const rental = async (region_name) => {
                     region_name: region_name
                 }
             })
+            if (!region){
+                return {
+                    code: 404,
+                    data: {
+                        success: false,
+                        data: `No region of name ${region_name} was found`
+                    }
+                }
+            }
             const agg = await prisma.ReservationRegion.aggregate({
                 where: {
                     region_id: region.region_id

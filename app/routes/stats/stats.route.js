@@ -1,10 +1,9 @@
 const router = require("express").Router()
-const statsController = require("../../controllers/stats/stats.controller")
-
+const rentalsStatsController = require("../../controllers/stats/rentals.controller")
 /**
  * Rate of usage based on number of rentals per region
  * */
-router.get("/rental", statsController.rental)
+router.get("/rental", rentalsStatsController.rental)
 
 
 
