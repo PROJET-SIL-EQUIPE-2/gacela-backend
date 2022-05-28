@@ -708,7 +708,7 @@ const history = async (email) => {
 
         // Find reservations of that locataire
         let reservations = await prisma.Reservations.findMany({
-            where:{
+            where: {
                 locataire_id: locataire.id
             },
             include: {
@@ -723,7 +723,7 @@ const history = async (email) => {
                 data: reservations
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
             data: `Server error, ${e.message}`,

@@ -180,7 +180,8 @@ model Task {
   date              DateTime?          @map("_date") @db.Date
   panne_id          Int?
   description       String?            @db.VarChar
-  completed         Boolean?
+  completed         Boolean?           @default(false)
+  progress Int?     @default(0)
   AgentsMaintenance AgentsMaintenance? @relation(fields: [agent_id], references: [agent_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
