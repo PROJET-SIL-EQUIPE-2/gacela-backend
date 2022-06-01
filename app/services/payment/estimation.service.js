@@ -12,7 +12,13 @@ const getDuration = async (departLat, departLong, destLat, destLong) => {
         let endpoint = `https://api.tomtom.com/routing/1/calculateRoute/${departLat}%2C${departLong}%3A${destLat}%2C${destLong}/json?key=DGN137adravN52Y5SA1TMXip7GQusRQp`
         const response = await fetch(endpoint)
         const data = await response.json()
-        return (data.routes[0].summary["travelTimeInSeconds"] + data.routes[0].summary["trafficDelayInSeconds"]) / (SECONDS_IN_MINUTE * MINUTES_IN_HOUR)
+        console.log(data)
+        try {
+            return (data.routes[0].summary["travelTimeInSeconds"] + data.routes[0].summary["trafficDelayInSeconds"]) / (SECONDS_IN_MINUTE * MINUTES_IN_HOUR)
+        }catch (e){
+            return  null
+        }
+
 }
 
 
@@ -22,9 +28,11 @@ const calculateEstimatedPrice = async (
     try {
         let priceHour = await typeService.getPriceOfType(carType);
         let duration = await getDuration(departLat, departLong, destLat,destLong);
-        let constant = 10;
-
-        return (duration / 3600) * priceHour + constant
+        if (duration != null){
+            let constant = 10;
+            return (duration / 3600) * priceHour + constant
+        }
+        return null
     }catch (e) {
         return {
             code: 500,

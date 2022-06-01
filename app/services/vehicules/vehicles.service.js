@@ -154,6 +154,7 @@ const getDisponible = async (vehiculeType) => {
             }
         }
     } catch (e) {
+        console.log(e)
         return {
             code: 500,
             data: `Service error, ${e.message}`,
@@ -570,16 +571,29 @@ const search = async (type, departLat, departLong, destLat, destLong) => {
     try {
         let {data} = await getDisponible(type)
         let cars = data.data
+        // console.log(cars)
         let locations = await geo.carsLocation(cars)
         let carsWithCurrentLocation = await geo.carsLocation(locations)
         let lat = departLat
         let long = departLong
+        // console.log(carsWithCurrentLocation)
         let closestIdx = await geo.findClosestCar({lat, long}, carsWithCurrentLocation)
         let closest
         let estimatedPrice;
         if (closestIdx >= 0){
             closest = cars[closestIdx]
             estimatedPrice = await estimationService.calculateEstimatedPrice(type, departLat, departLong, destLat, destLong)
+            console.log(estimatedPrice)
+
+            if (!estimatedPrice){
+                return {
+                    code: 500,
+                    data: {
+                        success: false,
+                        data: `Could not estimate`
+                    }
+                }
+            }
         }else{
             closest = null
         }
@@ -592,6 +606,7 @@ const search = async (type, departLat, departLong, destLat, destLong) => {
                 }
             }
         }
+
         return {
             code: 200,
             data: {
