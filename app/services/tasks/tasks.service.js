@@ -7,219 +7,225 @@ const prisma = new PrismaClient()
 
 
 
-const getAllTasks = async(id) =>{
-    
-    try{
+const getAllTasks = async (id) => {
+
+    try {
         const tasks = await prisma.task.findMany({
-            where : {
-                agent_id : Number(id)
+            where: {
+                agent_id: Number(id)
             }
         });
 
         if (tasks)
-        return {
-            code : 200,
-            data: { success: true, 
-                data : {
-                    tasks,
-                },
-            }
-        };
-    }catch(e){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: {
+                        tasks,
+                    },
+                }
+            };
+    } catch (e) {
         console.error(e);
         return {
-            code : 500,
+            code: 500,
             data: { success: false, errors: [{ msg: `Server error` }] }
         };
     }
 }
 
-const getCompletedTasks = async(id) =>{
+const getCompletedTasks = async (id) => {
 
-    try{
+    try {
         const tasks = await prisma.task.findMany({
-            where : {
-                agent_id : Number(id),
-                completed : true
+            where: {
+                agent_id: Number(id),
+                completed: true
             }
         });
 
         if (tasks)
-        return {
-            code : 200,
-            data: { success: true, 
-                data : {
-                    tasks,
-                },
-            }
-        };
-    }catch(e){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: {
+                        tasks,
+                    },
+                }
+            };
+    } catch (e) {
         console.error(e);
         return {
-            code : 500,
+            code: 500,
             data: { success: false, errors: [{ msg: `Server error` }] }
         };
     }
 }
 
-const getUnfinishedTasks = async(id) =>{
+const getUnfinishedTasks = async (id) => {
 
-    try{
+    try {
         const tasks = await prisma.task.findMany({
-            where : {
-                agent_id : Number(id),
-                completed : false
+            where: {
+                agent_id: Number(id),
+                completed: false
             }
         });
 
         if (tasks)
-        return {
-            code : 200,
-            data: { success: true, 
-                data : {
-                    tasks
-                },
-            }
-        };
-    }catch(e){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: {
+                        tasks
+                    },
+                }
+            };
+    } catch (e) {
         console.error(e);
         return {
-            code : 500,
+            code: 500,
             data: { success: false, errors: [{ msg: `Server error` }] }
         };
     }
 }
 
-const getTaskDetail = async(id) =>{
+const getTaskDetail = async (id) => {
 
-    try{
+    try {
         const panne = await prisma.panne.findMany({
-            where : {
-                panne_id : Number(id),
+            where: {
+                panne_id: Number(id),
             },
-            include : {
-                Vehicules : true
+            include: {
+                Vehicules: true
             }
         });
 
         if (panne)
-        return {
-            code : 200,
-            data: { success: true, 
-                data : {
-                    panne
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: {
+                        panne
+                    }
                 }
-            }
-        };
-    }catch(e){
+            };
+    } catch (e) {
         console.error(e);
         return {
-            code : 500,
+            code: 500,
             data: { success: false, errors: [{ msg: `Server error` }] }
         };
     }
 }
 
-const fixPanne = async(id) =>{
+const fixPanne = async (id) => {
 
-        try{
-            const task = await prisma.task.update ({
-                where : {
-                    task_id : Number(id)
+    try {
+        const task = await prisma.task.update({
+            where: {
+                task_id: Number(id)
+            },
+            data: {
+                completed: true,
+                progress: 100,
+            }
+        });
+        if (task) {
+
+            var panne = await prisma.panne.update({
+                where: {
+                    panne_id: Number(task.panne_id)
                 },
-                data : {
-                    completed : true,
-                }
-            });
-        if(task) {
-           
-            var panne = await prisma.panne.update ({
-                where : {
-                    panne_id : Number(task.panne_id)
-                },
-                data : {
-                    blocked : false,
-                    treated : true
+                data: {
+                    blocked: false,
+                    treated: true
                 }
             });
         }
         if (panne)
-        return {
-            code : 200,
-            data: { success: true, 
-                msg : "fixed succefully"
-            }
-        };
-    }catch(e){
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    msg: "fixed succefully"
+                }
+            };
+    } catch (e) {
         console.error(e);
         return {
-            code : 500,
+            code: 500,
             data: { success: false, errors: [{ msg: `Server error` }] }
         };
     }
 }
 
-const updateProgress = async(id) =>{
+const updateProgress = async (id) => {
 
-    try{
-        
+    try {
+
         const task = await prisma.task.findFirst({
-            where : {
-                task_id : Number(id),
-                completed : false
+            where: {
+                task_id: Number(id),
+                completed: false
             }
         });
-        if(task){
-                if(task.progress < 90 ) {
-                    const taskUpdated = await prisma.task.update ({
-                        where : {
-                            task_id : Number(id)
-                        },
-                        data : {
-                            progress : task.progress + 10,
-                        }
-                    });
-                    return {
-                        code : 200,
-                        data: { success: true, 
-                            msg : "updated succefully"
-                        }
-                    };
-                }else{
-                    const taskUpdated = await prisma.task.update ({
-                        where : {
-                            task_id : Number(id)
-                        },
-                        data : {
-                            progress : task.progress + 10,
-                            completed : true,
-                        }
-                    });
-                    return {
-                        code : 200,
-                        data: { success: true, 
-                            msg : "completed succefully"
-                        }
-                    };
-                }
-        }else{
+        if (task) {
+            if (task.progress < 90) {
+                const taskUpdated = await prisma.task.update({
+                    where: {
+                        task_id: Number(id)
+                    },
+                    data: {
+                        progress: task.progress + 10,
+                    }
+                });
+                return {
+                    code: 200,
+                    data: {
+                        success: true,
+                        msg: "updated succefully"
+                    }
+                };
+            } else {
+                const taskUpdated = await prisma.task.update({
+                    where: {
+                        task_id: Number(id)
+                    },
+                    data: {
+                        progress: task.progress + 10,
+                        completed: true,
+                    }
+                });
+                return {
+                    code: 200,
+                    data: {
+                        success: true,
+                        msg: "completed succefully"
+                    }
+                };
+            }
+        } else {
             return {
-                code : 200,
-                data: { success: true, 
-                    msg : "already completed"
+                code: 200,
+                data: {
+                    success: true,
+                    msg: "already completed"
                 }
             };
         }
-        
-   
-    
-}catch(e){
-    console.error(e);
-    return {
-        code : 500,
-        data: { success: false, errors: [{ msg: `Server error` }] }
-    };
-}
+    } catch (e) {
+        console.error(e);
+        return {
+            code: 500,
+            data: { success: false, errors: [{ msg: `Server error` }] }
+        };
+    }
 }
 module.exports = {
     getAllTasks,

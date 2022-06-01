@@ -69,6 +69,18 @@ const getDemandeSupport = async (agent_id) => {
         const supports = await prisma.demandesSupport.findMany({
             where: {
                 agent_id: Number(agent_id),
+
+            },
+            include: {
+                Vehicules: true,
+                Locataires: {
+                    select: {
+                        family_name: true,
+                        name: true,
+                        email: true,
+                        phone_number: true,
+                    }
+                },
             }
         });
 
