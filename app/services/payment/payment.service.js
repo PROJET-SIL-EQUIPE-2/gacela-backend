@@ -88,7 +88,7 @@ const createPayment = async (payment_id, estimated_price, type) => {
 /**
  * Returns the payment associated to a reservation
  * @param {[Int]} reservation_id
- * @return {[Payment]} payment object of that reservation
+ * @return {[]} payment object of that reservation
  */
 const getPaymentOfReservation = async (reservation_id) => {
     try {
@@ -115,9 +115,43 @@ const getPaymentById = async (payment_id) => {
     }
 }
 
+const update = async (reservation_id) => {
+    try {
+        let payment = await prisma.Paiment.findFirst({
+            where: {
+                reservation_id: reservation_id
+            }
+        })
+        if (payment){
+            let real_price=  await estimationService.calculateRealPrice(reservation_id)
+            await setPaymentRealPrice(payment.paiment_id, real_price)
+            return true
+        }
+    }catch (e){
+        throw Error(e.message)
+    }
+}
+
+const setPaymentRealPrice = async (payment_id, price) => {
+    try {
+        let payment = await prisma.Paiment.update({
+            where: {
+                paiment_id: payment_id
+            },
+            data: {
+                real_price: price
+            }
+        })
+        return true
+    }catch (e) {
+        throw Error(`Could not update price of payment ${payment_id}`)
+    }
+}
+
 module.exports = {
     getPaymentOfReservation,
     getPaymentById,
     checkout,
-    createPayment
+    createPayment,
+    update
 }

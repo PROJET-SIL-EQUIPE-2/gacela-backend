@@ -4,14 +4,25 @@ const odb = require("../odb/odb");
 
 const prisma = new PrismaClient();
 
+const paymentService = require("../payment/payment.service")
+
+const getById = async (reservation_id) => {
+    try {
+        return await prisma.Reservations.findUnique({
+            reservation_id: reservation_id
+        })
+    } catch (e) {
+
+    }
+}
 // Get pending reservations
 const pending = async () => {
     try {
         let reservations = await prisma.Reservations.findMany({
-                where : {
-                    etat: "INVALIDE"
-                }
+            where: {
+                etat: "INVALIDE"
             }
+        }
         );
         return {
             code: 200,
@@ -20,11 +31,11 @@ const pending = async () => {
                 reservations
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -34,10 +45,10 @@ const pending = async () => {
 const validated = async () => {
     try {
         let reservations = await prisma.Reservations.findMany({
-                where : {
-                    etat: "ENCOURS"
-                }
+            where: {
+                etat: "ENCOURS"
             }
+        }
         );
         return {
             code: 200,
@@ -46,11 +57,11 @@ const validated = async () => {
                 reservations
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -60,10 +71,10 @@ const validated = async () => {
 const completed = async () => {
     try {
         let reservations = await prisma.Reservations.findMany({
-                where : {
-                    etat: "COMPLETED"
-                }
+            where: {
+                etat: "COMPLETED"
             }
+        }
         );
         return {
             code: 200,
@@ -72,11 +83,11 @@ const completed = async () => {
                 reservations
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -86,10 +97,10 @@ const completed = async () => {
 const rejected = async () => {
     try {
         let reservations = await prisma.Reservations.findMany({
-                where : {
-                    etat: "REJECTED"
-                }
+            where: {
+                etat: "REJECTED"
             }
+        }
         );
         return {
             code: 200,
@@ -98,18 +109,19 @@ const rejected = async () => {
                 reservations
             }
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
 }
 
-const createReservation = async (matricule,locataire, departLat, departLong, destLat, destLong) => {
 
+
+const createReservation = async (matricule, locataire, departLat, departLong, destLat, destLong) => {
     try {
 
         let loc = await prisma.Locataires.findFirst({
@@ -118,32 +130,35 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
             }
         })
 
-        if (!loc){
+        if (!loc) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     data: `No locataire of email ${locataire} was found`
-                }
+                },
+                log: `No locataire of email ${locataire} was found`
             }
         }
-        if (!loc.validated){
+        if (!loc.validated) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     data: `locataire of email ${locataire} was not validated yet`
-                }
+                },
+                log: `locataire of email ${locataire} was not validated yet`
             }
         }
 
-        if (loc.blocked){
+        if (loc.blocked) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     data: `locataire of email ${locataire} is blocked`
-                }
+                },
+                log: `locataire of email ${locataire} is blocked\``
             }
         }
         let car = await prisma.Vehicules.findFirst({
@@ -151,29 +166,31 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 matricule: matricule
             }
         })
-        if (!car){
+        if (!car) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `No car of matricule ${matricule} was found`
-                }
+                },
+                log: `No car of matricule ${matricule} was found`
             }
         }
-        if (!car.disponible){
+        if (!car.disponible) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `Car of matricule ${matricule} is not disponible`
-                }
+                },
+                log: `Car of matricule ${matricule} is not disponible`
             }
         }
 
         let reservation = await prisma.Reservations.findFirst({
-            where : {
+            where: {
                 locataire_id: loc.id,
-                vehicule_id: car.vehicule_id ,
+                vehicule_id: car.vehicule_id,
                 etat: "INVALIDE"
             }
         }
@@ -181,14 +198,14 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
 
         if (!reservation) {
             reservation = await prisma.Reservations.create({
-                data : {
+                data: {
                     locataire_id: loc.id,
-                    vehicule_id: car.vehicule_id ,
-                    etat: "INVALIDE" ,
-                    departLat : departLat ,
-                    departLong : departLong ,
-                    destLat : destLat ,
-                    destLong : destLong
+                    vehicule_id: car.vehicule_id,
+                    etat: "INVALIDE",
+                    departLat: departLat,
+                    departLong: departLong,
+                    destLat: destLat,
+                    destLong: destLong
                 }
             });
 
@@ -208,16 +225,17 @@ const createReservation = async (matricule,locataire, departLat, departLong, des
                 code: 400,
                 data: {
                     success: false,
-                    data: `Cette réservation est toujours en cours`
-                }
+                    data: `Cette réservation ${reservation.reservation_id} est toujours en cours`
+                },
+                log: `Cette réservation ${reservation.reservation_id} est toujours en cours`
             }
 
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -234,41 +252,44 @@ const validateReservation = async (reservation_id, locataire_email) => {
                 email: locataire_email
             }
         })
-        if (!client){
+        if (!client) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `No client of that email ${locataire_email} was found`,
-                }
+                },
+                log: `No client of that email ${locataire_email} was found`,
             }
         }
         let reservation = await prisma.Reservations.findUnique({
-            where : {
+            where: {
                 reservation_id: reservation_id,
             },
             include: {
                 locataire: true
             }
         })
-        if (!reservation){
+        if (!reservation) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
 
         // Check if this client has requested this reservation
-        if (reservation.locataire.email !== locataire_email){
+        if (reservation.locataire.email !== locataire_email) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `Locataire of email ${locataire_email} has not requested this reservation`,
-                }
+                },
+                log: `Locataire of email ${locataire_email} has not requested this reservation`,
             }
         }
 
@@ -279,7 +300,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is en cours`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is en cours`
                 }
             case "COMPLETED":
                 return {
@@ -287,17 +309,19 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
+                // TODO: Checkout client here
 
                 reservation = await prisma.Reservations.update({
-                    data : {
-                        etat : "ENCOURS", //completed
+                    data: {
+                        etat: "ENCOURS", //completed
                         code: randomstring.generate(7)
                     },
-                    where : {
-                        reservation_id : reservation_id,
+                    where: {
+                        reservation_id: reservation_id,
                     }
                 });
 
@@ -322,7 +346,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                         data: {
                             success: true,
                             message: "La reservation a été validée."
-                        }
+                        },
+                        log: `La reservation ${reservation_id} a été validée.`
                     }
 
                 }
@@ -333,7 +358,8 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected and can not be validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was rejected and can not be validated`
                 }
         }
 
@@ -342,13 +368,14 @@ const validateReservation = async (reservation_id, locataire_email) => {
             data: {
                 success: false,
                 message: "La reservation n'a pas pu être validée."
-            }
+            },
+            log: `La reservation de l\'id ${reservation_id} n'a pas pu être validée.`
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -358,17 +385,18 @@ const validateReservation = async (reservation_id, locataire_email) => {
 const rejectReservation = async (reservation_id) => {
     try {
         let reservation = await prisma.Reservations.findUnique({
-            where : {
+            where: {
                 reservation_id: reservation_id,
             }
         })
-        if (!reservation){
+        if (!reservation) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
         switch (reservation.etat) {
@@ -378,7 +406,8 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is en cours`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is en cours`
                 }
             case "COMPLETED":
                 return {
@@ -386,15 +415,16 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
                 reservation = await prisma.Reservations.update({
-                    data : {
-                        etat : "REJECTED",
+                    data: {
+                        etat: "REJECTED",
                     },
-                    where : {
-                        reservation_id : reservation_id,
+                    where: {
+                        reservation_id: reservation_id,
                     }
                 });
 
@@ -414,7 +444,8 @@ const rejectReservation = async (reservation_id) => {
                         data: {
                             success: true,
                             message: "La reservation a été rejete."
-                        }
+                        },
+                        log: `La reservation de l\'id ${reservation_id} a été rejete.`
                     }
 
                 }
@@ -425,7 +456,8 @@ const rejectReservation = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was rejected before`
                 }
         }
 
@@ -434,13 +466,14 @@ const rejectReservation = async (reservation_id) => {
             data: {
                 success: false,
                 message: "La reservation n'a pas pu être validée."
-            }
+            },
+            log: "La reservation n'a pas pu être validée."
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error,`,
-            log: `Server error,`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -448,67 +481,71 @@ const rejectReservation = async (reservation_id) => {
 
 const verifyCode = async (reservation_id, code) => {
 
-   try{
-       let reservation = await prisma.Reservations.findUnique({
-           where : {
-               reservation_id: reservation_id,
-           }
-       });
+    try {
+        let reservation = await prisma.Reservations.findUnique({
+            where: {
+                reservation_id: reservation_id,
+            }
+        });
 
-       if (!reservation){
-           return {
-               status: 400,
-               data: {
-                   success: false,
-                   message: `No reservation of that id ${reservation_id} was found`
-               }
-           }
-       }
-       if(reservation.code === code) {
-           // TODO: Send unlock command to device
-           odb.setStatus("unlocked");
-           await unlockCar(reservation.vehicule_id)
-           // deverouillerVoiture(reservation)  ;
-           return {
-               status: 200,
-               data: {
-                   success: true,
-                   message: "Car unlocked"
-               }
-           }
-       }
-       // TODO: Send error message to device
-       odb.setStatus("Locked, try again")
+        if (!reservation) {
+            return {
+                status: 400,
+                data: {
+                    success: false,
+                    message: `No reservation of that id ${reservation_id} was found`
+                },
+                log: `No reservation of that id ${reservation_id} was found`
+            }
+        }
+        if (reservation.code === code) {
+            // TODO: Send unlock command to device
+            odb.setStatus("unlocked");
+            await unlockCar(reservation.vehicule_id)
+            // deverouillerVoiture(reservation)  ;
+            return {
+                status: 200,
+                data: {
+                    success: true,
+                    message: "Car unlocked"
+                },
+                log: `Car of code ${code} unlocked`
+            }
+        }
+        // TODO: Send error message to device
+        odb.setStatus("Locked, try again")
 
-       // TODO: Retry ?
+        // TODO: Retry ?
 
-       return {
-           status: 400,
-           data: {
-               success: false,
-               message: "Le code est incorrect! "
-           }
-       }
-   }catch (e) {
-       return {
-           status: 500,
-           data: `Server error,`,
-           log: `Server error,`,
-           serviceError: e
-       }
-   }
+        return {
+            status: 400,
+            data: {
+                success: false,
+                message: "Le code est incorrect! "
+            },
+            log: "Le code est incorrect! "
+        }
+    } catch (e) {
+        return {
+            status: 500,
+            data: `Server error, ${e.message}`,
+            log: `Server error,${e.message}`,
+            serviceError: e
+        }
+    }
 
 }
 
 const unlockCar = async (vehicule_id) => {
 
     let dev = await prisma.Vehicules.update({
-        data : {
-            locked : false
-        } ,
-        where : {
-        vehicule_id : vehicule_id,
-    }});
+        data: {
+            locked: false
+        },
+        where: {
+            vehicule_id: vehicule_id,
+        }
+    });
     return !!dev;
 }
 
@@ -516,41 +553,43 @@ const unlockCar = async (vehicule_id) => {
 const lockCar = async (vehicule_id) => {
 
     let dev = await prisma.Vehicules.update({
-        data : {
-            locked : true
-        } ,
-        where : {
-            vehicule_id : vehicule_id,
-        }});
+        data: {
+            locked: true
+        },
+        where: {
+            vehicule_id: vehicule_id,
+        }
+    });
     return !!dev;
 }
 
 const validateTrajet = async (reservation_id) => {
     try {
         let reservation = await prisma.Reservations.findUnique({
-            where : {
+            where: {
                 reservation_id: reservation_id,
             }
         })
-        if (!reservation){
+        if (!reservation) {
             return {
                 code: 400,
                 data: {
                     success: false,
                     message: `No reservation of that id ${reservation_id} was found`,
-                }
+                },
+                log: `No reservation of that id ${reservation_id} was found`,
             }
         }
         switch (reservation.etat) {
             case "ENCOURS":
                 let valid = await prisma.Reservations.update({
-                        data : {
-                            etat: 'COMPLETED'
-                        } ,
-                        where : {
-                            reservation_id: reservation_id,
-                        }
+                    data: {
+                        etat: 'COMPLETED'
+                    },
+                    where: {
+                        reservation_id: reservation_id,
                     }
+                }
                 );
                 // Update Vehicule
                 await prisma.Vehicules.update({
@@ -561,15 +600,20 @@ const validateTrajet = async (reservation_id) => {
                         vehicule_id: reservation.vehicule_id
                     }
                 })
-                if(valid) {
-                    // deverouillerVoiture(valid) ;
+                if (valid) {
+                    // unlock car
                     await unlockCar(reservation.vehicule_id)
+
+                    // Update real price
+                    await paymentService.update(reservation)
+
                     return {
                         code: 200,
                         data: {
                             success: true,
                             message: "Le trajet est marqué comme complet."
-                        }
+                        },
+                        log: `Le trajet ${reservation_id} est marqué comme complet.`
                     }
                 }
                 break;
@@ -579,7 +623,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was completed before`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} was completed before`
                 }
             case "INVALIDE":
                 return {
@@ -587,7 +632,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} is not validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is not validated`
                 }
             case "REJECTED":
                 return {
@@ -595,7 +641,8 @@ const validateTrajet = async (reservation_id) => {
                     data: {
                         success: false,
                         message: `Reservation of id ${reservation_id} was rejected and can not be validated`
-                    }
+                    },
+                    log: `Reservation of id ${reservation_id} is not validated`
                 }
         }
         return {
@@ -603,13 +650,14 @@ const validateTrajet = async (reservation_id) => {
             data: {
                 success: false,
                 message: "Un probleme est survenue lors de la modification"
-            }
+            },
+            log: `Un probleme est survenue lors de la modification du trajet ${reservation_id}`
         }
-    }catch (e){
+    } catch (e) {
         return {
             code: 500,
-            data: `Server error`,
-            log: `Server error`,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -627,7 +675,7 @@ const exists = async (reservation_id) => {
         })
 
         return reservation != null
-    }catch (e) {
+    } catch (e) {
 
         return false
     }
@@ -644,17 +692,52 @@ const isFinished = async (reservation_id) => {
         })
         return reservation.etat === "COMPLETED";
 
-    }catch (e) {
+    } catch (e) {
         return false
+    }
+}
+
+const history = async (email) => {
+    // Get user by email
+    try {
+        let locataire = await prisma.Locataires.findFirst({
+            where: {
+                email: email
+            }
+        })
+
+        // Find reservations of that locataire
+        let reservations = await prisma.Reservations.findMany({
+            where: {
+                locataire_id: locataire.id
+            },
+            include: {
+                vehicule: true
+            }
+        })
+
+        return {
+            code: 200,
+            data: {
+                success: true,
+                data: reservations
+            }
+        }
+    } catch (e) {
+        return {
+            code: 500,
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`
+        }
     }
 }
 
 
 module.exports = {
-    createReservation ,
-    validateTrajet ,
-    verifyCode ,
-    validateReservation ,
+    createReservation,
+    validateTrajet,
+    verifyCode,
+    validateReservation,
     rejectReservation,
     pending,
     validated,
@@ -663,5 +746,8 @@ module.exports = {
     lockCar,
     unlockCar,
     exists,
-    isFinished
+    isFinished,
+    getById,
+    history,
+
 }

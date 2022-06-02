@@ -6,8 +6,14 @@ const path = require("path");
 const uploadPath = "images/vehicles/";
 const uploader = multer({ dest: path.join("uploads", uploadPath) })
 
+// nearby search
+router.post("/search", vehiclesController.search)
+
 // Get all vehicles
 router.get("/all", vehiclesController.getAllVehicles);
+
+// TODO GET assigned cars
+router.get("/assigned", vehiclesController.getAssignedCars);
 
 // Vehicle by id
 router.get("/:id", vehiclesController.getVehicleById);
@@ -23,8 +29,6 @@ router.get("/all/reserved", vehiclesController.getReserved)
 // Get out of order vehicules
 router.get("/all/defective", vehiclesController.getDefective)
 
-
-
 // Add new vehicle
 router.post("/add", uploader.single('car_photo'), vehiclesController.addVehicle);
 
@@ -38,6 +42,8 @@ router.post("/unassign", vehiclesController.unassign)
 // delete vehicle
 
 router.delete("/delete/:id", vehiclesController.deleteVehicle);
+
+
 
 
 module.exports = router;

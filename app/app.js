@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors")
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const dotenv = require("dotenv")
 const bodyParser = require("body-parser")
 
@@ -29,6 +28,11 @@ const agentsRouter = require("./routes/agents/agents.router");
 
 const reservationsRouter = require("./routes/reservation/reservation.route")
 
+const typesService = require("./routes/vehicules/types.router");
+
+const regionsRouter = require("./routes/regions/regions.route");
+
+const statsRouter = require("./routes/stats/stats.route");
 const paymentRouter = require("./routes/payment/payment.route")
 
 // firebase admin
@@ -89,12 +93,15 @@ app.use("/api/decideurs", decideurRouter);
 
 app.use("/api/agents", agentsRouter);
 
-app.use("/api/reservations", reservationsRouter)
+app.use("/api/reservations", reservationsRouter);
 
+app.use("/api/types", typesService);
+
+app.use("/api/regions", regionsRouter);
+
+app.use("/api/stats", statsRouter);
 app.use("/api/payment", paymentRouter)
 
-const odb = require("./services/odb/odb");
-const mqtt = require("mqtt");
 
 // firebase cloud messaging
 firebaseAdminInitializeApp();
