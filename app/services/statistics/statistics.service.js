@@ -42,38 +42,21 @@ const getNbrDemandesRejetSemaine = async (weekNumber , month , year ) => {
 
 const getNbrDemandesAcceptMois = async (month , year) => {
     
-    try {
-        const result = await prisma.$queryRaw`SELECT count(*) FROM  (SELECT *, EXTRACT(MONTH FROM date_reservation) AS MONTH, EXTRACT(YEAR FROM date_reservation) AS YEAR FROM Reservations) WHERE MONTH=${month} AND YEAR=${year} AND etat=COMPLETED OR etat=ENCOURS`
-    if(result) {
-        return {
-            code : 200 ,
-            data: {
-                success: true,
-                data: result
-
+  
+        const client = new Client()
+        await client.connect()
+        console.log(year)
+        const result = await client.query(`SELECT count(*) as TOTAL FROM learn.public."Reservations" WHERE EXTRACT(MONTH FROM date_demande)=${month} AND DATEPART(week, date_demande)= ${weekNumber} AND (etat=COMPLETED OR etat=ENCOURS) ;`)
+        await client.end()
+            return {
+                code : 200 ,
+                data: {
+                    success: true,
+                    year : year ,
+                    data: result
+    
+                }
             }
-        }
-    } 
-    else {
-        return {
-            code : 400 ,
-            data: {
-                success: false,
-                data: 0
-
-            }
-        }
-
-    }
-
-} catch(e) {
-    return {
-            code: 500,
-            data: `Server error ${e.meta.cause}`,
-            error: e
-        }
-
-}
 }
 
 const getNbrDemandesRejetMois = async (month , year) => {
