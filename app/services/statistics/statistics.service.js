@@ -190,35 +190,39 @@ const getNbrInscriptionsAnnee = async (year) => {
 
 const getFinanceSemaine = async (weekNumber , month , year) => {
     
-    try {
-        const result = await prisma.$queryRaw`SELECT sum(real_price) FROM  (SELECT *,  DATEPART(week, date_paiment) AS WEEK,  EXTRACT(MONTH FROM date_paiment) AS MONTH, EXTRACT(YEAR FROM date_paiment) AS YEAR FROM Paiment) WHERE MONTH=${month} AND YEAR=${year} AND WEEK=${weekNumber}`
-    return result ;
-
-} catch(e) {
-    return {
-            code: 500,
-            data: `Server error ${e.meta.cause}`,
-            error: e
-        }
     
-} 
+        const client = new Client()
+        await client.connect()
+        console.log(year)
+        const result = await client.query(`SELECT sum(real_price) as TOTAL FROM learn.public."Paiment" WHERE EXTRACT(YEAR FROM date_paiment)=${year} AND  DATEPART(week, date_paiment) = ${weekNumber} AND EXTRACT(MONTH FROM date_paiment)=${month};`)
+        await client.end()
+            return {
+                code : 200 ,
+                data: {
+                    success: true,
+                    year : year ,
+                    data: result
+    
+                }
+            }
 }
 
 const getFinanceMois = async (month , year) => {
     
-    try {
-        const result = await prisma.$queryRaw`SELECT sum(real_price) FROM  (SELECT *, EXTRACT(MONTH FROM date_paiment) AS MONTH, EXTRACT(YEAR FROM date_paiment) AS YEAR FROM Paiment) WHERE MONTH=${month} AND YEAR=${year} `
-    return result ;
-
-
-} catch(e) {
-    return {
-            code: 500,
-            data: `Server error ${e.meta.cause}`,
-            error: e
-        }
+    const client = new Client()
+        await client.connect()
+        console.log(year)
+        const result = await client.query(`SELECT sum(real_price) as TOTAL FROM learn.public."Paiment" WHERE EXTRACT(YEAR FROM date_paiment)=${year} AND EXTRACT(MONTH FROM date_paiment)=${month};`)
+        await client.end()
+            return {
+                code : 200 ,
+                data: {
+                    success: true,
+                    year : year ,
+                    data: result
     
-}
+                }
+            }
 }
 
 const getFinanceAnnee = async (year) => {
