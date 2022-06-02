@@ -9,7 +9,15 @@ const paymentService = require("../payment/payment.service")
 const getById = async (reservation_id) => {
     try {
         return await prisma.Reservations.findUnique({
-            reservation_id: reservation_id
+            where: {
+                reservation_id: reservation_id
+            },
+            include: {
+                vehicule: true,
+                locataire: true,
+                Paiment: true,
+                reservation_region: true
+            }
         })
     } catch (e) {
 
@@ -214,7 +222,7 @@ const createReservation = async (matricule, locataire, departLat, departLong, de
                 data: {
                     success: true,
                     reservation,
-                    message: "Votre reservation a été bien enregistrée. Veuillez attendre sa validation."
+                    message: "Votre reservation a été bien enregistrée. Vous devez proceder a la paiment pour la validation"
                 },
                 log: `Une reservation de la voiture ${matricule} a ete cree par le locataire ${locataire}`
             }
@@ -602,10 +610,10 @@ const validateTrajet = async (reservation_id) => {
                 })
                 if (valid) {
                     // unlock car
-                    await unlockCar(reservation.vehicule_id)
+                    // await unlockCar(reservation.vehicule_id)
 
                     // Update real price
-                    await paymentService.update(reservation)
+                    await paymentService.update(reservation.reservation_id)
 
                     return {
                         code: 200,

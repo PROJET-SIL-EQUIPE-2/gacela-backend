@@ -8,7 +8,7 @@ const logger = require("../../services/logger")
 const checkout = async (req, res) => {
     const validator = Joi.object({
         reservation_id : Joi.number().required(),
-        token: Joi.string().required()
+        amount: Joi.number().required()
     })
     const {error} = validator.validate(req.body);
     if (error){
@@ -17,8 +17,8 @@ const checkout = async (req, res) => {
             errors: [{ msg: error.details[0].message }]
         });
     }
-    const {reservation_id} = req.body
-    const {code, data, serviceError, log} = await paymentService.checkout(parseInt(reservation_id), token)
+    const {reservation_id, amount} = req.body
+    const {code, data, serviceError, log} = await paymentService.createPayment(parseInt(reservation_id), parseFloat(amount))
 
     // Send response to client
     console.log(data)

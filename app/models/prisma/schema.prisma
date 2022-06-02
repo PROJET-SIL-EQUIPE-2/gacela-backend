@@ -108,7 +108,7 @@ model Reply {
 
 model Refund {
   refund_id         Int           @id @default(autoincrement())
-  paiment_id        String?
+  paiment_id        Int?
   paiment           Paiment? @relation(fields: [paiment_id], references: [paiment_id], onDelete: NoAction, onUpdate: NoAction)
   amount            Int?
 
@@ -152,7 +152,7 @@ model NotificationsLocataire {
 }
 
 model Paiment {
-  paiment_id   String          @id
+  paiment_id   Int                @id @default(autoincrement())
   reservation_id  Int?
   estimated_price Float?
   real_price      Float?      @default(0)

@@ -43,9 +43,29 @@ const calculateEstimatedPrice = async (
             }
         }
     }
+}
 
-
-           
+const calculateEstimatedPriceOfReservation = async (reservation_id) => {
+    let reservation = await reservationService.getById(reservation_id)
+    let car = await carsService.getById(reservation.vehicule.vehicule_id)
+    try {
+        let priceHour = await typeService.getPriceOfType(car.type_vehicule);
+        let duration = await getDuration(reservation.departLat, reservation.departLong, reservation.destLat,reservation.destLong);
+        if (duration != null){
+            let constant = 10;
+            return (duration / 3600) * priceHour + constant
+        }
+        return null
+    }catch (e) {
+        return {
+            code: 500,
+            data: {
+                success: false,
+                data: `Error while calculating estimated price`,
+                log: `Error while calculating estimated price`
+            }
+        }
+    }
 }
 
 const calculateRealPrice = async (reservation_id) => {
@@ -72,5 +92,6 @@ const calculateRealPrice = async (reservation_id) => {
 module.exports = {
     calculateEstimatedPrice,
     calculateRealPrice,
-    getDuration
+    getDuration,
+    // calculateEstimatedPriceOfReservation
 }
