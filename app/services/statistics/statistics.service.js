@@ -227,19 +227,20 @@ const getFinanceMois = async (month , year) => {
 
 const getFinanceAnnee = async (year) => {
   
-    try {
-        const result = await prisma.$queryRaw`SELECT sum(real_price) FROM  (SELECT *, EXTRACT(YEAR FROM date_paiment) AS YEAR FROM Paiment) WHERE YEAR=${year} `
-    return result ;
-
-
-} catch(e) {
-    return {
-            code: 500,
-            data: `Server error ${e.meta.cause}`,
-            error: e
-        }
+    const client = new Client()
+        await client.connect()
+        console.log(year)
+        const result = await client.query(`SELECT sum(real_price) as TOTAL FROM learn.public."Paiment" WHERE EXTRACT(YEAR FROM date_paiment)=${year} ;`)
+        await client.end()
+            return {
+                code : 200 ,
+                data: {
+                    success: true,
+                    year : year ,
+                    data: result
     
-}
+                }
+            }
 }
 
 module.exports = {
