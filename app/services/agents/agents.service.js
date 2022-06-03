@@ -41,6 +41,7 @@ const getById = async (id) => {
         phone_number: true,
         blocked: true,
         Vehicules: true,
+        Task: true,
       },
       where: {
         agent_id: id,
