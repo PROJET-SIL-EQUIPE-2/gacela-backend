@@ -6,6 +6,7 @@ const getAllAgents = async () => {
   try {
     const allAgents = await prisma.AgentsMaintenance.findMany({
       select: {
+        agent_id: true,
         name: true,
         family_name: true,
         email: true,
