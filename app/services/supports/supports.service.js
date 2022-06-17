@@ -9,19 +9,20 @@ const demandeSupport = async (reservation_id, typeSupport, message) => {
 
     try {
 
-        const Reservation = await prisma.Reservations.findFirst({
+        const reservation = await prisma.Reservations.findFirst({
             where: {
                 reservation_id: Number(reservation_id)
             },
             include: {
-                Vehicules: {
+                vehicule: {
                     select: {
                         responsable: true,
                     }
                 }
             }
         });
-        if (!Reservation)
+
+        if (!reservation)
             return {
                 code: 400,
                 data: { success: false, errors: [{ msg: `Reservation n'existe pas` }] }
@@ -30,9 +31,9 @@ const demandeSupport = async (reservation_id, typeSupport, message) => {
 
         const support = await prisma.demandesSupport.create({
             data: {
-                locataire_id: Reservation.locataire_id,
-                agent_id: Reservation.Vehicules.responsable,
-                vehicule_id: Reservation.vehicule_id,
+                locataire_id: reservation.locataire_id,
+                agent_id: reservation.vehicule.responsable,
+                vehicule_id: reservation.vehicule_id,
                 type_support: typeSupport,
                 message: message,
             }
@@ -42,7 +43,7 @@ const demandeSupport = async (reservation_id, typeSupport, message) => {
         // TODO: NOTIFY THE AGENT (push notification)
         if (support) {
             // send the notification
-            await notificationService.sendNotification(Reservation.Vehicules.responsable,
+            await notificationService.sendNotification(reservation.vehicule.responsable,
                 "Vous avez une demande de support",
                 message)
 
@@ -69,6 +70,18 @@ const getDemandeSupport = async (agent_id) => {
         const supports = await prisma.demandesSupport.findMany({
             where: {
                 agent_id: Number(agent_id),
+
+            },
+            include: {
+                Vehicules: true,
+                Locataires: {
+                    select: {
+                        family_name: true,
+                        name: true,
+                        email: true,
+                        phone_number: true,
+                    }
+                },
             }
         });
 
