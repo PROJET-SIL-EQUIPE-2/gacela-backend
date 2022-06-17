@@ -714,10 +714,17 @@ const history = async (email) => {
             }
         })
 
+        if(!locataire){
+            return {
+                code: 404,
+                data: `No locataire of email ${email} was found`
+            }
+        }
         // Find reservations of that locataire
         let reservations = await prisma.Reservations.findMany({
             where: {
-                locataire_id: locataire.id
+                locataire_id: locataire.id,
+                etat: "COMPLETED"
             },
             include: {
                 vehicule: true

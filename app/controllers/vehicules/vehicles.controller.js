@@ -246,7 +246,6 @@ const search = async (req, res) => {
 
 
 const getAssignedCars = async (req, res) => {
-    console.log("hi")
     const validator = Joi.object({
         email: Joi.string().required().required()
     })
