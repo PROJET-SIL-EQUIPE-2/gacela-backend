@@ -32,6 +32,7 @@
     "firebase-admin": "^10.0.2",
     "google-auth-library": "^7.14.0",
     "googleapis": "^97.0.0",
+    "html-pdf-node": "^1.0.8",
     "jasmin": "^0.0.2",
     "joi": "^17.6.0",
     "jsdoc": "^3.6.10",

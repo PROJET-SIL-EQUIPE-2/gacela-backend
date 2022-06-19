@@ -46,6 +46,7 @@ dotenv.config({
 const app = express();
 app.set("port", process.env.PORT || 3000);
 app.use(express.static('uploads'));
+app.use(express.static('reports'));
 
 //// Apply middlewares
 // Allow cross-origin

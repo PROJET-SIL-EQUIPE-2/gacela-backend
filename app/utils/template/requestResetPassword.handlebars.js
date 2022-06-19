@@ -1,5 +1,5 @@
 const html =
-`<html>
+`<html lang="en">
     <head>
         <style>
         </style>

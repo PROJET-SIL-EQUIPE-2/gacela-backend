@@ -106,9 +106,7 @@ dist
 # TernJS port file
 .tern-port
 uploads/*
+reports/*
 ignoreme/*
-<<<<<<< HEAD
-models/prima/migrations/
-=======
-models/migrations/*
->>>>>>> 896e1aebd40a8ef60e4df4ebb9a4a618879079f0
+models/prisma/migrations/
+

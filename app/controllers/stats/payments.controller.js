@@ -17,16 +17,7 @@ const yearlyReport = async (req, res) => {
         });
     }
     const {year} = req.body
-    const {code, data, serviceError, log} = await paymentsStatsService.yearlyReport(year)
-
-    if (!serviceError){
-        // Send  message to user
-        res.status(code).json(data)
-        // Invoke logger
-    }else{
-        // Invoke error logger
-        res.status(code).json(serviceError)
-    }
+    await paymentsStatsService.yearlyReport(year, res)
 }
 
 
