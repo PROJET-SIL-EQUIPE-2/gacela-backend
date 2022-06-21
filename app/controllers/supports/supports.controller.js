@@ -90,13 +90,13 @@ const replyDemandeSupport = async (req, res) => {
 }
 
 const getDemandeSupportReplies = async (req, res) => {
-    if (!req.params.demande_id)
+    if (!req.params.locataire_id)
         return res.status(400).json({
             success: false,
-            errors: [{ msg: "demande id est obligatoire" }]
+            errors: [{ msg: "locataire id est obligatoire" }]
         });
 
-    const { code, data } = await supportsService.getDemandeSupportReplies(req.params.demande_id)
+    const { code, data } = await supportsService.getDemandeSupportReplies(req.params.locataire_id)
     return res.status(code).json(data)
 }
 

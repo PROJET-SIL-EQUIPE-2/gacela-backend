@@ -20,6 +20,6 @@ router.get("/", supportsController.getAllDemandeSupport);
 router.put("/:demande_id", supportsController.readDemandeSupport);
 
 // get demande replies
-router.get("/reply/:demande_id", supportsController.getDemandeSupportReplies)
+router.get("/reply/:locataire_id", supportsController.getDemandeSupportReplies)
 
 module.exports = router;
