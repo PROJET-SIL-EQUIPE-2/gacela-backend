@@ -15,7 +15,7 @@ router.get("/completed", reservationController.completed);
 router.get("/rejected", reservationController.rejected)
 
 // GET reservation history of a user
-router.get("/history", reservationController.history)
+router.post("/history", reservationController.history)
 
 router.post("/verify-code", reservationController.verifyCode);
 

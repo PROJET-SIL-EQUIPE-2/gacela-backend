@@ -13,7 +13,7 @@ router.post("/search", vehiclesController.search)
 router.get("/all", vehiclesController.getAllVehicles);
 
 // TODO GET assigned cars
-router.get("/assigned", vehiclesController.getAssignedCars);
+router.post("/assigned", vehiclesController.getAssignedCars);
 
 // Vehicle by id
 router.get("/:id", vehiclesController.getVehicleById);
