@@ -248,28 +248,15 @@ const replyDemandeSupport = async (demandeId, locataireId, adminId, message) => 
     }
 }
 
-const getDemandeSupportReplies = async (demandeId) => {
+const getDemandeSupportReplies = async (locataireId) => {
     try {
-        // check if the demande exist
-        const demande = await prisma.demandesSupport.findFirst({
-            where: {
-                demande_id: Number(demandeId)
-            }
-        })
-
-        if (!demande)
-            return {
-                code: 400,
-                data: {
-                    success: false,
-                    errors: [{ msg: `votre demande n'existe pas` }]
-                }
-            }
-
         // get the replies
         const replies = await prisma.reply.findMany({
             where: {
-                demande_id: Number(demandeId),
+                locataire_id: Number(locataireId),
+            },
+            include: {
+                DemandesSupport: true
             }
         })
 
