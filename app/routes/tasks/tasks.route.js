@@ -2,6 +2,9 @@ const tasksController = require("../../controllers/tasks/tasks.controller");
 const express = require("express");
 const router = express.Router();
 
+// Create task
+router.post("/create", tasksController.createTask);
+
 // get all tasks
 router.get("/:id_agent", tasksController.getAllTasks);
 
