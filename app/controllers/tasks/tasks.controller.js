@@ -8,7 +8,7 @@ const logger = require("../../services/logger");
 // create task
 const createTask = async (req, res) => {
     const validator = Joi.object({
-        agent_id: Joi.string().required(),
+        agent_id: Joi.number().required(),
         description: Joi.string().required(),
         important: Joi.boolean().optional()
     })
