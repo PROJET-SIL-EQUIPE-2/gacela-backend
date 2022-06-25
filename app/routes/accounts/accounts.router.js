@@ -6,7 +6,6 @@ const Role = require("../../middlewares/auth/roles");
 
 router.delete("/locataire", accountsController.deleteLocataire);
 
-router.delete("/agent", auth.authorize([Role.Admin, Role.Decideur]), accountsController.deleteAM);
+router.delete("/agent", accountsController.deleteAM);
 
-
-module.exports = router
+module.exports = router;
