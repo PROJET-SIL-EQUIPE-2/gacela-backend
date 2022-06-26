@@ -132,5 +132,6 @@ module.exports = {
     demandeSupport,
     readDemandeSupport,
     replyDemandeSupport,
-    getDemandeSupportReplies
+    getDemandeSupportReplies,
+    deleteDemande
 }

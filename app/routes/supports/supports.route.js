@@ -22,4 +22,6 @@ router.put("/:demande_id", supportsController.readDemandeSupport);
 // get demande replies
 router.get("/reply/:locataire_id", supportsController.getDemandeSupportReplies)
 
-module.exports = router;
+router.delete("/delete", supportsController.deleteDemande)
+
+module.exports = router
