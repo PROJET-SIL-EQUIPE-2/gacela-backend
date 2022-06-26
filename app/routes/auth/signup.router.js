@@ -22,14 +22,14 @@ router.post(
 // validate locataire demand by email
 router.post(
   "/locataire/validate",
-  auth.authorize(Role.Admin),
+
   signUpController.validateLocataire
 );
 
 // reject locataire and send him a justification
 router.post(
   "/locataire/reject",
-  auth.authorize(Role.Admin),
+
   signUpController.rejectLocataire
 );
 
