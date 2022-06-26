@@ -306,7 +306,7 @@ const deleteDemande = async (id) => {
     } catch (e) {
         return {
             code: 500,
-            data: `Service error`,
+            data: `Could not delete support, check if it exists`,
             log: `Service error while deleting`,
             serviceError: e
         }
