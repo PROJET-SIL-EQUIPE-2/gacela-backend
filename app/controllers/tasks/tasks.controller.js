@@ -1,8 +1,37 @@
 const tasksService = require("../../services/tasks/tasks.service")
+const Joi = require("joi")
+const logger = require("../../services/logger");
 
 
 
 
+// create task
+const createTask = async (req, res) => {
+    const validator = Joi.object({
+        agent_id: Joi.number().required(),
+        description: Joi.string().required(),
+        important: Joi.boolean().optional()
+    })
+    const { error } = validator.validate(req.body);
+    if (error) {
+
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {agent_id, description, important} = req.body
+    const {code, data, serviceError, log} = tasksService.createTask(agent_id, description, important)
+    if (!serviceError) {
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+        logger.debug(log)
+    } else {
+        // Invoke error logger
+        logger.error(log);
+        res.status(code).json(data);
+    }
+}
 
 // get all tasks
 
@@ -47,6 +76,7 @@ const updateProgress = async(req, res) => {
     return res.status(code).json(data)
 }
 module.exports = {
+    createTask,
     getAllTasks,
     getCompletedTasks,
     getUnfinishedTasks,

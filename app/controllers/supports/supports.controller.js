@@ -1,5 +1,6 @@
 const supportsService = require("../../services/supports/supports.service")
 const Joi = require("joi");
+const logger = require("../../services/logger");
 
 
 
@@ -100,11 +101,37 @@ const getDemandeSupportReplies = async (req, res) => {
     return res.status(code).json(data)
 }
 
+const deleteDemande = async (req, res) => {
+    const validator = Joi.object({
+        demande_id: Joi.number().required()
+    })
+    const { error } = validator.validate(req.body);
+    if (error) {
+
+        return res.status(400).json({
+            errors: [{ msg: error.details[0].message }]
+        });
+    }
+    const {demande_id} = req.body
+    const {code, data, serviceError, log} = await supportsService.deleteDemande(parseInt(demande_id))
+    if (!serviceError) {
+        // Send  message to user
+        res.status(code).json(data)
+        // Invoke logger
+        logger.debug(log)
+    } else {
+        // Invoke error logger
+        logger.error(log);
+        res.status(code).json(data);
+    }
+}
+
 module.exports = {
     getAllDemandeSupport,
     getDemandeSupport,
     demandeSupport,
     readDemandeSupport,
     replyDemandeSupport,
-    getDemandeSupportReplies
+    getDemandeSupportReplies,
+    deleteDemande
 }

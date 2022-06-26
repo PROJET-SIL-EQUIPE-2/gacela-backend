@@ -7,6 +7,44 @@ const prisma = new PrismaClient()
 
 
 
+// Create task
+
+const createTask = async (agent_id, description, important) => {
+    try {
+        const task = await prisma.Task.create({
+            data: {
+                agent_id: agent_id,
+                description: description,
+                important: important
+            }
+        })
+        if (!task) return {
+            code: 400,
+            data: {
+                success: false,
+                data: "Could not create task"
+            }
+        }
+        return {
+            code: 201,
+            data: {
+                success: true,
+                data: `Task for agent ${agent_id} create`,
+                log: `Task for agent ${agent_id} create`
+            }
+        }
+    }catch (e) {
+        return {
+            code: 500,
+            data: {
+                success: false,
+                data: `Server error`,
+                log: `Server error`
+            }
+        }
+    }
+}
+
 const getAllTasks = async (id) => {
 
     try {
@@ -228,6 +266,7 @@ const updateProgress = async (id) => {
     }
 }
 module.exports = {
+    createTask,
     getAllTasks,
     getCompletedTasks,
     getUnfinishedTasks,

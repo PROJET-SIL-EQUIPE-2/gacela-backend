@@ -276,6 +276,43 @@ const getDemandeSupportReplies = async (locataireId) => {
     }
 }
 
+const deleteDemande = async (id) => {
+    try {
+        const deleted = await prisma.DemandesSupport.delete({
+            where: {
+                demande_id: id
+            }
+        });
+
+        if (deleted) {
+            return {
+                code: 200,
+                data: {
+                    success: true,
+                    data: "Demande Support deleted"
+                },
+                log: "Demande Support deleted"
+            }
+        } else {
+            return {
+                code: 400,
+                data: {
+                    success: false,
+                    data: "Demande Support could not be deleted"
+                },
+                log: "Demande Support could not be deleted"
+            }
+        }
+    } catch (e) {
+        return {
+            code: 500,
+            data: `Could not delete support, check if it exists`,
+            log: `Service error while deleting`,
+            serviceError: e
+        }
+    }
+}
+
 module.exports = {
     demandeSupport,
     getDemandeSupport,
@@ -283,4 +320,5 @@ module.exports = {
     readDemandeSupport,
     replyDemandeSupport,
     getDemandeSupportReplies,
+    deleteDemande
 }
