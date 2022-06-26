@@ -320,4 +320,5 @@ module.exports = {
     readDemandeSupport,
     replyDemandeSupport,
     getDemandeSupportReplies,
+    deleteDemande
 }
