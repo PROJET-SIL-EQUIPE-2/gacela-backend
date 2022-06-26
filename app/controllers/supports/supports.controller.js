@@ -113,7 +113,7 @@ const deleteDemande = async (req, res) => {
         });
     }
     const {demande_id} = req.body
-    const {code, data, serviceError, log} = supportsService.deleteDemande(demande_id)
+    const {code, data, serviceError, log} = supportsService.deleteDemande(parseInt(demande_id))
     if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)
