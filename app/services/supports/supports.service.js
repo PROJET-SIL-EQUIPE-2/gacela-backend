@@ -280,7 +280,7 @@ const deleteDemande = async (id) => {
     try {
         const deleted = await prisma.DemandesSupport.delete({
             where: {
-                decideur_id: id
+                demande_id: id
             }
         });
 
