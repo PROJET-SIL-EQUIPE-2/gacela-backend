@@ -278,6 +278,20 @@ const getDemandeSupportReplies = async (locataireId) => {
 
 const deleteDemande = async (id) => {
     try {
+        const demande = await prisma.DemandesSupport.findFirst({
+            where: {
+                demande_id: id
+            }
+        })
+        console.log(demande)
+        if (!demande) return {
+            code: 400,
+            data: {
+                success: false,
+                data: "Demande Support could not be deleted"
+            },
+            log: "Demande Support could not be deleted"
+        }
         const deleted = await prisma.DemandesSupport.delete({
             where: {
                 demande_id: id
@@ -304,6 +318,7 @@ const deleteDemande = async (id) => {
             }
         }
     } catch (e) {
+        console.log(e)
         return {
             code: 500,
             data: `Could not delete support, check if it exists`,
