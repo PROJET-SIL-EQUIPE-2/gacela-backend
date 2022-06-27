@@ -132,7 +132,7 @@ const yearlyReport = async (year, res) => {
         </head>
         <body>
         <div class="logo">
-            LOGO
+            
         </div>
         <div class="center">
             <div class="title">
