@@ -352,7 +352,9 @@ const addVehicle = async (req, carType, mileage, matricule) => {
     let newVehicle;
     // find vehicule type id
     let type = await prisma.VehiculeType.findFirst({
-      type: carType,
+      where: {
+        type: carType
+      },
     });
 
     if (car_photo) {
@@ -394,10 +396,11 @@ const addVehicle = async (req, carType, mileage, matricule) => {
       log: "Vehicle can not be added",
     };
   } catch (e) {
+    console.log(e)
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
-      log: `Server error, ${e.meta.cause}`,
+      data: `Server error`,
+      log: `Server error`,
       serviceError: e,
     };
   }

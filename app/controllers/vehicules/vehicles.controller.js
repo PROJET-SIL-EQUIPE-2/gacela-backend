@@ -91,7 +91,6 @@ const addVehicle = async (req, res) => {
     const validator = Joi.object({
         type: Joi.string().required(),
         mileage: Joi.number().required(),
-        price_per_hour: Joi.number().required(),
         matricule: Joi.string().min(8).required()
     })
     const { error } = validator.validate(req.body);
@@ -106,12 +105,11 @@ const addVehicle = async (req, res) => {
     const {
         type,
         mileage,
-        price_per_hour,
         matricule
     } = req.body;
 
     // Invoke service
-    const { code, data, serviceError, log } = await vehiclesService.addVehicle(type, parseFloat(mileage), parseFloat(price_per_hour));
+    const { code, data, serviceError, log } = await vehiclesService.addVehicle(req, type, parseFloat(mileage), matricule);
 
     if (!serviceError) {
         // Send  message to user
