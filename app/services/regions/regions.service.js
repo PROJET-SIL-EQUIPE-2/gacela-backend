@@ -72,9 +72,37 @@ const deleteRegion = async (id) => {
     }
 }
 
+const getRegionByName = async (name) => {
+    let region;
+    if (!name) name = "Nord"
+
+    region = await prisma.Region.findFirst({
+        where: {
+            region_name: name
+        }
+    });
+    return region
+}
+
+const getRegionNameByLatLong = async (lat, long) => {
+    const NORTH_SOUTH_LAT_THRESHOLD = 32.740517
+    const EST_OUEST_LONG_THRESHOLD = 3.330900
+    if (lat >= NORTH_SOUTH_LAT_THRESHOLD){
+        return "Nord"
+    }else if (lat <= NORTH_SOUTH_LAT_THRESHOLD){
+        return "Sud"
+    }else if (long >= EST_OUEST_LONG_THRESHOLD){
+        return "Est"
+    }else{
+        return "Ouest"
+    }
+}
+
 
 module.exports = {
     getAllRegions,
     addRegion,
-    deleteRegion
+    deleteRegion,
+    getRegionByName,
+    getRegionNameByLatLong
 }

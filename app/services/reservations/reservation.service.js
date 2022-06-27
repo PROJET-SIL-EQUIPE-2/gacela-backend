@@ -1,6 +1,7 @@
 const randomstring = require("randomstring")
 const PrismaClient = require("@prisma/client").PrismaClient;
 const odb = require("../odb/odb");
+const regionsService = require("../regions/regions.service")
 
 const prisma = new PrismaClient();
 
@@ -333,6 +334,15 @@ const validateReservation = async (reservation_id, locataire_email) => {
                     }
                 });
 
+                // TODO Update ReservationRegion
+                let region_name = regionsService.getRegionNameByLatLong(reservation.departLat, reservation.departLong);
+                let region =  await regionsService.getRegionByName(region_name)
+                await prisma.ReservationRegion.create({
+                    data: {
+                        region_id: region.region_id,
+                        reservation_id: reservation.reservation_id
+                    }
+                })
 
 
                 if (reservation) {
