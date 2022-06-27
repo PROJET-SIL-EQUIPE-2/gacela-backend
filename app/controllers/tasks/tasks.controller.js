@@ -20,7 +20,7 @@ const createTask = async (req, res) => {
         });
     }
     const {agent_id, description, important} = req.body
-    const {code, data, serviceError, log} = tasksService.createTask(agent_id, description, important)
+    const {code, data, serviceError, log} = await tasksService.createTask(agent_id, description, important)
     if (!serviceError) {
         // Send  message to user
         res.status(code).json(data)

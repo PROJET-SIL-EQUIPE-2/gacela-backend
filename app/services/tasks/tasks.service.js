@@ -29,9 +29,9 @@ const createTask = async (agent_id, description, important) => {
             code: 201,
             data: {
                 success: true,
-                data: `Task for agent ${agent_id} create`,
-                log: `Task for agent ${agent_id} create`
-            }
+                data: `Task for agent ${agent_id} created`,
+            },
+            log: `Task for agent ${agent_id} create`
         }
     }catch (e) {
         return {
