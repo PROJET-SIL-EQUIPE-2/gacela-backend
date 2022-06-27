@@ -1,5 +1,7 @@
 const PrismaClient = require("@prisma/client").PrismaClient;
 const locataireService = require("../../services/mailLoc.service");
+const logger = require("../../services/logger");
+
 
 const prisma = new PrismaClient();
 
@@ -25,6 +27,7 @@ const getValidatedLocataires = async (req, res) => {
     return res.send(non_validated);
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
     return res.status(500).json("Server error");
   }
 };
@@ -52,6 +55,7 @@ const getWaitingLocataires = async (req, res) => {
     res.send(r);
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
     return res.status(500).json("Server error");
   }
 };
@@ -84,6 +88,8 @@ const getRejectedLocataires = async (req, res) => {
     res.send(r);
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
+
     return res.status(500).json("Server error");
   }
 };
@@ -109,6 +115,8 @@ const getAllLocataires = async (req, res) => {
     });
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
+
     return res.status(500).json({
       code: 500,
       message: e.message,
@@ -140,6 +148,8 @@ const getBlockedLocataires = async (req, res) => {
     });
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
+
     return res.status(500).json({
       code: 500,
       message: e.message,
@@ -172,6 +182,8 @@ const getNotBlockedLocataires = async (req, res) => {
     });
   } catch (e) {
     console.error(e);
+    logger.error(e.message)
+
     return res.status(500).json({
       code: 500,
       message: e.message,

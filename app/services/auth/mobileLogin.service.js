@@ -50,7 +50,7 @@ const loginLocataire = async (email, password) => {
           code: 401,
           data: {
             success: false,
-            errors: [{ msg: "Your demande is in qeue, wait for validation" }]
+            errors: [{ msg: "Your demande is in queue, wait for validation" }]
           }
         }
 

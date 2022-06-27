@@ -36,7 +36,7 @@ const getDecideurById = async (req, res) => {
             res.status(code).json(data);
         }
     }catch (e){
-        res.json("Number my be provided");
+        res.json("Number must be provided");
     }
 }
 

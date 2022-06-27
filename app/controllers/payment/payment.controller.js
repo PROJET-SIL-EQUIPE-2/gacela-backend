@@ -42,6 +42,7 @@ const refund = async (req, res) => {
     const {error} = validator.validate(req.body);
     if (error){
         // Bad request
+        logger.error(error.details[0].message)
         return res.status(400).json({
             errors: [{ msg: error.details[0].message }]
         });

@@ -10,16 +10,16 @@ const getAll = async () => {
             data: {
                 success: true,
                 data: types
-            }
+            },
+            log: "Giving all types"
         }
     }catch (e){
         console.log(e)
         return {
             code: 500,
-            data: {
-                success: false,
-                data: e.message
-            }
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
+            serviceError: e,
         }
     }
 }
@@ -41,10 +41,9 @@ const getType = async (type) => {
     }catch (e){
         return {
             code: 500,
-            data: {
-                success: false,
-                data: e.message
-            }
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
+            serviceError: e,
         }
     }
 }
@@ -63,16 +62,16 @@ const addType = async (type, price_per_hour) => {
             data: {
                 success: true,
                 data: insertedType
-            }
+            },
+            log: `Yaaay new car type added`
         }
     }catch (e) {
         console.log(e)
         return {
             code: 500,
-            data: {
-                success: false,
-                data: `Type already exists`
-            }
+            data: `Server error, ${e.message}`,
+            log: `Server error, ${e.message}`,
+            serviceError: e
         }
     }
 }
@@ -86,7 +85,12 @@ const getPriceOfType = async (type) => {
         })
         return fetchedType.price_per_hour
     }catch (e) {
-        throw e
+       return {
+           code: 500,
+           data: `Server error could not fetch price, ${e.message}`,
+           log: `Server error could not fetch price, ${e.message}`,
+           serviceError: e,
+       }
     }
 
 }

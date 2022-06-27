@@ -24,8 +24,8 @@ const getAllAgents = async () => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
-      log: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
       serviceError: e,
     };
   }
@@ -69,8 +69,8 @@ const getById = async (id) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
-      log: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
       serviceError: e,
     };
   }

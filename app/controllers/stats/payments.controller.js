@@ -66,13 +66,17 @@ const dailyReport = async (req, res) => {
     const {year, month, day} = req.body
     const {code, data, serviceError, log} = await paymentsStatsService.dailyReport(year, month, day)
 
+    // Send response to client
     if (!serviceError){
         // Send  message to user
         res.status(code).json(data)
         // Invoke logger
+        logger.debug(log)
     }else{
         // Invoke error logger
         res.status(code).json(serviceError)
+        logger.error(log)
+
     }
 }
 

@@ -234,6 +234,7 @@ const rejectReservation = async (req, res) => {
         }
 
     } catch (e) {
+
         res.status(400).json("Reservation must be a number")
     }
 }

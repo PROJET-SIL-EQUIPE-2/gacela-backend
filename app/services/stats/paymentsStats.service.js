@@ -179,14 +179,17 @@ const yearlyReport = async (year, res) => {
                     benefit,
                     currency: "dzd",
                     path
-                }
+                },
+                log: `Payment statistics report generated for year ${year}`
             })
         })
     })
         .catch(e => {
             return {
                 code: 500,
-                data: "Could not generate report"
+                data: "Could not generate report",
+                log: `Could not generate report ${e.message}`
+
             }
         });
 
@@ -211,7 +214,9 @@ const monthlyReport = async (year, month) => {
                 currency: "dzd"
 
             }
-        }
+        },
+        log: `Monthly Report generated`
+
     }
 }
 
@@ -234,7 +239,8 @@ const dailyReport = async (year, month, day) => {
                 currency: "dzd"
 
             }
-        }
+        },
+        log: `Daily Report generated`
     }
 }
 

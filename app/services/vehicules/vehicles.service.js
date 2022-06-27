@@ -81,8 +81,8 @@ const getAll = async (vehiculeType) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Service error, ${e.meta.cause}`,
-      log: `Service error, ${e.meta.cause}`,
+      data: `Service error, ${e.message}`,
+      log: `Service error, ${e.message}`,
       serviceError: e,
     };
   }
@@ -209,8 +209,9 @@ const getById = async (id) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
-      log: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
+
       serviceError: e,
     };
   }
@@ -247,7 +248,9 @@ const getAvailable = async () => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
+
       serviceError: e,
     };
   }
@@ -300,7 +303,8 @@ const getReserved = async () => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
       serviceError: e,
     };
   }
@@ -336,7 +340,8 @@ const getDefective = async () => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.meta.cause}`,
+      data: `Server error, ${e.message}`,
+      log: `Server error, ${e.message}`,
       serviceError: e,
     };
   }
@@ -399,8 +404,8 @@ const addVehicle = async (req, carType, mileage, matricule) => {
     console.log(e)
     return {
       code: 500,
-      data: `Server error`,
-      log: `Server error`,
+      data: `Server error could not add car ${e.message}`,
+      log: `Server error could not add car ${e.message}`,
       serviceError: e,
     };
   }
@@ -436,8 +441,8 @@ const deleteVehicule = async (id) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Service error, ${e.meta.cause}`,
-      log: `Service error, ${e.meta.cause}`,
+      data: `Service error could not delete car, ${e.message}`,
+      log: `Service error could not delete car, ${e.message}`,
       serviceError: e,
     };
   }
@@ -492,7 +497,9 @@ const assign = async (matricule, email) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Service error`,
+      data: `Service error could not assign car ${e.message}`,
+
+      log: `Service error could not assign car ${e.message}`,
       serviceError: e,
     };
   }
@@ -556,7 +563,8 @@ const unassign = async (matricule, email) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Service error`,
+      data: `Service error could not unassign car, ${e.message}`,
+      log: `Service error could not unassign car, ${e.message}`,
       serviceError: e,
     };
   }
@@ -624,7 +632,9 @@ const search = async (type, departLat, departLong, destLat, destLong) => {
   } catch (e) {
     return {
       code: 500,
-      data: `Server error, ${e.message}`,
+      data: `Server error could not search car, ${e.message}`,
+      log: `Server error could not search car, ${e.message}`,
+      serviceError: e
     };
   }
 };
@@ -658,7 +668,14 @@ const getAssignedCars = async (email) => {
         data: `No agent of email ${email} not found`,
       },
     };
-  } catch (e) {}
+  } catch (e) {
+    return {
+      code: 500,
+      data: `Server error could not assign car, ${e.message}`,
+      log: `Server error could not assign car, ${e.message}`,
+      serviceError: e
+    }
+  }
 };
 
 module.exports = {
