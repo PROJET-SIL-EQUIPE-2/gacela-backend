@@ -319,7 +319,7 @@ const rejectLocataire = async (email, justificatif) => {
                         demande_id: demand.demande_id
                     },
                     data: {
-                        etat_demande: REJECTED
+                        etat_demande: "REJECTED"
                     }
                 })
             ]);
@@ -350,7 +350,7 @@ const rejectLocataire = async (email, justificatif) => {
                 code: 200,
                 data: {
                     success: true,
-                    data: data,
+                    data: "Locataire rejected",
                     message: "An email is sent to locataire"
                 },
                 log: "An email is sent to locataire"
@@ -368,10 +368,11 @@ const rejectLocataire = async (email, justificatif) => {
         }
 
     }catch (e){
+        console.log(e)
         return {
             code: 500,
-            data: `Server error, ${e.meta.cause}`,
-            log: `Server error, ${e.meta.cause}`,
+            data: `Server error`,
+            log: `Server error`,
             serviceError: e
         }
     }
