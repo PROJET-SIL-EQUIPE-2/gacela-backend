@@ -248,12 +248,12 @@ const replyDemandeSupport = async (demandeId, locataireId, adminId, message) => 
     }
 }
 
-const getDemandeSupportReplies = async (locataireId) => {
+const getDemandeSupportReplies = async (demande_id) => {
     try {
         // get the replies
         const replies = await prisma.reply.findMany({
             where: {
-                locataire_id: Number(locataireId),
+                demande_id: Number(demande_id),
             },
             include: {
                 DemandesSupport: true

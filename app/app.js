@@ -37,6 +37,7 @@ const paymentRouter = require("./routes/payment/payment.route")
 
 // firebase admin
 const firebaseAdminInitializeApp = require("./config/firebase-admin.config")
+const odb = require("./services/odb/odb");
 
 // Configure dotenv
 dotenv.config({
@@ -103,6 +104,12 @@ app.use("/api/regions", regionsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/payment", paymentRouter)
 
+
+app.post("/api/device/status", (req, res) => {
+    console.log(req.body.status)
+    odb.setStatus(req.body.status);
+    res.end();
+})
 
 // firebase cloud messaging
 firebaseAdminInitializeApp();

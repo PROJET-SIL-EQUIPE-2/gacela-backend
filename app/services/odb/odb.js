@@ -1,9 +1,9 @@
 const mqtt = require('mqtt');
 
-const client = mqtt.connect("mqtt://test.mosquitto.org:1883")
+const client = mqtt.connect(process.env.MQTT_SERVER)
 
 client.on("connect", () => {
-    console.log("Connected")
+    console.log("Connected to MQTT")
 })
 
 const send = (message) => {
@@ -13,8 +13,10 @@ const send = (message) => {
 }
 
 const setStatus = (message) => {
+    console.log(client.connected)
     const topic = "device/status";
-    client.publish(topic, message, { retain: true });
+    console.log("Sending to: ", topic," a message ", message)
+    client.publish(topic, message);
 }
 
 const lockCar = () => {
@@ -26,6 +28,7 @@ const unlockCar = () => {
 }
 
 module.exports = {
+    client,
     send,
     setStatus
 }
