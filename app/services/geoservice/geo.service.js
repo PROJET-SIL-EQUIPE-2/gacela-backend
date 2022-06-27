@@ -44,6 +44,8 @@ const findClosestCar = async (location, cars) => {
 const carsLocation = async (cars) => {
     let locations = []
     let status
+    // console.log(cars)
+
     try {
         for (let i = 0; i < cars.length; i++) {
             status = await prisma.VehiculesStatus.findFirst({
@@ -51,6 +53,7 @@ const carsLocation = async (cars) => {
                     matricule: cars[i].matricule
                 }
             })
+            // console.log(status)
             locations.push({
                 matricule: status.matricule,
                 lat: status.lat,

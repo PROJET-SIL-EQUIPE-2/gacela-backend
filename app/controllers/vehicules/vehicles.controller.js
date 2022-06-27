@@ -226,6 +226,7 @@ const search = async (req, res) => {
         destLat,
         destLong
     } = req.body
+    // console.log(req.body.departLat)
     const {code, data, serviceError, log} = await vehiclesService.search(type, departLat, departLong, destLat, destLong) ;
 
     // Send response to client

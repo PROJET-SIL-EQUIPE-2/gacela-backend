@@ -67,12 +67,12 @@ const refund = async (req, res) => {
 
 const estimate = async (req, res) => {
     const {
-        departLat,
-        departLong,
-        destLat,
-        destLong
+        startLat,
+        startLong,
+        endLat,
+        endLong
     } = req.body
-    const est = await estimationService.getDuration(departLat, departLong, destLat, destLong)
+    const est = await estimationService.getDuration(startLat, startLong, endLat, endLong)
     return res.json(est)
 }
 

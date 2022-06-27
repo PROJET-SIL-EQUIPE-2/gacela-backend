@@ -574,8 +574,9 @@ const search = async (type, departLat, departLong, destLat, destLong) => {
   try {
     let { data } = await getDisponible(type);
     let cars = data.data;
-    // console.log(cars)
     let locations = await geo.carsLocation(cars);
+    // console.log(locations)
+
     let carsWithCurrentLocation = await geo.carsLocation(locations);
     let lat = departLat;
     let long = departLong;
