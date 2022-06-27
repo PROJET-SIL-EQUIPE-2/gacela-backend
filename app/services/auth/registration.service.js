@@ -17,6 +17,8 @@ const signUpLocataire = async (req,
                                email,
                                phone_number,
                                password,) => {
+    let uploaded1
+    let uploaded2
     try {
         // Check if locataire already exists
         const locataire = await prisma.locataires.findUnique({
@@ -45,10 +47,10 @@ const signUpLocataire = async (req,
 
         if (req.files.personal_photo && req.files.photo_identity){
             const personal_photo = req.files.personal_photo[0];
-            upload(personal_photo);
-            const photo_identity = req.files.photo_identity[0]
-            upload(photo_identity);
+            uploaded1 = upload(personal_photo);
 
+            const photo_identity = req.files.photo_identity[0]
+            uploaded2 = upload(photo_identity);
             // TODO: Must be a transaction ?
             const newLocataire = await prisma.locataires.create({
                 data: {
@@ -57,8 +59,8 @@ const signUpLocataire = async (req,
                     email: email,
                     phone_number: phone_number,
                     password: passwordHash,
-                    personal_photo: path.join(uploadPath, personal_photo.filename),
-                    photo_identity: path.join(uploadPath, photo_identity.filename)
+                    personal_photo: path.join(uploadPath, personal_photo.filename + uploaded1.ext),
+                    photo_identity: path.join(uploadPath, photo_identity.filename + uploaded2.ext)
                 }
             })
             // console.log("LOCATAIRE ADDED")
@@ -98,11 +100,11 @@ const signUpLocataire = async (req,
 
 
     } catch (e) {
-
+        console.log(e)
         return {
             code: 500,
-            data: `Server error, ${e.meta.cause}`,
-            log: `Server error, ${e.meta.cause}`,
+            data: `Server error`,
+            log: `Server error`,
             serviceError: e
         }
     }

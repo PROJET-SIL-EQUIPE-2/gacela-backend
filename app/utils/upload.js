@@ -13,7 +13,9 @@ const upload = (file) => {
                 }
             }
         })
-        return pathlib.basename(uploadedFilePath);
+        console.log(pathlib.extname(originalname))
+        console.log(pathlib.basename(uploadedFilePath))
+        return {name: pathlib.basename(uploadedFilePath), ext: pathlib.extname(originalname)};
     }
 }
 const deleteFiles = (files) => {

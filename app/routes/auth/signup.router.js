@@ -39,14 +39,12 @@ router.post("/agent", signUpController.signUpAM);
 // Register new admin
 router.post(
   "/admin",
-  auth.authorize([Role.Admin]),
   signUpController.registerAdmin
 );
 
 // Register a new dicedeur
 router.post(
   "/decideur",
-  auth.authorize([Role.Admin]),
   signUpController.registerDicedeur
 );
 
