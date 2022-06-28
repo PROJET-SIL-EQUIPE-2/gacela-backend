@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const upload = require("../../utils/upload");
 const path = require("path");
+const sendEmail = require("../../utils/sendEmail");
 
 const PrismaClient = require("@prisma/client").PrismaClient;
 
@@ -81,7 +82,7 @@ const signUpLocataire = async (req,
                         msg: "Locataire registered"
                     }
                 },
-                log: "Locataire registered"
+                log: `Locataire ${email} registered`
             }
 
 
@@ -103,8 +104,8 @@ const signUpLocataire = async (req,
         console.log(e)
         return {
             code: 500,
-            data: `Server error`,
-            log: `Server error`,
+            data: `Server error. ${e.message}`,
+            log: `Server error, ${e.message}`,
             serviceError: e
         }
     }
@@ -201,7 +202,7 @@ const validateLocataire = async (email) => {
                             updatedLocataire
                         }
                     },
-                    log: "Locataire validated"
+                    log: `Locataire ${email} validated`
                 }
             }
             // TODO: Should we handle the case where locataire was rejected before?
@@ -214,7 +215,7 @@ const validateLocataire = async (email) => {
                         }
                     ]
                 },
-                log: "This demand was rejected before"
+                log: `This demand ${email} was rejected before`
             }
 
         }
@@ -274,7 +275,7 @@ const rejectLocataire = async (email, justificatif) => {
                         msg: "Locataire is already validated"
                     }]
                 },
-                log: "Locataire is already validated"
+                log: `Locataire ${email} is already validated`
             }
         }
 
@@ -324,9 +325,9 @@ const rejectLocataire = async (email, justificatif) => {
                 })
             ]);
             // TODO: Send email and delete records
-            // await sendEmail(email, "Motif de rejet", justificatif)
+            await sendEmail(email, "Motif de rejet", justificatif)
 
-            // Delete records
+            // Delete records ?
             // await prisma.$transaction([
             //     prisma.DemandesInscriptionRejected.delete({
             //         where: {
